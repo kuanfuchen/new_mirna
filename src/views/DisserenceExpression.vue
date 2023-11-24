@@ -14,7 +14,7 @@
           </v-col>
           <v-col cols="4">
             <v-sheet>
-              <v-select label="Select compare" :items="compare_de_title_group" v-model="compare_de_title" @change="changed_miRNA_DataInfo"
+              <v-select label="Select compare" :items="compare_de_title_group" v-model="compare_de_title" @update:modelValue="changed_miRNA_DataInfo"
               variant="outlined" dense></v-select>
             </v-sheet>
           </v-col>
@@ -62,7 +62,6 @@
         <div class="" v-if="handleDataIF">
           <DisplayTable :table="tableComponentInfo"></DisplayTable>
         </div>
-        
         <!-- <v-img width="100%" aspect-ratio="16/9" cover
           src="../assets/miRNA-seq/Bowtie2/03. DE miRNAs/Volcano plot - EV CL1-5 vs EV CL1-0 - EV CL1-5 vs EV CL1-0.png"
         ></v-img> -->
@@ -73,7 +72,7 @@
   </div>
 </template>
 <script setup>
-  import { ref, watch } from 'vue';
+  import { ref } from 'vue';
   import {dataService} from '../service/data_service.js';
   import { takeUntil, debounceTime,Subject } from 'rxjs';
   import DisplayTable from '../components/DisplayTable.vue';
@@ -101,16 +100,20 @@
       console.log("don't deData");
       return
     };
+    console.log(de_data, 'de_data')
     compare_de_title_group.value = await de_data.title_Group;
     compare_de_title.value = await de_data.title_Group[0];
     compare_de_tables_info = await de_data.info;
+    console.log(compare_de_tables_info, 'compare_de_tables_info')
     await handle_table_Info();
     
   };
   const handle_table_Info = ()=>{
     return new Promise((resolve, reject)=>{
+      handleDataIF.value = false;
       for(let i = 0 ; compare_de_tables_info.length > i ; i++){
       if(compare_de_tables_info[i].title === compare_de_title.value){
+        console.log(compare_de_tables_info[i], 'compare_de_tables_info[i]')
         const headers = [];
         for(let j = 0 ; compare_de_tables_info[i].headers.length > j; j++){
           const header = compare_de_tables_info[i].headers[j].split(/\(/);
@@ -125,10 +128,16 @@
       tableComponentInfo.value = response;
       handleDataIF.value = true;
     })
-  }
-  const changed_miRNA_DataInfo = ()=>{
-    console.log(123);
-    console.log(compare_de_title.value ,'compare_de_title')
-  }
-    
+  };
+  const changed_miRNA_DataInfo = () => {
+    // const preDe_folder_data_group = compare_de_folder_data.value;
+    // console.log(compare_de_title.value ,'compare_de_title')
+    // console.log(compare_de_tables_info, 'compare_de_tables_info')
+    for(let i = 0; compare_de_tables_info.length > i ; i++){
+      if( compare_de_title.value === compare_de_tables_info[i].title){
+        // console.log(compare_de_tables_info[i], 'preDe_folder_data_group[i].title')
+        handle_table_Info()
+      }
+    }
+  };
 </script>

@@ -51,7 +51,6 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab)=>{
       if(index === 5 ) normalized_RNA_title.push(body);
       if(index > 5){
         const numberBody = Number(body) + 1;
-        
         // if(numberBody === 0){
         //   normalized_Info[i].push(numberBody)
         // }else{
