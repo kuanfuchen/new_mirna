@@ -1,0 +1,199 @@
+<template>
+  <div class="mt-3 px-3">
+    <v-card>
+    <v-tabs v-model="useStyleTab" color="primary" >
+      <v-tab v-for="(item, i) in displayStyle" color="primary" :key="i" class="text-none" >
+        {{ item }}
+      </v-tab>
+    </v-tabs>
+    <v-card-text>
+      <v-window v-model="useStyleTab">
+        <v-window-item value="Graph">
+          <div>
+            <div class="d-flex justify-center">
+              <div class="text-h6 w-25">
+                <p class="text-center mb-2">Sample1</p>
+                <v-select v-model="sample1Item" @update:modelValue="changeSample1"
+                :items="selctedSampleItem" variant="outlined"></v-select>
+              </div>
+              <div class="text-h6 mx-5">V.S</div>
+              <div class="text-h6 w-25">
+                <p class="text-center mb-2">Sample2</p>
+                <v-select v-model="sample2Item" @update:modelValue="changeSample2"
+                  :items="selctedSampleItem" variant="outlined"></v-select>
+              </div>
+            </div>
+          </div>
+          <v-card class="mx-3 mt-3" width="100%">
+            <template v-slot:title>
+              Scatter Plot
+            </template>
+            <ScatterPlot :scatterGraphInfo="selectedSampleTitle"></ScatterPlot>
+          </v-card>
+          <v-card class="mx-3 mt-3" width="100%">
+            <template v-slot:title>
+              Box Plot
+            </template>
+            <BoxPlot></BoxPlot>
+          </v-card>
+          <v-card class="mx-3 mt-3" width="100%">
+            <template v-slot:title>
+              PCA Plot
+            </template>
+            <PCA_plot></PCA_plot>
+          </v-card>
+        </v-window-item>
+        <v-window-item value="Table">
+          <v-card>
+            <v-tabs v-model="condition_header" color="primary" @click="displayTableInfo">
+              <v-tab v-for="(item, i) in conditionHeaders" color="primary" :key="i" class="text-none">
+                {{ item }}
+              </v-tab>
+            </v-tabs>
+            <v-data-table v-model:items-per-page="itemsPerPage"  :headers="tableComponentInfo.headers"
+              :items="tableComponentInfo.body" item-value="Sample name" class="elevation-1">
+            </v-data-table>
+            <v-windows v-model="condition_header">
+              <v-window-item v-for="( header, index ) in conditionHeaders" :key="index" :value="header">
+              <!-- <DisplayTable :table="tableComponentInfo"></DisplayTable> -->
+              </v-window-item>
+            </v-windows>
+          </v-card>
+        </v-window-item>
+      </v-window>
+    </v-card-text>
+    </v-card>
+  </div>
+</template>
+<script setup >
+  /* eslint-disable */
+  import { ref, reactive } from 'vue';
+  import { dataService } from '../service/data_service.js';
+  import { Subject, takeUntil, debounceTime } from 'rxjs';
+  // import { VDataTable } from "vuetify/labs/VDataTable";
+  import DisplayTable from '../components/DisplayTable.vue';
+  import BoxPlot from '../components/poltly/BoxPlot.vue';
+  import ScatterPlot from '../components/poltly/ScatterPlot.vue';
+  import PCA_plot from '../components/poltly/PCAPlot.vue';
+  // import MiRNATabs from '../components/MiRNATabs.vue';
+  const comSubject$ = new Subject();
+  const tableComponentInfo = ref({});
+  const miRNATab = ref(0);
+  const miRNATabs = ref([]);
+  const itemsPerPage = ref(20)
+  // const miRNATables = ref([]);
+  let miRNATables = {};
+  const headers = [];
+  const conditionHeaders = ref([]);
+  const condition_header = ref(0);
+  const condition_Table = ref([]);
+  const selctedSampleItem = ref([]);
+  const sample1Item = ref('');
+  const sample2Item = ref('');
+  const selectedSampleTitle = reactive([]);
+  const displayStyle = ref(['Graph', 'Table']);
+  const useStyleTab = ref(0);
+  const tableHeader = [
+    {title: 'Gene Symbol', align: 'center', sortable: true, key: 'title'},
+    {title: 'log10(CPM+1)', align: 'center', sortable: true, key: 'log10(CPM+1)'},
+    {title: 'CPM', align: 'center', sortable: true, key: 'CPM'},
+    {title: 'Read Count', align: 'center', sortable: true, key: 'ReadCount'}];
+  // 
+
+  // 
+  dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(100)).subscribe(async(visualization_info)=>{
+    selctedSampleItem.value = await visualization_info.headers;
+    if(visualization_info.headers.length > 1){
+      sample1Item.value = visualization_info.headers[0];
+      sample2Item.value = visualization_info.headers[1];
+      selectedSampleTitle.length = 0;
+      selectedSampleTitle.push(visualization_info.headers[0], visualization_info.headers[1])
+      // selectedSampleTitle = [visualization_info.headers[0], visualization_info.headers[1]];
+    }
+  });
+  dataService.handleRawReadsFolder$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((microRNAraw)=>{
+    if(Object.keys(miRNATables).length === 0) computed_miRNA_Info(microRNAraw);
+    // miRNATab.value = microRNAraw.tabs[0];
+    // miRNATables.value = microRNAraw.tabsTable;
+    // handleTableComponent(microRNAraw.tabsTable[0]);
+    //tabs模板速度太快，資料還沒處理好就畫出介面，導致介面無資料，之後要延遲tabs時間
+    // dataService.transferHandleFinishMeg(microRNAraw);
+  });
+  const computed_miRNA_Info = (microRNAraw)=>{
+    console.log(microRNAraw,'microRNAraw');
+    conditionHeaders.value.length = 0;
+    const tempSort_conditionHeaders = []
+    for(let j = 0 ; microRNAraw.tabsTable[0].headers.length > j ; j++){
+      if( j > 4 ) headers.push(microRNAraw.tabsTable[0].headers[j]);
+      if( j > 5 ) tempSort_conditionHeaders.push(microRNAraw.tabsTable[0].headers[j]);
+    }
+    conditionHeaders.value = tempSort_conditionHeaders.sort();
+    const tableObj = {};
+    // console.log(headers, 'headers')
+    for(let i = 0 ; microRNAraw.tabsTable.length > i ; i++){
+      const tableHeaders = headers.filter((item , index)=>{ if(index> 0) return item } );
+      for(let j = 0 ; tableHeaders.length > j ; j++){
+        if(!tableObj[tableHeaders[j]]) tableObj[tableHeaders[j]] = {};
+      }
+      const readCount_Group = [];
+      const CPM_group = [];
+      if( i === 0){
+        for(let j = 0 ; microRNAraw.tabsTable[0].body.length > j ; j++){
+        const filter_read_group = microRNAraw.tabsTable[0].body[j].filter((item , index)=>{if(index > 5){ return item }});
+          readCount_Group.push(filter_read_group);
+        }
+      }
+      for(let j = 0 ; microRNAraw.tabsTable[1].body.length > j ; j++){
+        const filter_CPM_group = microRNAraw.tabsTable[1].body[j].filter((item , index)=>{if(index > 5){
+          return Number(item).toFixed(2)
+        }});
+        CPM_group.push(filter_CPM_group);
+      }
+      const miRNA_name_Group = [];
+      for(let j = 0 ; microRNAraw.tabsTable[i].body.length > j ; j++){
+        const filter_miRNA_name = microRNAraw.tabsTable[i].body[j].filter((item, index) => {if(index === 5) return item })[0];
+        miRNA_name_Group.push(filter_miRNA_name);
+      }
+      for(let j = 0 ; tableHeaders.length > j ; j++){
+        for(let k = 0; miRNA_name_Group.length > k ; k++){
+          if(!tableObj[tableHeaders[j]][miRNA_name_Group[k]]){
+            tableObj[tableHeaders[j]][miRNA_name_Group[k]] = {
+              'log10(CPM+1)': microRNAraw.log[k][j].toFixed(2),
+              'CPM': Number(CPM_group[k][j]).toFixed(2),
+              'ReadCount': readCount_Group[k][j]
+            }
+          }
+        }
+      }
+      
+    }
+    miRNATables = tableObj;
+    console.log(miRNATables ,'miRNATables')
+    miRNATabs.value = microRNAraw.tabs;
+    displayTableInfo();
+  };
+  const displayTableInfo = ()=>{
+    const selectHeaderName = conditionHeaders.value[condition_header.value];
+    const displayTableArr = [];
+    console.log(miRNATables[selectHeaderName], ' ')
+    const selected_miRNA_names = Object.keys(miRNATables[selectHeaderName]);
+    for(let i = 0 ; selected_miRNA_names.length > i ;i++){
+      const obj = miRNATables[selectHeaderName][selected_miRNA_names[i]];
+      obj['title'] = selected_miRNA_names[i];
+      displayTableArr.push(obj)
+    }
+    tableComponentInfo.value.headers = tableHeader;
+    // tableComponentInfo.value.body = displayTableArr;
+    tableComponentInfo.value.body = displayTableArr;
+  };
+  const changeSample1 = (ev)=> {
+    sample1Item.value = ev;
+    selectedSampleTitle.length = 0;
+    selectedSampleTitle.push(sample1Item.value, sample2Item.value)
+  };
+  const changeSample2 = (ev)=> {
+    sample2Item.value = ev;
+    selectedSampleTitle.length = 0;
+    selectedSampleTitle.push(sample1Item.value, sample2Item.value)
+  };
+</script>
