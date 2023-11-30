@@ -59,6 +59,7 @@
       </v-card-text>
       <v-card-text>
         <p class="text-h6 ml-3 text-teal">Volcano Plot</p>
+        <Volcano></Volcano>
         <div class="" v-if="handleDataIF">
           <DisplayTable :table="tableComponentInfo"></DisplayTable>
         </div>
@@ -66,8 +67,6 @@
           src="../assets/miRNA-seq/Bowtie2/03. DE miRNAs/Volcano plot - EV CL1-5 vs EV CL1-0 - EV CL1-5 vs EV CL1-0.png"
         ></v-img> -->
       </v-card-text>
-
-      
     </v-card>
   </div>
 </template>
@@ -76,6 +75,7 @@
   import {dataService} from '../service/data_service.js';
   import { takeUntil, debounceTime,Subject } from 'rxjs';
   import DisplayTable from '../components/DisplayTable.vue';
+  import Volcano from '../components/poltly/Volcano_plot.vue';
   const comSubject$ = new Subject();
   const compare_de_title_group = ref([]);
   const compare_de_title = ref('');
@@ -90,9 +90,9 @@
     body:[]
   });
   let compare_de_tables_info = [];
-
   dataService.DE_Folder_Info$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((deFolderData)=>{
     sort_deFolderData(deFolderData);
+    console.log('table')
   });
   const sort_deFolderData = async(de_data)=>{
     if(Object.keys(de_data).length === 0)return;
@@ -100,11 +100,9 @@
       console.log("don't deData");
       return
     };
-    console.log(de_data, 'de_data')
     compare_de_title_group.value = await de_data.title_Group;
     compare_de_title.value = await de_data.title_Group[0];
     compare_de_tables_info = await de_data.info;
-    console.log(compare_de_tables_info, 'compare_de_tables_info')
     await handle_table_Info();
     
   };
@@ -113,7 +111,6 @@
       handleDataIF.value = false;
       for(let i = 0 ; compare_de_tables_info.length > i ; i++){
       if(compare_de_tables_info[i].title === compare_de_title.value){
-        console.log(compare_de_tables_info[i], 'compare_de_tables_info[i]')
         const headers = [];
         for(let j = 0 ; compare_de_tables_info[i].headers.length > j; j++){
           const header = compare_de_tables_info[i].headers[j].split(/\(/);
@@ -130,12 +127,8 @@
     })
   };
   const changed_miRNA_DataInfo = () => {
-    // const preDe_folder_data_group = compare_de_folder_data.value;
-    // console.log(compare_de_title.value ,'compare_de_title')
-    // console.log(compare_de_tables_info, 'compare_de_tables_info')
     for(let i = 0; compare_de_tables_info.length > i ; i++){
       if( compare_de_title.value === compare_de_tables_info[i].title){
-        // console.log(compare_de_tables_info[i], 'preDe_folder_data_group[i].title')
         handle_table_Info()
       }
     }

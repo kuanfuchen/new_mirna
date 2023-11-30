@@ -23,6 +23,7 @@ const handleQCReadAlignmentfolder = async() => {
   const handleFinish_adaptor_trimming = handleSplitTxt(adaptor_trimming);
   const handleFinish_base_trimming = handleSplitTxt(base_trimming);
   const handleFinish_post_alignment = handleSplitTxt(post_alignment);
+  // console.log(handleFinish_pre_alignment_qaqc, 'handleFinish_pre_alignment_qaqc')
   const miRNATabs = {
     tabs: readAlignmentTitle,
     tabsTable: [handleFinish_pre_alignment_qaqc, handleFinish_adaptor_trimming, handleFinish_base_trimming, handleFinish_post_alignment]
@@ -39,9 +40,9 @@ const handleRawReadsFolder = () => {
   }
   graphPlotVisualization(handleFinish_CPM_Normalized_counts, microRNA_countTab);
 }
-const graphPlotVisualization = async(normalized_count, microRNA_countTab)=>{
+const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
   if(!normalized_count.headers || !normalized_count.body) return;
-  const headersSort = normalized_count.headers.filter((header, i)=> {if(i > 5)return header });
+  const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
   const normalized_Info = [];
   const normalized_RNA_title = []
 
@@ -92,7 +93,7 @@ const handle_CPM_PCA = ()=>{
 }
 const handleDE_Folder = async () => {
   //由於有未知元素命名，故特別命名
-  const de_folder_name = '../assets/miRNA-seq/Bowtie2/03. DE miRNAs/';
+  // const de_folder_name = '../assets/miRNA-seq/Bowtie2/03. DE miRNAs/';
   const assetContext = require.context( '../assets/miRNA-seq/Bowtie2/03. DE miRNAs/', true, /\.txt$/)
   assetContext.keys().forEach((key) => {
   // const key_index = key.indexOf(/\gene_list.txt/);

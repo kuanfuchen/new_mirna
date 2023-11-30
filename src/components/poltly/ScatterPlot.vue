@@ -14,15 +14,22 @@
     y: [],
     mode: 'markers',
     type: 'scatter',
-    name: 'Team A',
+    name: 'scatter',
     text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
     marker: { size: 12 }
   };
+  // const trace2 = {
+  //   x: [15, 15],
+  //   y: [1, 5],  // 在 y = 15 的地方畫一條水平線
+  //   mode: 'lines',
+  //   type: 'scatter',
+  //   name: 'Additional Line'
+  // };
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
   };
-  const data = [ trace1,/* trace2 */];
+  // const data = [ trace1, trace2 ];
   const defineScatterGraphInfo = defineProps(['scatterGraphInfo']);
   let scatter_Info = {
     headers:[],
@@ -59,7 +66,6 @@
     }
     maxVal = Math.ceil(maxVal);
     minVal = Math.floor(minVal - 1);
-    // console.log(minVal, maxVal)
     trace1.x = traceSite[0];
     trace1.y = traceSite[1];
     trace1.text = scatter_Info.miRNA_title;
@@ -74,13 +80,11 @@
     drawGraphScatterPlot_visualization(scatterplot_visualizationDiv)
   };
   const drawGraphScatterPlot_visualization = (div)=>{
-    console.log(data, 'data')
     Plotly.newPlot(div, data, layout, { responsive:true });
   };
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe(async(visualization_info)=>{
     if(visualization_info.info.length === 0) return;
     scatter_Info = visualization_info;
-    console.log(scatter_Info, 'scatter_Info')
     await handleScatterPlotInfo()
   });
   watch(defineScatterGraphInfo.scatterGraphInfo,()=>{

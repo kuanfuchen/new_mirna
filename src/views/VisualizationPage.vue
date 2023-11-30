@@ -120,7 +120,6 @@
     // dataService.transferHandleFinishMeg(microRNAraw);
   });
   const computed_miRNA_Info = (microRNAraw)=>{
-    console.log(microRNAraw,'microRNAraw');
     conditionHeaders.value.length = 0;
     const tempSort_conditionHeaders = []
     for(let j = 0 ; microRNAraw.tabsTable[0].headers.length > j ; j++){
@@ -129,7 +128,6 @@
     }
     conditionHeaders.value = tempSort_conditionHeaders.sort();
     const tableObj = {};
-    // console.log(headers, 'headers')
     for(let i = 0 ; microRNAraw.tabsTable.length > i ; i++){
       const tableHeaders = headers.filter((item , index)=>{ if(index> 0) return item } );
       for(let j = 0 ; tableHeaders.length > j ; j++){
@@ -168,14 +166,14 @@
       
     }
     miRNATables = tableObj;
-    console.log(miRNATables ,'miRNATables')
+    // console.log(miRNATables ,'miRNATables')
     miRNATabs.value = microRNAraw.tabs;
     displayTableInfo();
   };
   const displayTableInfo = ()=>{
     const selectHeaderName = conditionHeaders.value[condition_header.value];
     const displayTableArr = [];
-    console.log(miRNATables[selectHeaderName], ' ')
+    // console.log(miRNATables[selectHeaderName], ' ')
     const selected_miRNA_names = Object.keys(miRNATables[selectHeaderName]);
     for(let i = 0 ; selected_miRNA_names.length > i ;i++){
       const obj = miRNATables[selectHeaderName][selected_miRNA_names[i]];
