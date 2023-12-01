@@ -61,7 +61,7 @@
   };
   // 
   const positiveLine = {
-    x: [2, 2],
+    x: [1, 1],
     y: [0, 15],  // 在 y = 15 的地方畫一條水平線
     mode: 'lines',
     type: 'scatter',
@@ -72,7 +72,7 @@
     }
   };
   const negativeLine = {
-    x: [-2, -2],
+    x: [-1, -1],
     y: [0, 10],
     mode: 'lines',
     type: 'scatter',
