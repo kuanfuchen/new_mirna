@@ -15,7 +15,7 @@
           <v-col cols="4">
             <v-sheet>
               <v-select label="Select compare" :items="compare_de_title_group" v-model="compare_de_title" @update:modelValue="changed_miRNA_DataInfo"
-              variant="outlined" dense></v-select>
+                variant="outlined" density="compact"></v-select>
             </v-sheet>
           </v-col>
         </v-row>
@@ -28,14 +28,14 @@
           </v-col>
           <v-col cols="2">
             <v-sheet>
-              <v-select label="Select P-value or Q-value" :items="select_P_val_or_Q_value" v-model="select_P_Q_Style"
+              <v-select density="compact" label="Select P-value or Q-value" :items="select_P_val_or_Q_value" v-model="select_P_Q_Style"
                 variant="outlined" >
               </v-select>
             </v-sheet>
           </v-col>
           <v-col cols="2">
             <v-sheet>
-              <v-text-field label="Number(0 ~ 1)" variant="outlined" v-model="select_value_Number"></v-text-field>
+              <v-text-field density="compact" label="Number(0 ~ 1)" variant="outlined" v-model="select_value_Number"></v-text-field>
             </v-sheet>
           </v-col>
         </v-row>
@@ -49,17 +49,19 @@
             </v-sheet>
           </v-col>
           <v-col cols="2">
-            <v-text-field label="Number(-10 ~ 0)" variant="outlined" v-model="log2_LowerBound"></v-text-field>
+            <v-text-field label="Number(-10 ~ 0)" variant="outlined" v-model="log2_LowerBound" density="compact"
+            @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
           <v-col cols="2">
-            <v-text-field label="Number(0 ~ 10)" variant="outlined" v-model="log2_UpperBound"></v-text-field>
+            <v-text-field label="Number(0 ~ 10)" variant="outlined" v-model="log2_UpperBound" density="compact" 
+            @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
         </v-row>
         <hr>
       </v-card-text>
       <v-card-text>
         <p class="text-h6 ml-3 text-teal">Volcano Plot</p>
-        <Volcano></Volcano>
+        <Volcano :change_volcano_plot="compare_de_Obj"></Volcano>
         <div class="" v-if="handleDataIF">
           <DisplayTable :table="tableComponentInfo"></DisplayTable>
         </div>
@@ -84,15 +86,18 @@
   const select_value_Number = ref(0);
   const log2_LowerBound = ref(-1);
   const log2_UpperBound = ref(1);
-  const handleDataIF = ref(false)
+  const handleDataIF = ref(false);
   const tableComponentInfo = ref({
     headers:[],
     body:[]
   });
+  const compare_de_Obj = ref({
+    title:'',
+  });
+  // const volcano_plot_title = ref('')
   let compare_de_tables_info = [];
   dataService.DE_Folder_Info$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((deFolderData)=>{
     sort_deFolderData(deFolderData);
-    console.log('table')
   });
   const sort_deFolderData = async(de_data)=>{
     if(Object.keys(de_data).length === 0)return;
@@ -127,9 +132,18 @@
     })
   };
   const changed_miRNA_DataInfo = () => {
+    if(log2_UpperBound.value === '' || log2_LowerBound.value === '')return;
+    console.log(log2_UpperBound.value, 'log2_UpperBound')
+
+    // if(log2_LowerBound.value || log2_UpperBound.value)
     for(let i = 0; compare_de_tables_info.length > i ; i++){
       if( compare_de_title.value === compare_de_tables_info[i].title){
-        handle_table_Info()
+        handle_table_Info();
+        compare_de_Obj.value.title = compare_de_tables_info[i].title;
+        compare_de_Obj.value.selectStyle = select_P_Q_Style.value;
+        compare_de_Obj.value.selectStyleNum = select_value_Number.value;
+        compare_de_Obj.value.log2_LowerBound = log2_LowerBound.value;
+        compare_de_Obj.value.log2_UpperBound = log2_UpperBound.value;
       }
     }
   };

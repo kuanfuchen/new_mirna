@@ -8,7 +8,10 @@
   import Plotly from 'plotly.js-dist-min';
   import { dataService } from '@/service/data_service';
   import { takeUntil, debounceTime, Subject } from 'rxjs';
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
+  const props = defineProps(['change_volcano_plot']);
+  let log2Upper = 1;
+  let log2Lower = -1;
   const comSubject$ = new Subject();
   const storagedDE_folder = {
     info:[],
@@ -22,37 +25,85 @@
     type: 'scatter',
     name: 'Team A',
     text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
-    marker: { size: 6 }
+    marker: { 
+      size: 6,
+      color:'#1976D2',
+    }
   };
+  const negative_volcano_plot_plotlyjs_data = {
+    x: [],
+    y: [],
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Team B',
+    text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+    marker: { 
+      size: 6,
+      color:'#26A69A',
 
+    }
+  }
+  const selected_volcano__plot_plotlyjs_data = {
+    x: [],
+    y: [],
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Team C',
+    text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+    marker: { 
+      size: 6,
+      color:'#B0BEC5'
+    }
+  }
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
   };
   // 
   const positiveLine = {
-    x: [1, 1],
+    x: [2, 2],
     y: [0, 15],  // 在 y = 15 的地方畫一條水平線
     mode: 'lines',
     type: 'scatter',
-    name: 'Additional Line'
+    name: 'Additional Line',
+    line:{
+      color:'#546E7A',
+      width:1
+    }
   };
   const negativeLine = {
-    x:[-1, -1],
-    y:[0, 10],
+    x: [-2, -2],
+    y: [0, 10],
     mode: 'lines',
     type: 'scatter',
-    name: 'Additional Line'
+    name: 'Additional Line',
+    line:{
+      color:'#546E7A',
+      width:1
+    }
   }
-  // 
-  const DE_folder_data = [ volcano_plot_plotlyjs_data, positiveLine, negativeLine];
+  const DE_folder_data = [ volcano_plot_plotlyjs_data, selected_volcano__plot_plotlyjs_data, negative_volcano_plot_plotlyjs_data, positiveLine, negativeLine];
   dataService.DE_Folder_Info$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((deFolderData)=>{
-    // sort_deFolderData(deFolderData);
     storagedDE_folder.info = deFolderData.info;
     storagedDE_folder.headers = deFolderData.title_Group;
     handleDE_data();
-    // console.log(storagedDE_folder, 'storagedDE_folder');
   });
+  const reMark_DE_Plot = (num)=>{
+    volcano_plot_plotlyjs_data.x.length = 0;
+    volcano_plot_plotlyjs_data.y.length = 0;
+    volcano_plot_plotlyjs_data.text.length = 0;
+    negative_volcano_plot_plotlyjs_data.x.length = 0;
+    negative_volcano_plot_plotlyjs_data.y.length = 0;
+    negative_volcano_plot_plotlyjs_data.text.length = 0;
+    selected_volcano__plot_plotlyjs_data.x.length = 0;
+    selected_volcano__plot_plotlyjs_data.y.length = 0;
+    selected_volcano__plot_plotlyjs_data.text.length = 0;
+    layout.xaxis.range.length = 0;
+    layout.yaxis.range.length = 0;
+    positiveLine.x = [log2Upper, log2Upper];
+    negativeLine.x = [log2Lower, log2Lower];
+    handleDE_data(num);
+  }
   const handleDE_data = (selectedDataNum = 0)=>{
     valcanoTitle.value = storagedDE_folder.headers[selectedDataNum];
     const selected_DE_pValue = [];
@@ -71,9 +122,25 @@
     displatVolcano(selected_DE_pValue, selected_DE_log2, selected_RNA_name);
   }
   const displatVolcano = (p_value, log2, RNA_ID)=>{
-    volcano_plot_plotlyjs_data.y = p_value;
-    volcano_plot_plotlyjs_data.x = log2;
-    volcano_plot_plotlyjs_data.text = RNA_ID;
+    for(let i = 0 ; log2.length> i ; i++){
+      const floatNum = parseFloat(log2[i]);
+      if(log2Upper <= floatNum){
+        volcano_plot_plotlyjs_data.y.push(p_value[i]);
+        volcano_plot_plotlyjs_data.x.push(log2[i]);
+        volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+      }else if(log2Lower >= floatNum){
+        negative_volcano_plot_plotlyjs_data.y.push(p_value[i]);
+        negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
+        negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+      }else if( log2Lower < floatNum && floatNum < log2Upper){
+        selected_volcano__plot_plotlyjs_data.y.push(p_value[i]);
+        selected_volcano__plot_plotlyjs_data.x.push(log2[i]);
+        selected_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
+      }
+    }
+    // volcano_plot_plotlyjs_data.y = p_value;
+    // volcano_plot_plotlyjs_data.x = log2;
+    // volcano_plot_plotlyjs_data.text = RNA_ID;
     const maxValYaxis = Math.max(...p_value);
     const minValYaxis = Math.min(...p_value);
     const maxValXaxis = Math.max(...log2);
@@ -85,34 +152,24 @@
     layout.yaxis = {
       range:[minValYaxis, maxValYaxis ],
       title:'-log10'
-    }
+    };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
     setTimeout(()=>{
       Plotly.newPlot('displatVolcanoPlot',DE_folder_data, layout, {responsive:true})
-      // const xValues = [1, 2, 3, 4, 5];
-      // const yValues = [10, 14, 18, 24, 30];
-      // const trace1 = {
-      //   x: xValues,
-      //   y: yValues,
-      //   mode: 'markers',
-      //   type: 'scatter',
-      //   name: 'Data Points'
-      // };
-      // const trace2 = {
-      //   x: xValues,
-      //   y: [8, 12, 16, 20, 26],
-      //   fill: 'tonexty',  // 將線條與 x 軸之間的區域填充
-      //   type: 'scatter',
-      //   fillcolor: 'rgba(0,100,80,0.2)',  // 區域填充的顏色
-      //   line: { color: '#black' }  // 隱藏區域線條
-      // };
-      // const exlayout = {
-      //   title: 'Scatter Plot with Shaded Area',
-      //   xaxis: { title: 'X Axis' },
-      //   yaxis: { title: 'Y Axis' }
-      // };
-      // Plotly.newPlot('displatVolcanoPlot', [trace1, trace2], exlayout);
     },100)
   }
+  watch(props.change_volcano_plot, (change_Val)=>{
+    console.log(change_Val, 'newVal')
+    console.log(storagedDE_folder,'storagedDE_folder')
+    const titleIndex = storagedDE_folder.headers.indexOf(change_Val.title);
+    if(titleIndex === -1){
+      console.log('dont index')
+      return
+    }
+    valcanoTitle.value = change_Val.title;
+    log2Upper = change_Val.log2_UpperBound;
+    log2Lower = change_Val.log2_LowerBound;
+    reMark_DE_Plot(titleIndex);
+  })
 </script>
