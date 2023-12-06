@@ -18,9 +18,9 @@
 // })
 // import Textraw from './assets/miRNA-seq/Bowtie2/00. QC (Trim adaptor & Trim base)/01. Raw reads/pre_alignment_qaqc.txt?raw';
 onMounted(async() => {
-  dataService.handleQCReadAlignmentfolder();
-  dataService.handleRawReadsFolder();
-  dataService.handle_CPM_PCA();
-  dataService.handleDE_Folder();
+  await dataService.handleQCReadAlignmentfolder();
+  await dataService.handleRawReadsFolder();
+  await dataService.handle_CPM_PCA();
+  await dataService.handleDE_Folder();
 });
 </script>

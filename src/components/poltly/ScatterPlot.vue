@@ -16,7 +16,7 @@
     type: 'scatter',
     name: 'scatter',
     text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
-    marker: { size: 12 }
+    marker: { size: 6, color:'#00BCD4' }
   };
   // const trace2 = {
   //   x: [15, 15],
@@ -29,11 +29,12 @@
     xaxis: { range: [] },
     yaxis: { range: [] },
   };
-  // const data = [ trace1, trace2 ];
+  const data = [ trace1,/* trace2 */];
   const defineScatterGraphInfo = defineProps(['scatterGraphInfo']);
   let scatter_Info = {
     headers:[],
-    info:[]
+    info:[],
+    miRNA_title:[]
   };
   
   const handleScatterPlotInfo = () => {
@@ -53,7 +54,7 @@
     const traceSite = [];
     trace1.x.length = 0;
     trace1.y.length = 0;
-    trace1.text.length = 0;
+    trace1.text = [];
     for(let i = 0 ; scatter_Info_Index_Array.length > i ; i++){
       traceSite[i] = [];
       for(let j = 0 ; scatter_Info.info.length > j ;j++){
@@ -63,7 +64,7 @@
         }
         if(minVal > scatter_Info.info[j][scatter_Info_Index_Array[i]]) minVal = scatter_Info.info[j][scatter_Info_Index_Array[i]];
       }
-    }
+    };
     maxVal = Math.ceil(maxVal);
     minVal = Math.floor(minVal - 1);
     trace1.x = traceSite[0];
@@ -79,7 +80,7 @@
     };
     drawGraphScatterPlot_visualization(scatterplot_visualizationDiv)
   };
-  const drawGraphScatterPlot_visualization = (div)=>{
+  const drawGraphScatterPlot_visualization = (div) => {
     Plotly.newPlot(div, data, layout, { responsive:true });
   };
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe(async(visualization_info)=>{
@@ -87,7 +88,5 @@
     scatter_Info = visualization_info;
     await handleScatterPlotInfo()
   });
-  watch(defineScatterGraphInfo.scatterGraphInfo,()=>{
-    handleScatterPlotInfo()
-  });
+  watch(defineScatterGraphInfo.scatterGraphInfo,() => { handleScatterPlotInfo() });
 </script>

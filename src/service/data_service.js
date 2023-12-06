@@ -7,6 +7,7 @@ const _CPM_PCA_Info$ = new BehaviorSubject({});
 const _DE_Folder_Info$ = new BehaviorSubject({});
 const DE_folder_compare_name = [];
 const DE_folder_Data = [];
+const conditionSort = [];
 // txt
 import pre_alignment_qaqc from '../assets/miRNA-seq/Bowtie2/00. QC (Trim adaptor & Trim base)/01. Raw reads/pre_alignment_qaqc.txt';
 import adaptor_trimming from '../assets/miRNA-seq/Bowtie2/00. QC (Trim adaptor & Trim base)/02. Adaptor Trimming/pre_alignment_qaqc.txt';
@@ -20,10 +21,16 @@ import CPM_PCA from '../assets/miRNA-seq/Bowtie2/02. normalized reads/GSA (CPM)/
 const handleQCReadAlignmentfolder = async() => {
   const readAlignmentTitle = ['Adaptor', 'Adaptor Trimmed','Base Trimming', 'Alignment'];
   const handleFinish_pre_alignment_qaqc = handleSplitTxt(pre_alignment_qaqc);
+  for(let i = 0 ; handleFinish_pre_alignment_qaqc.body.length > i ; i++){
+    conditionSort.push({
+      name: handleFinish_pre_alignment_qaqc.body[i][0],
+      order: handleFinish_pre_alignment_qaqc.body[i][1]
+    })
+  };
+  conditionSort.sort((a,b)=> {if(b.order > a.order) return -1 });
   const handleFinish_adaptor_trimming = handleSplitTxt(adaptor_trimming);
   const handleFinish_base_trimming = handleSplitTxt(base_trimming);
   const handleFinish_post_alignment = handleSplitTxt(post_alignment);
-  // console.log(handleFinish_pre_alignment_qaqc, 'handleFinish_pre_alignment_qaqc')
   const miRNATabs = {
     tabs: readAlignmentTitle,
     tabsTable: [handleFinish_pre_alignment_qaqc, handleFinish_adaptor_trimming, handleFinish_base_trimming, handleFinish_post_alignment]
@@ -31,7 +38,7 @@ const handleQCReadAlignmentfolder = async() => {
   await _ReadAlignmentSubject$.next(miRNATabs);
 };
 const handleRawReadsFolder = () => {
-  const microRNA_countTitle = ['Raw_Reads','Normalized_Reads'];
+  const microRNA_countTitle = ['Raw_Reads', 'Normalized_Reads'];
   const handleFinish_microRNA_counts =  handleSplitTxt(microRNA_counts);
   const handleFinish_CPM_Normalized_counts = handleSplitTxt(CPM_Normalized_counts);
   const microRNA_countTab = {
@@ -44,21 +51,17 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
   if(!normalized_count.headers || !normalized_count.body) return;
   const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
   const normalized_Info = [];
-  const normalized_RNA_title = []
-
-  for(let i = 0 ; normalized_count.body.length > i ; i++){
+  const normalized_RNA_title = [];
+  for( let i = 0 ; normalized_count.body.length > i ; i++ ){
     normalized_Info[i] = [];
     normalized_count.body[i].forEach((body, index)=>{ 
-      if(index === 5 ) normalized_RNA_title.push(body);
+      if(index === 5 ) {
+        normalized_RNA_title.push(body)
+      };
       if(index > 5){
         const numberBody = Number(body) + 1;
-        // if(numberBody === 0){
-        //   normalized_Info[i].push(numberBody)
-        // }else{
-          const log10Body = Math.log10(numberBody);
-          normalized_Info[i].push(log10Body)
-          // normalized_Info
-        // }
+        const log10Body = Math.log10(numberBody);
+        normalized_Info[i].push(log10Body);
     }});
   }
   const microRNA_Info = {
@@ -67,7 +70,7 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
     log: normalized_Info
   };
   await _handleRawReadsFolder$.next(microRNA_Info);
-  await _visualization_Plot$.next({headers: headersSort, info: normalized_Info,miRNA_title: normalized_RNA_title});
+  await _visualization_Plot$.next({headers: headersSort, info: normalized_Info, miRNA_title: normalized_RNA_title, sortOrder: conditionSort});
 }
 const handleSplitTxt = (tableInfo) => {
   const miRNATable = {
@@ -89,6 +92,7 @@ const handleSplitTxt = (tableInfo) => {
 };
 const handle_CPM_PCA = ()=>{
   const pca_data = handleSplitTxt(CPM_PCA);
+  pca_data.sortOrder = conditionSort;
   _CPM_PCA_Info$.next(pca_data);
 }
 const handleDE_Folder = async () => {
@@ -101,7 +105,7 @@ const handleDE_Folder = async () => {
     const keySplitIndex = keySplit.indexOf('gene_list.txt');
     if(keySplitIndex > -1){
       const folderNameIndex = keySplit.length - 2;
-      DE_folder_compare_name.push(keySplit[folderNameIndex])
+      DE_folder_compare_name.push(keySplit[folderNameIndex]);
     }
   });
   const DE_txtGroup = [];
@@ -112,7 +116,6 @@ const handleDE_Folder = async () => {
   }
   for(let i = 0 ; DE_txtGroup.length > i ; i++){
     const de_txtTableInfo = handleSplitTxt(DE_txtGroup[i]);
-    // console.log(de_txtTableInfo, 'de_txtTableInfo');
     de_txtTableInfo.title = DE_folder_compare_name[i];
     DE_folder_Data.push(de_txtTableInfo);
     _DE_Folder_Info$.next({'title_Group': DE_folder_compare_name, 'info': DE_folder_Data});

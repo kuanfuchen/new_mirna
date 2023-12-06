@@ -10,7 +10,8 @@
   const comSubject$ = new Subject();
   const PCA_Data = {
     body:[],
-    headers:[]
+    headers:[],
+    sortOrder:[]
   };
   const layout = {
     xaxis: { title: 'PCA1' },
@@ -46,6 +47,7 @@
         name: PCA_Data.headers[ i + 1 ],
       }) 
     }
+    
     for( let i = 0 ; title.length > i ; i++ ){
       const layoutTextSplit = title[i].split(/^([^\s]+)\s*\(([\d.]+%)\)$/);
       const layoutAxisTitle = layoutTextSplit[2].substring(0,5);
@@ -54,11 +56,15 @@
       }else if(i === 1){
         layout.yaxis.title = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`
       }
-      
+    }
+    const pca_plot_data_order = [];
+    for(let i = 0 ; PCA_Data.sortOrder.length > i ; i++){
+      const orderIndex = pca_plot_data.filter((item)=>{if(item.name === PCA_Data.sortOrder[i].name) return item})[0];
+      pca_plot_data_order.push(orderIndex)
     }
     setTimeout(() => {
       const PCA_plot = document.getElementById('PCA_plot');
-      Plotly.newPlot(PCA_plot, pca_plot_data, layout,{ responsive: true });
+      Plotly.newPlot(PCA_plot, pca_plot_data_order, layout,{ responsive: true });
     }, 200);
   }
   dataService.CPM_PCA_Info$.pipe(takeUntil(comSubject$)).subscribe(async(data)=>{
@@ -67,6 +73,7 @@
         PCA_Data.body.push(data.body[i])
       }
     PCA_Data.headers = data.headers;
+    PCA_Data.sortOrder = data.sortOrder;
     await madePCA_plot();
   });
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="ml-5">{{ valcanoTitle }}</p>
+    <p class="ml-5" style="font-weight: 700;">{{ valcanoTitle }}</p>
     <div class="mt-3" id="displatVolcanoPlot"></div>
   </div>
 </template>
@@ -12,6 +12,7 @@
   const props = defineProps(['change_volcano_plot']);
   let log2Upper = 1;
   let log2Lower = -1;
+  let log_SelectStyleNum = 0;
   const comSubject$ = new Subject();
   const storagedDE_folder = {
     info:[],
@@ -67,8 +68,8 @@
     type: 'scatter',
     name: 'Additional Line',
     line:{
-      color:'#546E7A',
-      width:1
+      color:'#FFD600',
+      width:2
     }
   };
   const negativeLine = {
@@ -78,11 +79,22 @@
     type: 'scatter',
     name: 'Additional Line',
     line:{
-      color:'#546E7A',
-      width:1
+      color:'#FFD600',
+      width:2
     }
   }
-  const DE_folder_data = [ volcano_plot_plotlyjs_data, selected_volcano__plot_plotlyjs_data, negative_volcano_plot_plotlyjs_data, positiveLine, negativeLine];
+  const pvalue_line = {
+    x: [-100, 100],
+    y: [0, 0],
+    mode: 'lines',
+    type: 'scatter',
+    name: 'Additional Line',
+    line:{
+      color:'#FFA726',
+      width:2.5
+    }
+  }
+  const DE_folder_data = [ volcano_plot_plotlyjs_data, selected_volcano__plot_plotlyjs_data, negative_volcano_plot_plotlyjs_data, positiveLine, negativeLine, pvalue_line];
   dataService.DE_Folder_Info$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((deFolderData)=>{
     storagedDE_folder.info = deFolderData.info;
     storagedDE_folder.headers = deFolderData.title_Group;
@@ -121,26 +133,26 @@
     //calulate Math.log
     displatVolcano(selected_DE_pValue, selected_DE_log2, selected_RNA_name);
   }
-  const displatVolcano = (p_value, log2, RNA_ID)=>{
+  const displatVolcano = (p_value, log2, RNA_ID) => {
+    Plotly.purge('displatVolcanoPlot');
     for(let i = 0 ; log2.length> i ; i++){
       const floatNum = parseFloat(log2[i]);
-      if(log2Upper <= floatNum){
+      if( log2Upper <= floatNum &&  p_value[i] >= log_SelectStyleNum){
         volcano_plot_plotlyjs_data.y.push(p_value[i]);
         volcano_plot_plotlyjs_data.x.push(log2[i]);
         volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
-      }else if(log2Lower >= floatNum){
+      }else if( log2Lower >= floatNum && p_value[i] >= log_SelectStyleNum ){
         negative_volcano_plot_plotlyjs_data.y.push(p_value[i]);
         negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
         negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
-      }else if( log2Lower < floatNum && floatNum < log2Upper){
+      }
+      // else if( log2Lower < floatNum && floatNum < log2Upper  ){
+      else{
         selected_volcano__plot_plotlyjs_data.y.push(p_value[i]);
         selected_volcano__plot_plotlyjs_data.x.push(log2[i]);
         selected_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
       }
-    }
-    // volcano_plot_plotlyjs_data.y = p_value;
-    // volcano_plot_plotlyjs_data.x = log2;
-    // volcano_plot_plotlyjs_data.text = RNA_ID;
+    };
     const maxValYaxis = Math.max(...p_value);
     const minValYaxis = Math.min(...p_value);
     const maxValXaxis = Math.max(...log2);
@@ -150,18 +162,16 @@
       title:'log2'
     };
     layout.yaxis = {
-      range:[minValYaxis, maxValYaxis ],
+      range:[ minValYaxis, maxValYaxis ],
       title:'-log10'
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
     setTimeout(()=>{
-      Plotly.newPlot('displatVolcanoPlot',DE_folder_data, layout, {responsive:true})
+      Plotly.newPlot('displatVolcanoPlot', DE_folder_data, layout, { responsive: true })
     },100)
   }
   watch(props.change_volcano_plot, (change_Val)=>{
-    console.log(change_Val, 'newVal')
-    console.log(storagedDE_folder,'storagedDE_folder')
     const titleIndex = storagedDE_folder.headers.indexOf(change_Val.title);
     if(titleIndex === -1){
       console.log('dont index')
@@ -170,6 +180,11 @@
     valcanoTitle.value = change_Val.title;
     log2Upper = change_Val.log2_UpperBound;
     log2Lower = change_Val.log2_LowerBound;
+    if(change_Val.selectStyleNum === '') return;
+    // if(change_Val.selectStyleNum === '' || change_Val.selectStyleNum === Infinity )return;
+    log_SelectStyleNum = - Math.log10(change_Val.selectStyleNum);
+    if(log_SelectStyleNum === Infinity || log_SelectStyleNum === '') return;
+    pvalue_line.y = [ log_SelectStyleNum, log_SelectStyleNum ];
     reMark_DE_Plot(titleIndex);
-  })
+  });
 </script>

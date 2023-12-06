@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 px-3">
+  <div class=" px-3">
     <v-card>
     <v-tabs v-model="useStyleTab" color="primary" >
       <v-tab v-for="(item, i) in displayStyle" color="primary" :key="i" class="text-none" >
@@ -13,45 +13,51 @@
             <div class="d-flex justify-center">
               <div class="text-h6 w-25">
                 <p class="text-center mb-2">Sample1</p>
-                <v-select v-model="sample1Item" @update:modelValue="changeSample1"
+                <v-select v-model="sample1Item" @update:modelValue="changeSample1" density="compact"
                 :items="selctedSampleItem" variant="outlined"></v-select>
               </div>
               <div class="text-h6 mx-5">V.S</div>
               <div class="text-h6 w-25">
                 <p class="text-center mb-2">Sample2</p>
-                <v-select v-model="sample2Item" @update:modelValue="changeSample2"
+                <v-select v-model="sample2Item" @update:modelValue="changeSample2" density="compact"
                   :items="selctedSampleItem" variant="outlined"></v-select>
               </div>
             </div>
           </div>
-          <v-card class="mx-3 mt-3" width="100%">
+          <v-card class="px-3" width="100%">
             <template v-slot:title>
               Scatter Plot
             </template>
             <ScatterPlot :scatterGraphInfo="selectedSampleTitle"></ScatterPlot>
           </v-card>
-          <v-card class="mx-3 mt-3" width="100%">
+          <v-card class="px-3 pt-3" width="100%">
             <template v-slot:title>
               Box Plot
             </template>
             <BoxPlot></BoxPlot>
           </v-card>
-          <v-card class="mx-3 mt-3" width="100%">
+          <v-card class="px-3 pt-3" width="100%">
             <template v-slot:title>
               PCA Plot
             </template>
             <PCA_plot></PCA_plot>
           </v-card>
+          <v-card class="px-3 mt-3" width="100%">
+            <template v-slot:title>
+              Plot
+            </template>
+            <Dendrograms></Dendrograms>
+          </v-card>
         </v-window-item>
         <v-window-item value="Table">
-          <v-card>
+          <v-card class="visual_Data_Table">
             <v-tabs v-model="condition_header" color="primary" @click="displayTableInfo">
               <v-tab v-for="(item, i) in conditionHeaders" color="primary" :key="i" class="text-none">
                 {{ item }}
               </v-tab>
             </v-tabs>
-            <v-data-table v-model:items-per-page="itemsPerPage"  :headers="tableComponentInfo.headers"
-              :items="tableComponentInfo.body" item-value="Sample name" class="elevation-1">
+            <v-data-table fixed-header v-model:items-per-page="itemsPerPage"  :headers="tableComponentInfo.headers"
+              :items="tableComponentInfo.body" item-value="Sample name" class="elevation-1" :height="dataTable_height">
             </v-data-table>
             <v-windows v-model="condition_header">
               <v-window-item v-for="( header, index ) in conditionHeaders" :key="index" :value="header">
@@ -75,24 +81,24 @@
   import BoxPlot from '../components/poltly/BoxPlot.vue';
   import ScatterPlot from '../components/poltly/ScatterPlot.vue';
   import PCA_plot from '../components/poltly/PCAPlot.vue';
+  import Dendrograms from '../components/poltly/Dendrogram.vue';
   // import MiRNATabs from '../components/MiRNATabs.vue';
   const comSubject$ = new Subject();
   const tableComponentInfo = ref({});
   const miRNATab = ref(0);
   const miRNATabs = ref([]);
   const itemsPerPage = ref(20)
-  // const miRNATables = ref([]);
   let miRNATables = {};
   const headers = [];
   const conditionHeaders = ref([]);
   const condition_header = ref(0);
-  const condition_Table = ref([]);
   const selctedSampleItem = ref([]);
   const sample1Item = ref('');
   const sample2Item = ref('');
   const selectedSampleTitle = reactive([]);
   const displayStyle = ref(['Graph', 'Table']);
   const useStyleTab = ref(0);
+  const dataTable_height = ref('')
   const tableHeader = [
     {title: 'Gene Symbol', align: 'center', sortable: true, key: 'title'},
     {title: 'log10(CPM+1)', align: 'center', sortable: true, key: 'log10(CPM+1)'},
@@ -143,7 +149,8 @@
       }
       for(let j = 0 ; microRNAraw.tabsTable[1].body.length > j ; j++){
         const filter_CPM_group = microRNAraw.tabsTable[1].body[j].filter((item , index)=>{if(index > 5){
-          return Number(item).toFixed(2)
+          const numberItem = Math.round(Number(item)*100) / 100;
+          return numberItem
         }});
         CPM_group.push(filter_CPM_group);
       }
@@ -154,26 +161,37 @@
       }
       for(let j = 0 ; tableHeaders.length > j ; j++){
         for(let k = 0; miRNA_name_Group.length > k ; k++){
-          if(!tableObj[tableHeaders[j]][miRNA_name_Group[k]]){
+          if(!tableObj[tableHeaders[j]][miRNA_name_Group[k]]){ 
             tableObj[tableHeaders[j]][miRNA_name_Group[k]] = {
-              'log10(CPM+1)': microRNAraw.log[k][j].toFixed(2),
-              'CPM': Number(CPM_group[k][j]).toFixed(2),
-              'ReadCount': readCount_Group[k][j]
+              // 'log10(CPM+1)': microRNAraw.log[k][j].toFixed(2),
+              // 'CPM': Number(CPM_group[k][j]).toFixed(2),
+              // 
+              'ReadCount': readCount_Group[k][j],
+              'log10(CPM+1)': calNumInteger(microRNAraw.log[k][j]),
+              'CPM': calNumInteger(CPM_group[k][j]),
+              // 'ReadCount': readCount_Group[j][k],
+              // 'log10(CPM+1)': calNumInteger(microRNAraw.log[j][k]),
+              // 'CPM': calNumInteger(CPM_group[j][k]),
             }
           }
         }
       }
-      
     }
     miRNATables = tableObj;
-    // console.log(miRNATables ,'miRNATables')
     miRNATabs.value = microRNAraw.tabs;
+    const windowInnerheight = window.innerHeight;
+    dataTable_height.value =  Math.ceil((windowInnerheight - 330)/ windowInnerheight * 100) + 'vh';
     displayTableInfo();
   };
-  const displayTableInfo = ()=>{
+  const calNumInteger = (val) =>{
+    const numberItem = Math.round(Number(val)*100) / 100;
+    const numThousand = numberItem.toLocaleString('en-US');
+    return numThousand
+  };
+  const displayTableInfo = () => {  
+    
     const selectHeaderName = conditionHeaders.value[condition_header.value];
     const displayTableArr = [];
-    // console.log(miRNATables[selectHeaderName], ' ')
     const selected_miRNA_names = Object.keys(miRNATables[selectHeaderName]);
     for(let i = 0 ; selected_miRNA_names.length > i ;i++){
       const obj = miRNATables[selectHeaderName][selected_miRNA_names[i]];
@@ -181,6 +199,8 @@
       displayTableArr.push(obj)
     }
     tableComponentInfo.value.headers = tableHeader;
+    // console.log(windowInnerheight, 'windowInnerheight')
+    
     // tableComponentInfo.value.body = displayTableArr;
     tableComponentInfo.value.body = displayTableArr;
   };

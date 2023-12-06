@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="px-3 mt-3" width="100%" >
+    <v-card class="px-3" width="100%" >
       <!--  -->
       <template v-slot:title>
         <p class="text-teal">Analysis</p> 
@@ -35,7 +35,8 @@
           </v-col>
           <v-col cols="2">
             <v-sheet>
-              <v-text-field density="compact" label="Number(0 ~ 1)" variant="outlined" v-model="select_value_Number"></v-text-field>
+              <v-text-field density="compact" label="Number(0 ~ 1)" variant="outlined" v-model="select_value_Number"
+              type="number" @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
             </v-sheet>
           </v-col>
         </v-row>
@@ -49,20 +50,26 @@
             </v-sheet>
           </v-col>
           <v-col cols="2">
-            <v-text-field label="Number(-10 ~ 0)" variant="outlined" v-model="log2_LowerBound" density="compact"
+            <v-text-field label="Number(-10 ~ 0)" type="number" variant="outlined" v-model="log2_LowerBound" density="compact"
             @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
           <v-col cols="2">
-            <v-text-field label="Number(0 ~ 10)" variant="outlined" v-model="log2_UpperBound" density="compact" 
+            <v-text-field label="Number(0 ~ 10)" type="number" variant="outlined" v-model="log2_UpperBound" density="compact" 
             @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
         </v-row>
         <hr>
       </v-card-text>
       <v-card-text>
-        <p class="text-h6 ml-3 text-teal">Volcano Plot</p>
+        <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
         <Volcano :change_volcano_plot="compare_de_Obj"></Volcano>
         <div class="" v-if="handleDataIF">
+          <div class="">
+            <p class="text-h6 my-2 text-teal" style="font-weight: 700;">DE Table</p>
+            <p class="ml-3 mb-2" style="font-weight: 700;">
+              {{ compare_de_title }}
+            </p>
+          </div>
           <DisplayTable :table="tableComponentInfo"></DisplayTable>
         </div>
         <!-- <v-img width="100%" aspect-ratio="16/9" cover
@@ -83,7 +90,7 @@
   const compare_de_title = ref('');
   const select_P_val_or_Q_value = ref(['P-value', 'Q-value']);
   const select_P_Q_Style = ref('P-value');
-  const select_value_Number = ref(0);
+  const select_value_Number = ref(1);
   const log2_LowerBound = ref(-1);
   const log2_UpperBound = ref(1);
   const handleDataIF = ref(false);
@@ -118,8 +125,15 @@
       if(compare_de_tables_info[i].title === compare_de_title.value){
         const headers = [];
         for(let j = 0 ; compare_de_tables_info[i].headers.length > j; j++){
-          const header = compare_de_tables_info[i].headers[j].split(/\(/);
-          headers.push(header[0]);
+          // const header = compare_de_tables_info[i].headers[j].split(/\(/);
+          let header = '';
+          const headerIndex = compare_de_tables_info[i].headers[j].indexOf('LSMean');
+          if(headerIndex > -1){
+            header = compare_de_tables_info[i].headers[j];
+          }else{
+            header = compare_de_tables_info[i].headers[j].split(/\(/)[0];
+          }
+          headers.push(header);
         }
         resolve({
           body:compare_de_tables_info[i].body,
@@ -132,10 +146,7 @@
     })
   };
   const changed_miRNA_DataInfo = () => {
-    if(log2_UpperBound.value === '' || log2_LowerBound.value === '')return;
-    console.log(log2_UpperBound.value, 'log2_UpperBound')
-
-    // if(log2_LowerBound.value || log2_UpperBound.value)
+    if(log2_UpperBound.value === '' || log2_LowerBound.value === '') return;
     for(let i = 0; compare_de_tables_info.length > i ; i++){
       if( compare_de_title.value === compare_de_tables_info[i].title){
         handle_table_Info();
