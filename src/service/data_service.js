@@ -1,4 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
+import { utils, writeFileXLSX } from 'xlsx';
 const _ReadAlignmentSubject$ = new BehaviorSubject({});
 const _handleRawReadsFolder$ = new BehaviorSubject({});
 const _transferMeg$ = new Subject({});
@@ -8,18 +9,10 @@ const _DE_Folder_Info$ = new BehaviorSubject({});
 const DE_folder_compare_name = [];
 const DE_folder_Data = [];
 const conditionSort = [];
-// txt
-import pre_alignment_qaqc from '../assets/miRNA-seq/Bowtie2/00. QC (Trim adaptor & Trim base)/01. Raw reads/pre_alignment_qaqc.txt';
-import adaptor_trimming from '../assets/miRNA-seq/Bowtie2/00. QC (Trim adaptor & Trim base)/02. Adaptor Trimming/pre_alignment_qaqc.txt';
-import base_trimming from '../assets/miRNA-seq/Bowtie2/00. QC (Trim adaptor & Trim base)/03. Base Trimming/pre_alignment_qaqc.txt'
-import post_alignment from '../assets/miRNA-seq/Bowtie2/00. QC (Trim adaptor & Trim base)/04. post alignment/post_alignment_qaqc.txt';
-import microRNA_counts from '../assets/miRNA-seq/Bowtie2/01. raw reads/microRNA_counts.txt';
-import CPM_Normalized_counts from '../assets/miRNA-seq/Bowtie2/02. normalized reads/GSA (CPM)/CPM_Normalized_counts.txt';
-import CPM_PCA from '../assets/miRNA-seq/Bowtie2/02. normalized reads/GSA (CPM)/CPM_Normalized_counts_for_PCA_plot.txt'; 
-
+import { pre_alignment_qaqc, adaptor_trimming, base_trimming, post_alignment, microRNA_counts, CPM_Normalized_counts, CPM_PCA } from './getData';
 
 const handleQCReadAlignmentfolder = async() => {
-  const readAlignmentTitle = ['Adaptor', 'Adaptor Trimmed','Base Trimming', 'Alignment'];
+  const readAlignmentTitle = ['Row reads', 'Adaptor Trimmed','Base Trimming', 'Alignment'];
   const handleFinish_pre_alignment_qaqc = handleSplitTxt(pre_alignment_qaqc);
   for(let i = 0 ; handleFinish_pre_alignment_qaqc.body.length > i ; i++){
     conditionSort.push({
@@ -30,12 +23,49 @@ const handleQCReadAlignmentfolder = async() => {
   conditionSort.sort((a,b)=> {if(b.order > a.order) return -1 });
   const handleFinish_adaptor_trimming = handleSplitTxt(adaptor_trimming);
   const handleFinish_base_trimming = handleSplitTxt(base_trimming);
-  const handleFinish_post_alignment = handleSplitTxt(post_alignment);
+  const handleFinish_post_alignment = handle_post_alignment(post_alignment);
+  //  handleSplitTxt(post_alignment);
   const miRNATabs = {
     tabs: readAlignmentTitle,
     tabsTable: [handleFinish_pre_alignment_qaqc, handleFinish_adaptor_trimming, handleFinish_base_trimming, handleFinish_post_alignment]
   }
   await _ReadAlignmentSubject$.next(miRNATabs);
+};
+const handle_post_alignment = (post_alignment) => {
+  const finish_post_alignment = handleSplitTxt(post_alignment);
+  const headers = [];
+  finish_post_alignment.headers.forEach((header) => {
+    switch(header){
+      case 'Total alignments':
+        headers.push('Total alignments reads');
+        break;
+      case 'Aligned':
+        headers.push('%Aligned');
+        break;
+      case 'Total unaligned':
+        headers.push('Total unaligned reads');
+        break;
+      case 'Unaligned':
+        headers.push('%Unaligned')
+        break;
+      case 'Total unique':
+        headers.push('Total unique')
+        break;
+      case "Unique":
+        headers.push('%Unique');
+        break;
+      case "Total non-unique":
+        headers.push('Total non-unique read');
+        break;
+      case "Non-unique":
+        headers.push('%Non-unique')
+        break;
+      default:
+        headers.push(header)
+    }
+    finish_post_alignment.headers = headers;
+  });
+  return finish_post_alignment
 };
 const handleRawReadsFolder = () => {
   const microRNA_countTitle = ['Raw_Reads', 'Normalized_Reads'];
@@ -90,6 +120,10 @@ const handleSplitTxt = (tableInfo) => {
   }
   return miRNATable
 };
+const changedXlsxStyle = ()=>{
+  const wb = utils.book_new();
+  
+}
 const handle_CPM_PCA = ()=>{
   const pca_data = handleSplitTxt(CPM_PCA);
   pca_data.sortOrder = conditionSort;
@@ -103,7 +137,7 @@ const handleDE_Folder = async () => {
   // const key_index = key.indexOf(/\gene_list.txt/);
     const keySplit = key.split(/\//);
     const keySplitIndex = keySplit.indexOf('gene_list.txt');
-    if(keySplitIndex > -1){
+    if( keySplitIndex > -1 ){
       const folderNameIndex = keySplit.length - 2;
       DE_folder_compare_name.push(keySplit[folderNameIndex]);
     }
@@ -121,6 +155,25 @@ const handleDE_Folder = async () => {
     _DE_Folder_Info$.next({'title_Group': DE_folder_compare_name, 'info': DE_folder_Data});
   }
 }
+// const exportXlsx = async(sheetList)=> {
+//   const selectedSheetsName = [];
+//   const wb = utils.book_new();
+//   console.log(sheetList, 'sheetList')
+//   // const tempSheetIndex = sheetIndex;
+//   sheetList.forEach((sheet)=> {if(sheet.selected)selectedSheetsName.push(sheet.name)});
+//   if(selectedSheetsName.length === 0) return;
+//   for(let i = 0 ; selectedSheetsName.length > i ; i++){
+//     const index = sheetjsReaderXlsxFile.data.findIndex((item) => item.sheetName === selectedSheetsName[i]);
+//     // sheetIndex = index;
+//     const filterData = await readXlsxContent(filterCondition);
+//     const ws = utils.json_to_sheet(filterData);
+//     utils.book_append_sheet(wb, ws, selectedSheetsName[i]);  
+//   }
+//   writeFileXLSX(wb, 'new_Excel' + '.xlsx');
+//   // sheetIndex = tempSheetIndex;
+//   // _handleXlsxMessage$.next({'message': "Export files finish", displayedIcon: false });
+//   _exportFileProgram$.next({ download: true });
+// };
 const transferHandleFinishMeg = (handleInfo) => _transferMeg$.next(handleInfo);
 export const dataService = {
   handleQCReadAlignmentfolder,

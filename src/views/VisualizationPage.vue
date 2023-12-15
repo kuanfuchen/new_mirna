@@ -26,25 +26,28 @@
           </div>
           <v-card class="px-3" width="100%">
             <template v-slot:title>
-              Scatter Plot
+              <span class="font-weight-bold">Scatter Plot</span>
             </template>
             <ScatterPlot :scatterGraphInfo="selectedSampleTitle"></ScatterPlot>
           </v-card>
           <v-card class="px-3 pt-3" width="100%">
             <template v-slot:title>
-              Box Plot
+              <span class="font-weight-bold">Box Plot</span>
             </template>
             <BoxPlot></BoxPlot>
           </v-card>
           <v-card class="px-3 pt-3" width="100%">
             <template v-slot:title>
-              PCA Plot
+              <span class="mr-3 font-weight-bold">PCA Plot</span>
+              <span class="mt-3 font-weight-bold text-primary" style="font-size: 14px;">( color by condition )</span>
             </template>
             <PCA_plot></PCA_plot>
+            
           </v-card>
           <v-card class="px-3 mt-3" width="100%">
             <template v-slot:title>
-              Plot
+              <span class="font-weight-bold">Heatmap Plot</span>
+              
             </template>
             <Dendrograms></Dendrograms>
           </v-card>
@@ -56,8 +59,27 @@
                 {{ item }}
               </v-tab>
             </v-tabs>
-            <v-data-table fixed-header v-model:items-per-page="itemsPerPage"  :headers="tableComponentInfo.headers"
-              :items="tableComponentInfo.body" item-value="Sample name" class="elevation-1" :height="dataTable_height">
+            <div class="d-flex justify-end">
+              <div class="d-flex align-center" >
+                <div class="download_xlsx">
+                  <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
+                </div>
+                <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
+                <v-text-field
+                  v-model="search_RNAname"
+                  label=""
+                  prepend-inner-icon="mdi-magnify"
+                  single-line
+                  variant="outlined"
+                  hide-details
+                  density="compact"
+                  style="width:300px"
+              ></v-text-field>
+              </div>
+            </div>
+            <v-data-table fixed-header v-model:items-per-page="itemsPerPage" :headers="tableComponentInfo.headers"
+              :items="tableComponentInfo.body" item-value="Sample name" class="elevation-1" :height="dataTable_height"
+              :search="search_RNAname">
             </v-data-table>
             <v-windows v-model="condition_header">
               <v-window-item v-for="( header, index ) in conditionHeaders" :key="index" :value="header">
@@ -87,7 +109,7 @@
   const tableComponentInfo = ref({});
   const miRNATab = ref(0);
   const miRNATabs = ref([]);
-  const itemsPerPage = ref(20)
+  const itemsPerPage = ref(25)
   let miRNATables = {};
   const headers = [];
   const conditionHeaders = ref([]);
@@ -98,7 +120,8 @@
   const selectedSampleTitle = reactive([]);
   const displayStyle = ref(['Graph', 'Table']);
   const useStyleTab = ref(0);
-  const dataTable_height = ref('')
+  const dataTable_height = ref('');
+  const search_RNAname = ref('');
   const tableHeader = [
     {title: 'Gene Symbol', align: 'center', sortable: true, key: 'title'},
     {title: 'log10(CPM+1)', align: 'center', sortable: true, key: 'log10(CPM+1)'},
@@ -215,3 +238,11 @@
     selectedSampleTitle.push(sample1Item.value, sample2Item.value)
   };
 </script>
+<style lang="scss">
+  .v-table .v-data-table__th,  .v-table .v-data-table__td{
+    font-weight: 600 !important;
+  }
+  .download_xlsx{
+    cursor: pointer;
+  }
+</style>

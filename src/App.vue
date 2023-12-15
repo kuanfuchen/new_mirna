@@ -1,4 +1,9 @@
 <template>
+  <div class="allContainer mx-auto">
+    <router-view/>
+  </div>
+    
+  
   <!-- <nav> -->
     <!-- <router-link to="/">Home</router-link> |
     <router-link :to="{name:'about'}">About</router-link> -->
@@ -6,7 +11,7 @@
   <!-- </nav> -->
   <!-- <div class="">123456</div> -->
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-  <router-view/>
+  
 </template>
 <script setup>
   //
@@ -24,3 +29,8 @@ onMounted(async() => {
   await dataService.handleDE_Folder();
 });
 </script>
+<style lang="scss">
+  .allContainer{
+    width:97vw;
+  }
+</style>

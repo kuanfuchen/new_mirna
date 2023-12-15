@@ -7,6 +7,11 @@
           </v-list-item>
         </v-list>
         <v-list>
+          <v-list-item>
+            <v-list-item-title v-text="'WorkFlow Info'" ></v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <v-list>
           <v-list-subheader>Quality Control</v-list-subheader>
           <v-list-item v-for="(item, i) in sideBarGroupA" :key="i" :to="item.to"
             @click="activeItem = item.value"  :active="activeItem === item.value">

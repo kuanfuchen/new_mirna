@@ -1,14 +1,35 @@
 <template>
   <div>
+    <div class="d-flex justify-end">
+      <div class="download_xlsx" @click="toogle_Plot_Screen = true">
+        <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
+      </div>
+    </div>
     <div id="scatterplot_visualization"></div>
+    <!--  -->
+    <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
+      <v-card class="bg-white" style="overflow-y: hidden;">
+        <v-card-text >
+          <h5 class="text-h5" style="font-weight: 700;">
+            Scatter Plot
+          </h5>  
+          <div class="mt-3 ml-auto mr-5">
+            <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script setup >
   import Plotly from 'plotly.js-dist-min';
   import { takeUntil, Subject, debounceTime } from 'rxjs';
-  import { watch } from 'vue';
+  import { watch, ref } from 'vue';
   import { dataService } from '../../service/data_service.js';
+  import Dialog_plot from '../Dialog_Plot.vue';
   const comSubject$ = new Subject();
+  const toogle_Plot_Screen = ref(false);
+  const transfer_FullScreen_data = ref([]);
   const trace1 = {
     x: [],
     y: [],
@@ -78,6 +99,10 @@
       range:[ minVal, maxVal ],
       title:infoTitle[1]
     };
+    transfer_FullScreen_data.value = {
+      data: data,
+      layout
+    };
     drawGraphScatterPlot_visualization(scatterplot_visualizationDiv)
   };
   const drawGraphScatterPlot_visualization = (div) => {
@@ -86,7 +111,8 @@
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe(async(visualization_info)=>{
     if(visualization_info.info.length === 0) return;
     scatter_Info = visualization_info;
-    await handleScatterPlotInfo()
+    await handleScatterPlotInfo();
   });
   watch(defineScatterGraphInfo.scatterGraphInfo,() => { handleScatterPlotInfo() });
+  const close_dialog = (val) => toogle_Plot_Screen.value = val;
 </script>

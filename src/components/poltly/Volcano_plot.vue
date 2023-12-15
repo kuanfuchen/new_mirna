@@ -1,7 +1,24 @@
 <template>
   <div>
-    <p class="ml-5" style="font-weight: 700;">{{ valcanoTitle }}</p>
+    <div class="d-flex justify-space-between">
+      <p class="ml-3" style="font-weight: 700;font-size: 18px;" >{{ valcanoTitle }}</p>
+      <div class="download_xlsx" @click="toogle_Plot_Screen = true">
+        <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
+      </div>
+    </div>
     <div class="mt-3" id="displatVolcanoPlot"></div>
+    <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
+      <v-card class="bg-white" style="overflow-y: hidden;">
+        <v-card-text >
+          <h5 class="text-h5" style="font-weight: 700;">
+            {{ valcanoTitle }}
+          </h5>  
+          <div class="mt-3 ml-auto mr-5">
+            <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script setup>
@@ -9,11 +26,15 @@
   import { dataService } from '@/service/data_service';
   import { takeUntil, debounceTime, Subject } from 'rxjs';
   import { ref, watch } from 'vue';
+  import Dialog_plot from '../Dialog_Plot.vue';
   const props = defineProps(['change_volcano_plot']);
+  const emit = defineEmits(['maxValYaxis']);
+  const toogle_Plot_Screen = ref(false);
   let log2Upper = 1;
   let log2Lower = -1;
   let log_SelectStyleNum = 0;
   const comSubject$ = new Subject();
+  const transfer_FullScreen_data = ref([]);
   const storagedDE_folder = {
     info:[],
     headers:[]
@@ -28,7 +49,7 @@
     text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
     marker: { 
       size: 6,
-      color:'#1976D2',
+      color:'#EF5350',//1976D2
     }
   };
   const negative_volcano_plot_plotlyjs_data = {
@@ -40,7 +61,7 @@
     text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
     marker: { 
       size: 6,
-      color:'#26A69A',
+      color:'#1976D2',//26A69A
 
     }
   }
@@ -59,6 +80,7 @@
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
+    showlegend: false
   };
   // 
   const positiveLine = {
@@ -66,7 +88,7 @@
     y: [0, 15],  // 在 y = 15 的地方畫一條水平線
     mode: 'lines',
     type: 'scatter',
-    name: 'Additional Line',
+    name: 'Additional Line0',
     line:{
       color:'#FFD600',
       width:2
@@ -77,7 +99,7 @@
     y: [0, 10],
     mode: 'lines',
     type: 'scatter',
-    name: 'Additional Line',
+    name: 'Additional Line1',
     line:{
       color:'#FFD600',
       width:2
@@ -88,7 +110,7 @@
     y: [0, 0],
     mode: 'lines',
     type: 'scatter',
-    name: 'Additional Line',
+    name: 'Additional Line2',
     line:{
       color:'#FFA726',
       width:2.5
@@ -157,17 +179,23 @@
     const minValYaxis = Math.min(...p_value);
     const maxValXaxis = Math.max(...log2);
     const minValXaxis = Math.min(...log2);
+    const ceil_max_Xaxis = Math.ceil(maxValXaxis);
+    emit('xaxisMaxValue', ceil_max_Xaxis)
     layout.xaxis = {
       range:[ minValXaxis, maxValXaxis ],
-      title:'log2'
+      title:'log2Ratio'
     };
     layout.yaxis = {
       range:[ minValYaxis, maxValYaxis ],
-      title:'-log10'
+      title:'-log10 (P-value)'
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
     setTimeout(()=>{
+      transfer_FullScreen_data.value = {
+        data: DE_folder_data,
+        layout
+      };
       Plotly.newPlot('displatVolcanoPlot', DE_folder_data, layout, { responsive: true })
     },100)
   }
@@ -187,4 +215,10 @@
     pvalue_line.y = [ log_SelectStyleNum, log_SelectStyleNum ];
     reMark_DE_Plot(titleIndex);
   });
+  const close_dialog = (val) => toogle_Plot_Screen.value = val;
 </script>
+<style lang="scss">
+  .download_xlsx{
+    cursor: pointer;
+  }
+</style>

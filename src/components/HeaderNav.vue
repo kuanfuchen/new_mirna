@@ -4,11 +4,15 @@
       <v-img  gradient="to top right, rgba(19,84,122,.8), rgba(128,208,199,.8)"></v-img>
     </template>
     <template v-slot:prepend>
-      <v-icon icon="fa:fas fa-list" @click="toggleDrawer()"></v-icon>
+      <v-icon icon="fa:fas fa-list" @click="toggleDrawer()" class="ml-2"></v-icon>
       <!-- <v-icon icon="md:event"></v-icon> -->
       <!-- <v-app-bar-nav-icon @click="toggleDrawer()"></v-app-bar-nav-icon> -->
     </template>
-    <v-app-bar-title>miRNA</v-app-bar-title>
+    <v-app-bar-title>
+      <v-icon icon="fa:fas fa-dna" class="mx-2 rotateIcon">
+      </v-icon>
+      <span>miRNA</span><span class="ml-3">CGMMRC</span>
+    </v-app-bar-title>
     <v-spacer></v-spacer>
     <!-- <v-btn icon><v-icon>mdi-wrench</v-icon></v-btn> -->
     <!-- <v-btn icon><v-icon>mdi-heart</v-icon></v-btn>
@@ -25,3 +29,10 @@
   }
 
 </script>
+<style lang="scss">
+  .rotateIcon{
+    transform: rotate(90deg);
+    color:#BBDEFB;
+    font-size: 20px;
+  }
+</style>
