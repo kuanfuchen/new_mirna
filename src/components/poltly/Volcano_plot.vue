@@ -6,7 +6,7 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div class="mt-3" id="displatVolcanoPlot"></div>
+    <div class="mt-3" style="height:550px" id="displatVolcanoPlot"></div>
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
         <v-card-text >
@@ -27,7 +27,7 @@
   import { takeUntil, debounceTime, Subject } from 'rxjs';
   import { ref, watch } from 'vue';
   import Dialog_plot from '../Dialog_Plot.vue';
-  const props = defineProps(['change_volcano_plot']);
+  const props = defineProps(['change_volcano_plot', ]);
   const emit = defineEmits(['maxValYaxis']);
   const toogle_Plot_Screen = ref(false);
   let log2Upper = 1;

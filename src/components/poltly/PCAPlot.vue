@@ -30,10 +30,11 @@
   import { dataService } from '../../service/data_service';
   import Dialog_plot from '../Dialog_Plot.vue';
   import { takeUntil, Subject } from 'rxjs';
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   const comSubject$ = new Subject();
   const transfer_FullScreen_data = ref([]);
   const toogle_Plot_Screen = ref(false);
+  const definedProps = defineProps(['plot_size']);
   const PCA_Data = {
     body:[],
     headers:[],
@@ -42,6 +43,7 @@
   const layout = {
     xaxis: { title: 'PCA1', },
     yaxis: { title: 'PCA2', },
+    height:500
     // title: 'Quadrant Plot',
   };
   const settingColor = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4',
@@ -99,11 +101,19 @@
       const orderIndex = pca_plot_data.filter((item)=>{if(item.name === PCA_Data.sortOrder[i].name) return item})[0];
       pca_plot_data_order.push(orderIndex)
     }
-    
+    const full_screen_layout = {
+      xaxis:{
+        title:layout.xaxis.title,
+      },
+      
+      yaxis:{
+        title:layout.yaxis.title
+      }
+    }
     setTimeout(() => {
       transfer_FullScreen_data.value = {
         data:pca_plot_data_order,
-        layout
+        layout:full_screen_layout
       };
       Plotly.newPlot('PCA_plot', pca_plot_data_order, layout,{ responsive: true });
     }, 200);
@@ -138,4 +148,8 @@
     await madePCA_plot();
   });
   const close_dialog = (val) => toogle_Plot_Screen.value = val;
+  watch(definedProps.plot_size, (newVal)=>{
+    layout.height = newVal.height;
+    madePCA_plot()
+  })
 </script>

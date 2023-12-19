@@ -59,9 +59,14 @@
           <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
           <Volcano :change_volcano_plot="compare_de_Obj" @xaxisMaxValue="listenXxais_Max"></Volcano>
         </v-card>
-        <div  v-if="handleDataIF">
-            <v-card class="px-2 py-1">
-            <p class="text-h6 my-2 text-teal" style="font-weight: 700;">DE Table</p>
+        <div v-if="handleDataIF">
+          <v-card class="px-2 py-1">
+            <div class="d-flex align-center">
+              <p class="text-h6 my-2 text-teal" style="font-weight: 700;">DE Table</p>
+              <div class="download_xlsx ml-auto" @click="exportFile">
+                <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
+              </div>
+            </div>
             <div class="d-flex justify-space-between">
               <p class="mb-2" style="font-weight: 700;font-size: 18px;">
                 {{ compare_de_title }}
@@ -118,7 +123,6 @@
     };
     compare_de_title_group.value = await de_data.title_Group;
     compare_de_title.value = await de_data.title_Group[0];
-    compare_de_tables_info = await de_data.info;
     de_data.info.forEach((item) => compare_de_tables_info.push(item));
     await handle_table_Info();
   };
@@ -130,7 +134,7 @@
       let checkedUpDownIndex = -1; 
       let fdrIndex = -1;
       for(let i = 0 ; compare_de_tables_info.length > i ; i++){
-        if(compare_de_tables_info[i].title === compare_de_title.value){
+        // if(compare_de_tables_info[i].title === compare_de_title.value){
           const headers = [];
           for(let j = 0 ; compare_de_tables_info[i].headers.length > j; j++){
             let header = '';
@@ -170,13 +174,17 @@
             if(compare_de_tables_info[i].body[j].length <= headers.length){
               compare_de_tables_info[i].body[j][headers.length - 1]= significant_value;
             }
+            compare_de_tables_info[i].headers = headers;
           }
-          resolve({
-            body:compare_de_tables_info[i].body,
-            headers,
-          })
-      }}
+          if(compare_de_tables_info[i].title === compare_de_title.value){
+            resolve({
+              body:compare_de_tables_info[i].body,
+              headers,
+            })
+          }
+    }
     }).then((response)=>{
+      console.log(compare_de_tables_info, 'compare_de_tables_info')
       tableComponentInfo.value = response;
       handleDataIF.value = true;
     });
@@ -195,7 +203,21 @@
     }
   };
   const listenXxais_Max = (emitValue)=>{
-    // console.log(emitValue, 'emitValue')
     log2V_model_val.value = emitValue;
+  }
+  const exportFile = () =>{
+    console.log(compare_de_tables_info ,'compare_de_tables_info');
+    const combinationTable = [];
+    const combinationTable_title = [];
+    for(let i = 0 ; compare_de_tables_info.length > i ; i++){
+      const table = [];
+      combinationTable_title.push(compare_de_tables_info[i].title)
+      table.push(compare_de_tables_info[i].headers);
+      for(let j = 0 ; compare_de_tables_info[i].body.length > j ; j++){
+        table.push(compare_de_tables_info[i].body[j])
+      }
+      combinationTable.push(table)
+    }
+    dataService.exportXlsx(combinationTable, 'difference_expression', combinationTable_title);
   }
 </script>

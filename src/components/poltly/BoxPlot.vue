@@ -5,7 +5,7 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div id="Boxplot_visualization" ></div>
+    <div id="Boxplot_visualization" :style="{'height':definedProps.plot_size.height}"></div>
     <!--  -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
@@ -25,8 +25,9 @@
   import Plotly from 'plotly.js-dist-min';
   import { dataService } from '../../service/data_service.js';
   import { takeUntil, Subject, debounceTime } from 'rxjs';
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import Dialog_plot from '../Dialog_Plot.vue';
+  const definedProps = defineProps(['plot_size']);
   const transfer_FullScreen_data = ref([]);
   const comSubject$ = new Subject();
   const toogle_Plot_Screen = ref(false)
@@ -40,7 +41,9 @@
     y0[i] = Math.random();
     y1[i] = Math.random() + 1;
   }
-  const layout = { };
+  const layout = {
+    height:500
+  };
   // const boxdata = [trace1, trace2];
   // const drawGraphBoxplot_visualization = () =>{
   // const boxplot_visualization = document.getElementById('Boxplot_visualization');
@@ -73,14 +76,22 @@
     // drawGraphBoxplot_visualization(Boxplot_visualization, traceData)
     transfer_FullScreen_data.value = {
       data:dataOrder,
-      layout
+      layout:{}
     }
-    Plotly.newPlot(Boxplot_visualization, dataOrder, layout, { responsive: true });
+    setTimeout(()=>{
+      Plotly.newPlot(Boxplot_visualization, dataOrder, layout, { responsive: true });
+    })
+    
   };
+
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe(async(visualization_info)=>{
     if(visualization_info.info.length === 0) return;
     boxPlot_Info = visualization_info;
     await handleBoxPlotInfo();
   });
+  watch(definedProps.plot_size, (newVal)=>{
+    layout.height = newVal.height;
+    handleBoxPlotInfo()
+  })
   const close_dialog = (val) => toogle_Plot_Screen.value = val;
 </script>

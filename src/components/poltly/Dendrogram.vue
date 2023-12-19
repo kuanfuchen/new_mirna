@@ -1,6 +1,11 @@
 <template>
   <div>
-    <div id="myDiv"></div>
+    <div class="d-flex justify-end">
+      <div class="download_xlsx">
+        <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
+      </div>
+    </div>
+    <div id="myDiv" style="height:500px"></div>
   </div>
 </template>
 <script setup>

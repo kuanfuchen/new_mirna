@@ -1,11 +1,21 @@
 <template>
-  <div class=" px-3">
+  <div class="px-3 py-5">
     <v-card>
-    <v-tabs v-model="useStyleTab" color="primary" >
-      <v-tab v-for="(item, i) in displayStyle" color="primary" :key="i" class="text-none" >
-        {{ item }}
-      </v-tab>
-    </v-tabs>
+      <div class="d-flex justify-space-between">
+        <v-tabs v-model="useStyleTab" color="primary" >
+          <v-tab v-for="(item, i) in displayStyle" color="primary" :key="i" class="text-none" >
+            {{ item }}
+          </v-tab>
+        </v-tabs>
+        <div class="d-flex justify-end mt-2">
+          <div class="toggle_cols" @click="changed_plot_size(6, 500)">
+            <v-icon icon="fa:fas fa-table-columns mr-5"></v-icon>
+          </div>
+        <div class="toggle_cols" @click="changed_plot_size(12, 700)">
+          <v-icon icon="fa:far fa-square mr-5"></v-icon>
+            </div>
+        </div>
+      </div>
     <v-card-text>
       <v-window v-model="useStyleTab">
         <v-window-item value="Graph">
@@ -24,33 +34,42 @@
               </div>
             </div>
           </div>
-          <v-card class="px-3" width="100%">
-            <template v-slot:title>
-              <span class="font-weight-bold">Scatter Plot</span>
-            </template>
-            <ScatterPlot :scatterGraphInfo="selectedSampleTitle"></ScatterPlot>
-          </v-card>
-          <v-card class="px-3 pt-3" width="100%">
-            <template v-slot:title>
-              <span class="font-weight-bold">Box Plot</span>
-            </template>
-            <BoxPlot></BoxPlot>
-          </v-card>
-          <v-card class="px-3 pt-3" width="100%">
-            <template v-slot:title>
-              <span class="mr-3 font-weight-bold">PCA Plot</span>
-              <span class="mt-3 font-weight-bold text-primary" style="font-size: 14px;">( color by condition )</span>
-            </template>
-            <PCA_plot></PCA_plot>
-            
-          </v-card>
-          <v-card class="px-3 mt-3" width="100%">
-            <template v-slot:title>
-              <span class="font-weight-bold">Heatmap Plot</span>
-              
-            </template>
-            <Dendrograms></Dendrograms>
-          </v-card>
+          <v-row>
+            <v-col :cols="plot_cols">
+              <v-card class="px-3" width="100%">
+                <template v-slot:title>
+                  <span class="font-weight-bold">Scatter Plot</span>
+                </template>
+                <ScatterPlot :plot_size="plot_height"  :scatterGraphInfo="selectedSampleTitle" ></ScatterPlot>
+              </v-card>
+            </v-col>
+          <!-- </v-row> -->
+          <v-col :cols="plot_cols">
+            <v-card class="px-3 plotStyle" width="100%">
+              <template v-slot:title>
+                <span class="font-weight-bold" >Box Plot</span>
+              </template>
+              <BoxPlot :plot_size="plot_height" ></BoxPlot>
+            </v-card>
+          </v-col>
+          <v-col :cols="plot_cols">
+            <v-card class="px-3" width="100%">
+              <template v-slot:title>
+                <span class="mr-3 font-weight-bold">PCA Plot</span>
+                <span class="mt-3 font-weight-bold text-primary" style="font-size: 14px;">( color by condition )</span>
+              </template>
+              <PCA_plot :plot_size="plot_height"></PCA_plot>
+            </v-card>
+          </v-col>
+          <v-col :cols="plot_cols">
+            <v-card class="px-3" width="100%">
+              <template v-slot:title>
+                <span class="font-weight-bold mr-3">Heatmap Plot</span>
+              </template>
+              <Dendrograms></Dendrograms>
+            </v-card>
+          </v-col>
+        </v-row>
         </v-window-item>
         <v-window-item value="Table">
           <v-card class="visual_Data_Table">
@@ -61,31 +80,27 @@
             </v-tabs>
             <div class="d-flex justify-end">
               <div class="d-flex align-center" >
-                <div class="download_xlsx">
+                <div class="download_xlsx" @click="exportXlsxFile">
                   <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
                 </div>
                 <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
                 <v-text-field
-                  v-model="search_RNAname"
-                  label=""
-                  prepend-inner-icon="mdi-magnify"
-                  single-line
-                  variant="outlined"
-                  hide-details
-                  density="compact"
-                  style="width:300px"
-              ></v-text-field>
+                  v-model="search_RNAname" label=""
+                  prepend-inner-icon="mdi-magnify" single-line
+                  variant="outlined" hide-details
+                  density="compact" style="width:300px">
+                </v-text-field>
               </div>
             </div>
             <v-data-table fixed-header v-model:items-per-page="itemsPerPage" :headers="tableComponentInfo.headers"
               :items="tableComponentInfo.body" item-value="Sample name" class="elevation-1" :height="dataTable_height"
               :search="search_RNAname">
             </v-data-table>
-            <v-windows v-model="condition_header">
-              <v-window-item v-for="( header, index ) in conditionHeaders" :key="index" :value="header">
+            <!-- <v-windows v-model="condition_header"> -->
+              <!-- <v-window-item v-for="( header, index ) in conditionHeaders" :key="index" :value="header"> -->
               <!-- <DisplayTable :table="tableComponentInfo"></DisplayTable> -->
-              </v-window-item>
-            </v-windows>
+              <!-- </v-window-item> -->
+            <!-- </v-windows> -->
           </v-card>
         </v-window-item>
       </v-window>
@@ -99,7 +114,7 @@
   import { dataService } from '../service/data_service.js';
   import { Subject, takeUntil, debounceTime } from 'rxjs';
   // import { VDataTable } from "vuetify/labs/VDataTable";
-  import DisplayTable from '../components/DisplayTable.vue';
+  // import DisplayTable from '../components/DisplayTable.vue';
   import BoxPlot from '../components/poltly/BoxPlot.vue';
   import ScatterPlot from '../components/poltly/ScatterPlot.vue';
   import PCA_plot from '../components/poltly/PCAPlot.vue';
@@ -122,6 +137,10 @@
   const useStyleTab = ref(0);
   const dataTable_height = ref('');
   const search_RNAname = ref('');
+  const plot_height = reactive({
+    height:500
+  })
+  const plot_cols = ref(6);
   const tableHeader = [
     {title: 'Gene Symbol', align: 'center', sortable: true, key: 'title'},
     {title: 'log10(CPM+1)', align: 'center', sortable: true, key: 'log10(CPM+1)'},
@@ -148,6 +167,11 @@
     //tabs模板速度太快，資料還沒處理好就畫出介面，導致介面無資料，之後要延遲tabs時間
     // dataService.transferHandleFinishMeg(microRNAraw);
   });
+  const changed_plot_size = (colNum, plotSize)=>{
+    console.log(colNum, 'colNum')
+    plot_cols.value = colNum; 
+    plot_height.height = plotSize;
+  }
   const computed_miRNA_Info = (microRNAraw)=>{
     conditionHeaders.value.length = 0;
     const tempSort_conditionHeaders = []
@@ -186,15 +210,9 @@
         for(let k = 0; miRNA_name_Group.length > k ; k++){
           if(!tableObj[tableHeaders[j]][miRNA_name_Group[k]]){ 
             tableObj[tableHeaders[j]][miRNA_name_Group[k]] = {
-              // 'log10(CPM+1)': microRNAraw.log[k][j].toFixed(2),
-              // 'CPM': Number(CPM_group[k][j]).toFixed(2),
-              // 
               'ReadCount': readCount_Group[k][j],
               'log10(CPM+1)': calNumInteger(microRNAraw.log[k][j]),
               'CPM': calNumInteger(CPM_group[k][j]),
-              // 'ReadCount': readCount_Group[j][k],
-              // 'log10(CPM+1)': calNumInteger(microRNAraw.log[j][k]),
-              // 'CPM': calNumInteger(CPM_group[j][k]),
             }
           }
         }
@@ -212,7 +230,6 @@
     return numThousand
   };
   const displayTableInfo = () => {  
-    
     const selectHeaderName = conditionHeaders.value[condition_header.value];
     const displayTableArr = [];
     const selected_miRNA_names = Object.keys(miRNATables[selectHeaderName]);
@@ -237,12 +254,16 @@
     selectedSampleTitle.length = 0;
     selectedSampleTitle.push(sample1Item.value, sample2Item.value)
   };
+  const exportXlsxFile = ()=>{
+    console.log(tableComponentInfo.value, 'tableComponentInfo')
+    dataService.exportXlsx('visualization');
+  } 
 </script>
 <style lang="scss">
   .v-table .v-data-table__th,  .v-table .v-data-table__td{
     font-weight: 600 !important;
   }
-  .download_xlsx{
+  .download_xlsx, .toggle_cols{
     cursor: pointer;
   }
 </style>

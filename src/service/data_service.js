@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
-import { utils, writeFileXLSX } from 'xlsx';
+import { read, utils, writeFileXLSX } from 'xlsx';
 const _ReadAlignmentSubject$ = new BehaviorSubject({});
 const _handleRawReadsFolder$ = new BehaviorSubject({});
 const _transferMeg$ = new Subject({});
@@ -24,7 +24,6 @@ const handleQCReadAlignmentfolder = async() => {
   const handleFinish_adaptor_trimming = handleSplitTxt(adaptor_trimming);
   const handleFinish_base_trimming = handleSplitTxt(base_trimming);
   const handleFinish_post_alignment = handle_post_alignment(post_alignment);
-  //  handleSplitTxt(post_alignment);
   const miRNATabs = {
     tabs: readAlignmentTitle,
     tabsTable: [handleFinish_pre_alignment_qaqc, handleFinish_adaptor_trimming, handleFinish_base_trimming, handleFinish_post_alignment]
@@ -155,25 +154,25 @@ const handleDE_Folder = async () => {
     _DE_Folder_Info$.next({'title_Group': DE_folder_compare_name, 'info': DE_folder_Data});
   }
 }
-// const exportXlsx = async(sheetList)=> {
-//   const selectedSheetsName = [];
-//   const wb = utils.book_new();
-//   console.log(sheetList, 'sheetList')
-//   // const tempSheetIndex = sheetIndex;
-//   sheetList.forEach((sheet)=> {if(sheet.selected)selectedSheetsName.push(sheet.name)});
-//   if(selectedSheetsName.length === 0) return;
-//   for(let i = 0 ; selectedSheetsName.length > i ; i++){
-//     const index = sheetjsReaderXlsxFile.data.findIndex((item) => item.sheetName === selectedSheetsName[i]);
-//     // sheetIndex = index;
-//     const filterData = await readXlsxContent(filterCondition);
-//     const ws = utils.json_to_sheet(filterData);
-//     utils.book_append_sheet(wb, ws, selectedSheetsName[i]);  
-//   }
-//   writeFileXLSX(wb, 'new_Excel' + '.xlsx');
-//   // sheetIndex = tempSheetIndex;
-//   // _handleXlsxMessage$.next({'message': "Export files finish", displayedIcon: false });
-//   _exportFileProgram$.next({ download: true });
-// };
+const exportXlsx = async(readFile, fileName, sheetsName)=> {
+  let sheets_Title = [];
+  let excelName = '';
+  if(fileName === 'readAndAlignment'){
+    sheets_Title = ['Row reads', 'Adaptor Trimmed', 'Base Trimming', 'Alignment'];
+    excelName = 'Read And Alignment'
+  }else if(fileName === 'difference_expression'){
+    console.log(sheetsName, 'sheetsName')
+    sheets_Title = sheetsName;
+    excelName = 'Difference Expression'
+  }
+  const export_wb = utils.book_new();
+  for(let i = 0 ; readFile.length > i ; i++){
+    const ws = await utils.aoa_to_sheet(readFile[i]);
+    await utils.book_append_sheet(export_wb, ws, sheets_Title[i]);
+  }
+  writeFileXLSX(export_wb, excelName + '.xlsx');
+};
+
 const transferHandleFinishMeg = (handleInfo) => _transferMeg$.next(handleInfo);
 export const dataService = {
   handleQCReadAlignmentfolder,
@@ -181,6 +180,7 @@ export const dataService = {
   handle_CPM_PCA,
   transferHandleFinishMeg,
   handleDE_Folder,
+  exportXlsx,
   ReadAlignmentSubject$: _ReadAlignmentSubject$.asObservable(),
   handleRawReadsFolder$: _handleRawReadsFolder$.asObservable(),
   visualization_Plot$: _visualization_Plot$.asObservable(),

@@ -5,7 +5,7 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div id="scatterplot_visualization"></div>
+    <div id="scatterplot_visualization" ></div>
     <!--  -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
@@ -49,9 +49,10 @@
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
+    height:500
   };
   const data = [ trace1,/* trace2 */];
-  const defineScatterGraphInfo = defineProps(['scatterGraphInfo']);
+  const defineScatterGraphInfo = defineProps(['scatterGraphInfo','plot_size']);
   let scatter_Info = {
     headers:[],
     info:[],
@@ -99,20 +100,32 @@
       range:[ minVal, maxVal ],
       title:infoTitle[1]
     };
+    const fullScreen_layout = {
+      xaxis:layout.xaxis,
+      yaxis:layout.yaxis
+    }
     transfer_FullScreen_data.value = {
       data: data,
-      layout
+      layout:fullScreen_layout
     };
     drawGraphScatterPlot_visualization(scatterplot_visualizationDiv)
   };
   const drawGraphScatterPlot_visualization = (div) => {
-    Plotly.newPlot(div, data, layout, { responsive:true });
+    setTimeout(() => {
+      Plotly.newPlot(div, data, layout, { responsive:true });
+    });
   };
+  
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe(async(visualization_info)=>{
     if(visualization_info.info.length === 0) return;
     scatter_Info = visualization_info;
     await handleScatterPlotInfo();
   });
   watch(defineScatterGraphInfo.scatterGraphInfo,() => { handleScatterPlotInfo() });
+  watch(defineScatterGraphInfo.plot_size, (newVal)=>{
+    // console.log(newVal, 'newVal')
+    layout.height = newVal.height;
+    handleScatterPlotInfo();
+  })
   const close_dialog = (val) => toogle_Plot_Screen.value = val;
 </script>

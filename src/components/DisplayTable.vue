@@ -2,10 +2,9 @@
   <div>
     <div class="d-flex justify-end">
       <div class="d-flex align-center" >
-        <div class="download_xlsx">
+        <!-- <div class="download_xlsx" @click="exportFile">
           <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
-        </div>
-        
+        </div> -->
         <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
         <v-text-field
           v-model="search_RNAname"
@@ -48,7 +47,8 @@
 <script setup>
   import { ref, onMounted, watch } from 'vue';
   const itemsPerPage = ref(25);
-  const definedprops = defineProps (['table']);
+  const definedprops = defineProps (['table', 'exportName']);
+  import { dataService } from '../service/data_service.js'; 
   const headers = ref([]);
   const tableBody = ref([]);
   const dataTable_height = ref('');
@@ -113,7 +113,12 @@
       dataTable_height.value =  Math.ceil((windowInnerheight - 330)/ windowInnerheight * 100) + 'vh';
     }
     tableBody.value = bodyInfo;
-  }
+  };
+  // const exportFile = () =>{
+  //   const tableInfo = definedprops.table;
+  //   console.log(tableInfo, 'tableInfo');
+  //   dataService.exportXlsx(definedprops.exportName);
+  // } 
   watch(definedprops.table,(/*newTble*/)=>{
     headers.value.length = 0;
     tableBody.value.length = 0;
@@ -127,7 +132,7 @@
   .v-table .v-data-table__th,  .v-table .v-data-table__td{
     font-weight: 600 !important;
   }
-  .download_xlsx{
-    cursor: pointer;
-  }
+  // .download_xlsx{
+  //   cursor: pointer;
+  // }
 </style>
