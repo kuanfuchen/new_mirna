@@ -123,7 +123,6 @@
   });
   watch(defineScatterGraphInfo.scatterGraphInfo,() => { handleScatterPlotInfo() });
   watch(defineScatterGraphInfo.plot_size, (newVal)=>{
-    // console.log(newVal, 'newVal')
     layout.height = newVal.height;
     handleScatterPlotInfo();
   })

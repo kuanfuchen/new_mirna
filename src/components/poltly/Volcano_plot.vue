@@ -143,7 +143,6 @@
     const selected_DE_pValue = [];
     const selected_DE_log2 = [];
     const selected_RNA_name = [];
-    // console.log(storagedDE_folder.info[selectedDataNum].body,'storagedDE_folder.info[selectedDataNum].body')
     for(let i = 0 ; storagedDE_folder.info[selectedDataNum].body.length > i ; i++){
       const floatNum = parseFloat(storagedDE_folder.info[selectedDataNum].body[i][1]);
       const logCalu = - Math.log10(floatNum);

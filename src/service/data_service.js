@@ -161,9 +161,11 @@ const exportXlsx = async(readFile, fileName, sheetsName)=> {
     sheets_Title = ['Row reads', 'Adaptor Trimmed', 'Base Trimming', 'Alignment'];
     excelName = 'Read And Alignment'
   }else if(fileName === 'difference_expression'){
-    console.log(sheetsName, 'sheetsName')
     sheets_Title = sheetsName;
     excelName = 'Difference Expression'
+  }else if(fileName === 'visualization'){
+    sheets_Title = sheetsName;
+    excelName = 'Visualization'
   }
   const export_wb = utils.book_new();
   for(let i = 0 ; readFile.length > i ; i++){

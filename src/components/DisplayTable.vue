@@ -48,7 +48,7 @@
   import { ref, onMounted, watch } from 'vue';
   const itemsPerPage = ref(25);
   const definedprops = defineProps (['table', 'exportName']);
-  import { dataService } from '../service/data_service.js'; 
+  // import { dataService } from '../service/data_service.js'; 
   const headers = ref([]);
   const tableBody = ref([]);
   const dataTable_height = ref('');
@@ -114,11 +114,6 @@
     }
     tableBody.value = bodyInfo;
   };
-  // const exportFile = () =>{
-  //   const tableInfo = definedprops.table;
-  //   console.log(tableInfo, 'tableInfo');
-  //   dataService.exportXlsx(definedprops.exportName);
-  // } 
   watch(definedprops.table,(/*newTble*/)=>{
     headers.value.length = 0;
     tableBody.value.length = 0;

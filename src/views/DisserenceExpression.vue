@@ -184,7 +184,6 @@
           }
     }
     }).then((response)=>{
-      console.log(compare_de_tables_info, 'compare_de_tables_info')
       tableComponentInfo.value = response;
       handleDataIF.value = true;
     });
@@ -206,7 +205,6 @@
     log2V_model_val.value = emitValue;
   }
   const exportFile = () =>{
-    console.log(compare_de_tables_info ,'compare_de_tables_info');
     const combinationTable = [];
     const combinationTable_title = [];
     for(let i = 0 ; compare_de_tables_info.length > i ; i++){

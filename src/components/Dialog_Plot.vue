@@ -19,7 +19,6 @@
   const cancel_Dialog = (val) => emit('toggle_tranfer_dialog_plot', val);
   onMounted(() => {
     const plot_info = props.listen_plot_data;
-    console.log(plot_info, 'plot_info')
     Plotly.newPlot('dialog_poltly', plot_info.data, plot_info.layout, { responsive:true });
   });
 </script>

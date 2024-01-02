@@ -122,7 +122,7 @@
   // import MiRNATabs from '../components/MiRNATabs.vue';
   const comSubject$ = new Subject();
   const tableComponentInfo = ref({});
-  const miRNATab = ref(0);
+  // const miRNATab = ref(0);
   const miRNATabs = ref([]);
   const itemsPerPage = ref(25)
   let miRNATables = {};
@@ -168,13 +168,12 @@
     // dataService.transferHandleFinishMeg(microRNAraw);
   });
   const changed_plot_size = (colNum, plotSize)=>{
-    console.log(colNum, 'colNum')
     plot_cols.value = colNum; 
     plot_height.height = plotSize;
   }
   const computed_miRNA_Info = (microRNAraw)=>{
     conditionHeaders.value.length = 0;
-    const tempSort_conditionHeaders = []
+    const tempSort_conditionHeaders = [];
     for(let j = 0 ; microRNAraw.tabsTable[0].headers.length > j ; j++){
       if( j > 4 ) headers.push(microRNAraw.tabsTable[0].headers[j]);
       if( j > 5 ) tempSort_conditionHeaders.push(microRNAraw.tabsTable[0].headers[j]);
@@ -190,15 +189,21 @@
       const CPM_group = [];
       if( i === 0){
         for(let j = 0 ; microRNAraw.tabsTable[0].body.length > j ; j++){
-        const filter_read_group = microRNAraw.tabsTable[0].body[j].filter((item , index)=>{if(index > 5){ return item }});
+        const filter_read_group = microRNAraw.tabsTable[0].body[j].filter((item , index)=>{
+          if(index > 5){ 
+            return item 
+          }});
           readCount_Group.push(filter_read_group);
         }
       }
       for(let j = 0 ; microRNAraw.tabsTable[1].body.length > j ; j++){
-        const filter_CPM_group = microRNAraw.tabsTable[1].body[j].filter((item , index)=>{if(index > 5){
-          const numberItem = Math.round(Number(item)*100) / 100;
-          return numberItem
-        }});
+        const filter_CPM_group = [];
+        microRNAraw.tabsTable[1].body[j].forEach((item, index)=>{
+          if(index > 5){
+            const numberItem = Math.round(Number(item)*100) / 100;
+            filter_CPM_group.push(numberItem)
+          }
+        })
         CPM_group.push(filter_CPM_group);
       }
       const miRNA_name_Group = [];
@@ -239,9 +244,6 @@
       displayTableArr.push(obj)
     }
     tableComponentInfo.value.headers = tableHeader;
-    // console.log(windowInnerheight, 'windowInnerheight')
-    
-    // tableComponentInfo.value.body = displayTableArr;
     tableComponentInfo.value.body = displayTableArr;
   };
   const changeSample1 = (ev)=> {
@@ -255,9 +257,33 @@
     selectedSampleTitle.push(sample1Item.value, sample2Item.value)
   };
   const exportXlsxFile = ()=>{
-    console.log(tableComponentInfo.value, 'tableComponentInfo')
-    dataService.exportXlsx('visualization');
-  } 
+    
+    const miRNATables_Obj_Keys = Object.keys(miRNATables);
+    const visual_table = [];
+    for(let i = 0 ; miRNATables_Obj_Keys.length > i ; i++){
+      visual_table[i] = [];
+      const miRNATables_Obj_Keys_num_key = Object.keys(miRNATables[miRNATables_Obj_Keys[i]]);
+      let headers_title_Index = -1;
+      let headers = [];
+      for(let j = 0 ; miRNATables_Obj_Keys_num_key.length > j ; j++){
+        visual_table[i][j]=[];
+        const miRNA_val = miRNATables[miRNATables_Obj_Keys[i]][miRNATables_Obj_Keys_num_key[j]];
+        if( j===0){
+          headers = Object.keys(miRNA_val);
+          headers.unshift('microRNA ID');
+          headers_title_Index = headers.indexOf('title');
+          if(headers_title_Index > -1) headers.splice(headers_title_Index, 1);
+        }
+        const miRNA_Table_values = Object.values(miRNA_val);
+        miRNA_Table_values.unshift(miRNATables_Obj_Keys_num_key[j]);
+        if(headers_title_Index > -1) miRNA_Table_values.splice(headers_title_Index, 1);
+        visual_table[i][j] = miRNA_Table_values;
+      }
+      visual_table[i].unshift(headers);
+    }
+    dataService.exportXlsx(visual_table, 'visualization', miRNATables_Obj_Keys);
+
+  }
 </script>
 <style lang="scss">
   .v-table .v-data-table__th,  .v-table .v-data-table__td{
