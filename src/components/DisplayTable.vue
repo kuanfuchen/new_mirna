@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="d-flex justify-end">
+    <div class="d-flex justify-end mb-2">
       <div class="d-flex align-center" >
         <!-- <div class="download_xlsx" @click="exportFile">
           <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
@@ -98,7 +98,8 @@
       for( let j = 0 ; bodyInfoKeys.length > j ; j++ ){
         if(bodyInfoKeys[j] !== 'Samplename' && bodyInfoKeys[j] !== 'condition' && bodyInfoKeys[j] !== 'microRNAID' && bodyInfoKeys[j]!== 'Up_Down' && bodyInfoKeys[j] !== 'significant'){
           const [ base, exponent ] = bodyInfo[i][bodyInfoKeys[j]].split('E').map(Number);
-          const fixed2Val = (Math.round(Number(base)*1000) / 1000).toLocaleString('en-US');
+          const tempVal = (Math.round(Number(base)*1000) / 1000).toFixed(3);
+          const fixed2Val = tempVal.toLocaleString('en-US');
           if(exponent !== undefined && exponent !== 0){
             bodyInfo[i][bodyInfoKeys[j]] = `${fixed2Val}e${exponent}`;
           }else{

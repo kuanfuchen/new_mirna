@@ -7,11 +7,11 @@
             {{ item }}
           </v-tab>
         </v-tabs>
-        <div class="d-flex justify-end mt-2">
+        <div class="d-flex justify-end mt-2" v-if="useStyleTab === 0">
           <div class="toggle_cols" @click="changed_plot_size(6, 500)">
             <v-icon icon="fa:fas fa-table-columns mr-5"></v-icon>
           </div>
-        <div class="toggle_cols" @click="changed_plot_size(12, 700)">
+        <div class="toggle_cols" @click="changed_plot_size(12, 700)" v-if="useStyleTab === 0">
           <v-icon icon="fa:far fa-square mr-5"></v-icon>
             </div>
         </div>
@@ -81,7 +81,8 @@
             <div class="d-flex justify-end">
               <div class="d-flex align-center" >
                 <div class="download_xlsx" @click="exportXlsxFile">
-                  <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
+                  <!-- <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon> -->
+                  <v-icon icon="fa:fas fa-file-excel" class="text-teal mr-3" style="font-size: 24px;"></v-icon>
                 </div>
                 <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
                 <v-text-field
@@ -200,7 +201,7 @@
         const filter_CPM_group = [];
         microRNAraw.tabsTable[1].body[j].forEach((item, index)=>{
           if(index > 5){
-            const numberItem = Math.round(Number(item)*100) / 100;
+            const numberItem = Math.round(Number(item)*1000) / 1000;
             filter_CPM_group.push(numberItem)
           }
         })
@@ -230,8 +231,9 @@
     displayTableInfo();
   };
   const calNumInteger = (val) =>{
-    const numberItem = Math.round(Number(val)*100) / 100;
-    const numThousand = numberItem.toLocaleString('en-US');
+    const numberItem = Math.round(Number(val)*1000) / 1000;
+    const tempNumberItem = numberItem.toFixed(3);
+    const numThousand = tempNumberItem.toLocaleString('en-US');
     return numThousand
   };
   const displayTableInfo = () => {  
