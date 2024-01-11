@@ -53,32 +53,38 @@
         <hr>
       </v-card-text>
       <v-card-text>
-        <v-card class="py-1 mb-2">
-          <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
-          <Volcano :change_volcano_plot="compare_de_Obj" @xaxisMaxValue="listenXxais_Max"></Volcano>
-        </v-card>
-        <div v-if="handleDataIF">
-          <v-card class="px-2 py-1">
-            <div class="d-flex align-self-center">
-              <p class="text-h6 my-2 text-teal" style="font-weight: 700;">DE Table</p>
-              <div class="download_xlsx ml-auto " @click="exportFile">
-                <v-icon icon="fa:fas fa-file-excel" class="mr-5 text-teal mt-3" style="font-size: 24px;"></v-icon>
-              </div>
+        <v-row>
+          <v-col cols="6">
+            <div class="py-1 mb-2">
+              <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
+              <Volcano :change_volcano_plot="compare_de_Obj" @xaxisMaxValue="listenXxais_Max"></Volcano>
             </div>
-            <div class="d-flex justify-space-between">
-              <p class="mb-2" style="font-weight: 700;font-size: 18px;">
-                {{ compare_de_title }}
-              </p>
-              <div class="d-flex" style="width:500px">
-                <p class="mr-3 font-weight-bold pt-4" style="font-size:18px;">FDR</p>
-                <v-text-field  density="compact" label="FDR / Number(0 ~ 1)" variant="outlined" v-model="fdrVal" @update:modelValue="handle_table_Info"
-                  type="number">
-                </v-text-field>
-              </div>
+          </v-col>
+          <v-col cols="6">
+            <div v-if="handleDataIF">
+              <!-- <v-card class="px-2 py-1"> -->
+                <div class="d-flex align-self-center px-2 py-1">
+                  <p class="text-h6 my-2 text-teal" style="font-weight: 700;">DE Table</p>
+                  <div class="download_xlsx ml-auto " @click="exportFile">
+                    <v-icon icon="fa:fas fa-file-arrow-down" class="mr-5 text-teal mt-3" style="font-size: 24px;"></v-icon>
+                  </div>
+                </div>
+                <div class="d-flex justify-space-between">
+                  <p class="mb-2" style="font-weight: 700;font-size: 18px;">
+                    {{ compare_de_title }}
+                  </p>
+                  <!-- <div class="d-flex" style="width:500px">
+                    <p class="mr-3 font-weight-bold pt-4" style="font-size:18px;">FDR</p>
+                    <v-text-field  density="compact" label="FDR / Number(0 ~ 1)" variant="outlined" v-model="fdrVal" @update:modelValue="handle_table_Info"
+                      type="number">
+                    </v-text-field>
+                  </div> -->
+                </div>
+                <DisplayTable :table="tableComponentInfo" :expresstablestyle="220"></DisplayTable>
+              <!-- </v-card> -->
             </div>
-          <DisplayTable :table="tableComponentInfo"></DisplayTable>
-          </v-card>
-        </div>
+          </v-col>
+        </v-row>
       </v-card-text>
     </v-card>
   </div>
@@ -156,16 +162,17 @@
             fdrIndex = j;
           }
         }
-        const headers_significant_index = headers.indexOf('significant');
-        if(headers_significant_index === -1) headers.push('significant');
+        // const headers_significant_index = headers.indexOf('significant');
+        // if(headers_significant_index === -1) headers.push('significant');
         const headersUpper = [];
         for(let i = 0 ; headers.length > i ; i++){
           headersUpper.push(headers[i].toUpperCase())
         }
         const headers_p_value = headersUpper.indexOf('P-VALUE');
+        const headers_log2_Ratio = headersUpper.indexOf('LOG2RATIO');
         for(let j = 0 ; compare_de_tables_info[i].body.length > j ; j++){
-          const fdrNumber = Number(compare_de_tables_info[i].body[j][fdrIndex]);
-          const significant_value = fdrVal_Number >= fdrNumber ? true : false;
+          // const fdrNumber = Number(compare_de_tables_info[i].body[j][fdrIndex]);
+          // const significant_value = fdrVal_Number >= fdrNumber ? true : false;
           if(headers.length > compare_de_tables_info[i].body[j].length){
             compare_de_tables_info[i].body[j].forEach((item, index)=>{
               let changedStyle;
@@ -177,13 +184,19 @@
               }
             })
           }
-          if(compare_de_tables_info[i].body[j].length <= headers.length){
-            compare_de_tables_info[i].body[j][headers.length - 1]= significant_value;
-          }
+          // if(compare_de_tables_info[i].body[j].length <= headers.length){
+          //   compare_de_tables_info[i].body[j][headers.length - 1]= significant_value;
+          // }
           if(headers_p_value > -1 && compare_de_tables_info[i].title === compare_de_title.value) {
             const compare_de_tables_p_value_Number = Number(compare_de_tables_info[i].body[j][headers_p_value]);
+            const compare_de_tables_log2_Number = Number(compare_de_tables_info[i].body[j][headers_log2_Ratio]);
             if(compare_de_tables_p_value_Number > p_value_number_val) continue;
-            display_Table.push(compare_de_tables_info[i].body[j]);
+            // console.log(log2_LowerBound.value,'log2_LowerBound');
+            // console.log(log2_UpperBound.value, 'log2_UpperBound');
+            if(headers_log2_Ratio >=0 && compare_de_tables_log2_Number >=log2_UpperBound.value ||
+              headers_log2_Ratio >=0 && compare_de_tables_log2_Number <= log2_LowerBound.value){
+              display_Table.push(compare_de_tables_info[i].body[j]);
+            }
           };
           // 
           compare_de_tables_info[i].headers = headers;
@@ -227,13 +240,18 @@
         headersUpper.push(compare_de_tables_info[i].headers[j].toUpperCase())
       }
       const headers_p_value_Index = headersUpper.indexOf('P-VALUE');
+      const headers_log2_Ratio_Index = headersUpper.indexOf('LOG2RATIO');
       const table = [];
       combinationTable_title.push(compare_de_tables_info[i].title)
       table.push(compare_de_tables_info[i].headers);
       for(let j = 0 ; compare_de_tables_info[i].body.length > j ; j++){
         const compare_de_tables_p_value_Number = Number(compare_de_tables_info[i].body[j][headers_p_value_Index]);
         if(headers_p_value_Index > -1 && compare_de_tables_p_value_Number <= p_value_number_val){
-          table.push(compare_de_tables_info[i].body[j])
+          const compare_de_tables_log2_Number = Number(compare_de_tables_info[i].body[j][headers_log2_Ratio_Index]);
+          if(headers_log2_Ratio_Index >= 0 && compare_de_tables_log2_Number >= log2_UpperBound.value ||
+            headers_log2_Ratio_Index >= 0 && compare_de_tables_log2_Number <= log2_LowerBound.value){
+              table.push(compare_de_tables_info[i].body[j])
+            }
         }
         // table.push(compare_de_tables_info[i].body[j])
       }

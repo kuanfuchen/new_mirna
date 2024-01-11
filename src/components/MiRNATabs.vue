@@ -5,7 +5,7 @@
         <v-tab class="text-none" :value="tab" v-for="(tab, index) in miRNATabs" :key="index" @click="selectedTable(index)">{{ tab }}</v-tab>
       </v-tabs>
       <div class="download_xlsx ml-auto" @click="exportFile">
-        <v-icon icon="fa:fas fa-file-excel" class="mr-5 text-teal" style="font-size: 24px;"></v-icon>
+        <v-icon icon="fa:fas fa-file-arrow-down" class="mr-5 text-teal" style="font-size: 24px;"></v-icon>
       </div>
     </div>
     <v-card-text>

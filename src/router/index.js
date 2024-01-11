@@ -26,7 +26,12 @@ const routes = [
         path: 'differenceExpression',
         name:'DifferenceExpression',
         component: () => import('@/views/DifferenceExpression.vue')
+      },{
+        path:'workflowInfo',
+        name:'workflowInfo',
+        component: () => import('@/views/WorkflowInfo.vue')
       }
+
     ],
   },
 ]

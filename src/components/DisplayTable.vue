@@ -47,7 +47,7 @@
 <script setup>
   import { ref, onMounted, watch } from 'vue';
   const itemsPerPage = ref(25);
-  const definedprops = defineProps (['table', 'exportName']);
+  const definedprops = defineProps (['table', 'exportName','expresstablestyle']);
   // import { dataService } from '../service/data_service.js'; 
   const headers = ref([]);
   const tableBody = ref([]);
@@ -98,7 +98,8 @@
       for( let j = 0 ; bodyInfoKeys.length > j ; j++ ){
         if(bodyInfoKeys[j] !== 'Samplename' && bodyInfoKeys[j] !== 'condition' && bodyInfoKeys[j] !== 'microRNAID' && bodyInfoKeys[j]!== 'Up_Down' && bodyInfoKeys[j] !== 'significant'){
           const [ base, exponent ] = bodyInfo[i][bodyInfoKeys[j]].split('E').map(Number);
-          const tempVal = (Math.round(Number(base)*1000) / 1000).toFixed(3);
+          // const tempVal = (Math.round(Number(base)*1000) / 1000).toFixed(2);
+          const tempVal = (Math.round(Number(base)*100) / 100);
           const fixed2Val = tempVal.toLocaleString('en-US');
           if(exponent !== undefined && exponent !== 0){
             bodyInfo[i][bodyInfoKeys[j]] = `${fixed2Val}e${exponent}`;
@@ -111,7 +112,8 @@
 
     if(bodyInfo.length >= 20){
       const windowInnerheight = window.innerHeight;
-      dataTable_height.value =  Math.ceil((windowInnerheight - 330)/ windowInnerheight * 100) + 'vh';
+      const redundant_remove_table_height = typeof definedprops.expresstablestyle === 'number' ? definedprops.expresstablestyle : 0;
+      dataTable_height.value =  Math.ceil((windowInnerheight - 330 - redundant_remove_table_height)/ windowInnerheight * 100) + 'vh';
     }
     tableBody.value = bodyInfo;
   };

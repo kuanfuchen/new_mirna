@@ -3,33 +3,44 @@
       <v-navigation-drawer v-model="definedProp.leftDrawer" location="left">
         <v-list>
           <v-list-item to="/" :active="activeItem === 'projectInfo'" @click="activeItem = 'projectInfo'">
-            <v-list-item-title v-text="'Project Info'" ></v-list-item-title>
+            <v-list-item-title v-text="'Project Info'" class="titleStyle"></v-list-item-title>
           </v-list-item>
         </v-list>
         <v-list>
-          <v-list-item>
-            <v-list-item-title v-text="'WorkFlow Info'" ></v-list-item-title>
+          <v-list-item to="workflowInfo" :active="activeItem === 'workflowInfo'" @click="activeItem = 'workflowInfo'">
+            <v-list-item-title v-text="'WorkFlow Info'"  class="titleStyle"></v-list-item-title>
           </v-list-item>
         </v-list>
         <v-list>
-          <v-list-subheader>Quality Control</v-list-subheader>
+          <v-list-subheader class="titleStyle">Quality Control</v-list-subheader>
           <v-list-item v-for="(item, i) in sideBarGroupA" :key="i" :to="item.to"
-            @click="activeItem = item.value"  :active="activeItem === item.value">
-              <v-list-item-title v-text="item.title" >
+            @click="activeItem = item.value"  :active="activeItem === item.value" >
+              <v-list-item-title v-text="item.title" class="subTitleStyle pl-3">
               </v-list-item-title>
           </v-list-item>
         </v-list>
         <v-list>
-          <v-list-subheader>Analysis</v-list-subheader>
+          <v-list-subheader class="titleStyle">Analysis</v-list-subheader>
           <v-list-item v-for="(item, i) in sideBarGroupB" :key="i" :to="item.to"
             @click="activeItem = item.value"  :active="activeItem === item.value">
-              <v-list-item-title v-text="item.title">
+              <v-list-item-title v-text="item.title" class="subTitleStyle pl-3">
               </v-list-item-title>
           </v-list-item>
         </v-list>
     </v-navigation-drawer>
   </div>
 </template>
+<style lang="scss">
+  .titleStyle{
+    font-size: 18px;
+    font-weight: 700;
+    color: #00000099;
+  }
+  .subTitleStyle{
+      font-size: 16px;
+      color: #546E7A;
+    }
+</style>
 <script setup>
   import { defineProps } from 'vue';
   const definedProp = defineProps({

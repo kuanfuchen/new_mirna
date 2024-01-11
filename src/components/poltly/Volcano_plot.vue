@@ -6,14 +6,15 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div class="mt-3" style="height:550px" id="displatVolcanoPlot"></div>
+    <div class="mt-3" :style="{'height':plot_height + 'vh'}" id="displatVolcanoPlot"></div>
+    <!-- style="height:550px" -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
         <v-card-text >
           <h5 class="text-h5" style="font-weight: 700;">
             {{ valcanoTitle }}
           </h5>  
-          <div class="mt-3 ml-auto mr-5">
+          <div class="ml-auto mr-5">
             <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot>
           </div>
         </v-card-text>
@@ -27,6 +28,7 @@
   import { takeUntil, debounceTime, Subject } from 'rxjs';
   import { ref, watch } from 'vue';
   import Dialog_plot from '../Dialog_Plot.vue';
+  import {image_config, imageCapture} from '../../utils/image_download';
   const props = defineProps(['change_volcano_plot', ]);
   const emit = defineEmits(['maxValYaxis']);
   const toogle_Plot_Screen = ref(false);
@@ -39,6 +41,14 @@
     info:[],
     headers:[]
   };
+  const plot_height = ref(30)
+  const plotConfig = {
+    responsive:true, 
+    displaylogo: false,
+    modeBarButtonsToRemove: ['pan2d','select2d','lasso2d','zoom', 'toImage'],
+    modeBarButtonsToAdd:[imageCapture],
+    displayModeBar: true
+  }
   const valcanoTitle = ref('');
   const volcano_plot_plotlyjs_data = {
     x: [],
@@ -190,12 +200,17 @@
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
+    image_config.filename = `Volcano_plot`;
+    const windowInnerheight = window.innerHeight;
+    plot_height.value =  Math.ceil(( windowInnerheight - 450 )/ windowInnerheight * 100);
+    
     setTimeout(()=>{
       transfer_FullScreen_data.value = {
         data: DE_folder_data,
-        layout
+        layout,
+        plotConfig
       };
-      Plotly.newPlot('displatVolcanoPlot', DE_folder_data, layout, { responsive: true })
+      Plotly.newPlot('displatVolcanoPlot', DE_folder_data, layout, plotConfig)
     },100)
   }
   watch(props.change_volcano_plot, (change_Val)=>{

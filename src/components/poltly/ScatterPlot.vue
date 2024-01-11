@@ -5,7 +5,7 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div id="scatterplot_visualization" ></div>
+    <div id="scatterplot_visualization"></div>
     <!--  -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
@@ -13,7 +13,7 @@
           <h5 class="text-h5" style="font-weight: 700;">
             Scatter Plot
           </h5>  
-          <div class="mt-3 ml-auto mr-5">
+          <div class="ml-auto mr-5">
             <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot>
           </div>
         </v-card-text>
@@ -27,6 +27,7 @@
   import { watch, ref } from 'vue';
   import { dataService } from '../../service/data_service.js';
   import Dialog_plot from '../Dialog_Plot.vue';
+  import {image_config, imageCapture} from '../../utils/image_download';
   const comSubject$ = new Subject();
   const toogle_Plot_Screen = ref(false);
   const transfer_FullScreen_data = ref([]);
@@ -39,18 +40,37 @@
     text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
     marker: { size: 6, color:'#00BCD4' }
   };
-  // const trace2 = {
-  //   x: [15, 15],
-  //   y: [1, 5],  // 在 y = 15 的地方畫一條水平線
-  //   mode: 'lines',
-  //   type: 'scatter',
-  //   name: 'Additional Line'
-  // };
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
-    height:500
+    height:500,
   };
+  // const image_config = {
+  //   filename:'scatter_plot',
+  //   format:'png'
+  // }
+  // const imageCapture = {
+  //   name:'Download Image',
+  //   icon:Plotly.Icons.camera,
+  //   direction:'up',
+  //   click: async(gd )=>{
+  //     await Plotly.toImage(gd).then((url)=>{
+  //       const aElement = document.createElement('a');
+  //       aElement.href = url;
+  //       aElement.download= image_config.filename;
+  //       aElement.click()
+  //     })
+  //   }
+  // };
+  const plotConfig = {
+    responsive:true, 
+    displaylogo: false,
+    modeBarButtonsToRemove: ['pan2d','select2d','lasso2d','zoom','toImage'/*resetScale2d','zoomOut2d'*/],
+    modeBarButtonsToAdd:[imageCapture],
+    displayModeBar: true
+  };
+  
+  
   const data = [ trace1,/* trace2 */];
   const defineScatterGraphInfo = defineProps(['scatterGraphInfo','plot_size']);
   let scatter_Info = {
@@ -91,7 +111,7 @@
     minVal = Math.floor(minVal - 1);
     trace1.x = traceSite[0];
     trace1.y = traceSite[1];
-    trace1.text = scatter_Info.miRNA_title;
+    trace1.text = scatter_Info;
     layout.xaxis = {
       range: [ minVal, maxVal],
       title: infoTitle[0]
@@ -106,13 +126,17 @@
     }
     transfer_FullScreen_data.value = {
       data: data,
-      layout:fullScreen_layout
+      layout:fullScreen_layout,
+      plotConfig
     };
-    drawGraphScatterPlot_visualization(scatterplot_visualizationDiv)
+    // image_config.filename = `${infoTitle[0]}_vs_${infoTitle[1]}_scatter_plot`;
+    image_config.filename = `${infoTitle[0]}_vs_${infoTitle[1]}_scatter_plot`;
+    drawGraphScatterPlot_visualization(scatterplot_visualizationDiv);
   };
+
   const drawGraphScatterPlot_visualization = (div) => {
     setTimeout(() => {
-      Plotly.newPlot(div, data, layout, { responsive:true });
+      Plotly.newPlot(div, data, layout, plotConfig/*{ responsive:true, displayModeBar: false }*/)
     });
   };
   

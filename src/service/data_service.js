@@ -158,7 +158,7 @@ const exportXlsx = async(readFile, fileName, sheetsName)=> {
   let sheets_Title = [];
   let excelName = '';
   if(fileName === 'readAndAlignment'){
-    sheets_Title = ['Row reads', 'Adaptor Trimmed', 'Base Trimming', 'Alignment'];
+    sheets_Title = ['Raw reads', 'Adaptor Trimmed', 'Base Trimming', 'Alignment'];
     excelName = 'Read And Alignment'
   }else if(fileName === 'difference_expression'){
     sheets_Title = sheetsName;

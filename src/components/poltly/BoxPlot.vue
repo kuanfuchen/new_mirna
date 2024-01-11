@@ -13,7 +13,7 @@
           <h5 class="text-h5" style="font-weight: 700;">
             Box Plot
           </h5>  
-          <div class="mt-3 ml-auto mr-5">
+          <div class="ml-auto mr-5">
             <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot>
           </div>
         </v-card-text>
@@ -26,6 +26,7 @@
   import { dataService } from '../../service/data_service.js';
   import { takeUntil, Subject, debounceTime } from 'rxjs';
   import { ref, watch } from 'vue';
+  import {image_config, imageCapture} from '../../utils/image_download';
   import Dialog_plot from '../Dialog_Plot.vue';
   const definedProps = defineProps(['plot_size']);
   const transfer_FullScreen_data = ref([]);
@@ -44,7 +45,13 @@
   const layout = {
     height:500
   };
-  // const boxdata = [trace1, trace2];
+  const plotConfig = {
+    responsive:true, 
+    displaylogo: false,
+    modeBarButtonsToRemove: ['pan2d','select2d','lasso2d','zoom', 'toImage'],
+    modeBarButtonsToAdd:[imageCapture],
+    displayModeBar: true
+  }
   // const drawGraphBoxplot_visualization = () =>{
   // const boxplot_visualization = document.getElementById('Boxplot_visualization');
   //   Plotly.newPlot(boxplot_visualization, boxdata, layout);
@@ -74,12 +81,14 @@
     // 
     // Plotly.newPlot(Boxplot_visualization, sortTraceData, layout, { responsive: true });
     // drawGraphBoxplot_visualization(Boxplot_visualization, traceData)
+    image_config.filename = `Visualization_box_plot`;
     transfer_FullScreen_data.value = {
       data:dataOrder,
-      layout:{}
+      layout:{},
+      plotConfig
     }
     setTimeout(()=>{
-      Plotly.newPlot(Boxplot_visualization, dataOrder, layout, { responsive: true });
+      Plotly.newPlot(Boxplot_visualization, dataOrder, layout, plotConfig);
     })
     
   };

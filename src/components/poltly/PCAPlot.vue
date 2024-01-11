@@ -13,7 +13,7 @@
           <h5 class="text-h5" style="font-weight: 700;">
             PCA Plot
           </h5>  
-          <div class="mt-3 ml-auto mr-5">
+          <div class="ml-auto mr-5">
             <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot>
           </div>
         </v-card-text>
@@ -31,6 +31,7 @@
   import Dialog_plot from '../Dialog_Plot.vue';
   import { takeUntil, Subject } from 'rxjs';
   import { ref, watch } from 'vue';
+  import {image_config, imageCapture} from '../../utils/image_download';
   const comSubject$ = new Subject();
   const transfer_FullScreen_data = ref([]);
   const toogle_Plot_Screen = ref(false);
@@ -46,6 +47,13 @@
     height:500
     // title: 'Quadrant Plot',
   };
+  const plotConfig = {
+    responsive:true, 
+    displaylogo: false,
+    modeBarButtonsToRemove: ['pan2d','select2d','lasso2d','zoom','toImage'],
+    modeBarButtonsToAdd:[imageCapture],
+    displayModeBar: true
+  }
   const settingColor = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4',
     '#00BCD4', '#009688', '#4CAF50', '#8BC34A' , '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800','#FF5722'
     ,'#795548', '#607D8B'];
@@ -110,12 +118,14 @@
         title:layout.yaxis.title
       }
     }
+    image_config.filename = `Visualization_PCA_plot`;
     setTimeout(() => {
       transfer_FullScreen_data.value = {
         data:pca_plot_data_order,
-        layout:full_screen_layout
+        layout:full_screen_layout,
+        plotConfig
       };
-      Plotly.newPlot('PCA_plot', pca_plot_data_order, layout,{ responsive: true });
+      Plotly.newPlot('PCA_plot', pca_plot_data_order, layout, plotConfig);
     }, 200);
   }
   dataService.CPM_PCA_Info$.pipe(takeUntil(comSubject$)).subscribe(async(data)=>{

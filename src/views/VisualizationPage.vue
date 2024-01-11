@@ -78,11 +78,11 @@
                 {{ item }}
               </v-tab>
             </v-tabs>
-            <div class="d-flex justify-end">
+            <div class="d-flex justify-end mt-1">
               <div class="d-flex align-center" >
                 <div class="download_xlsx" @click="exportXlsxFile">
                   <!-- <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon> -->
-                  <v-icon icon="fa:fas fa-file-excel" class="text-teal mr-3" style="font-size: 24px;"></v-icon>
+                  <v-icon icon="fa:fas fa-file-arrow-down" class="text-teal mr-3" style="font-size: 24px;"></v-icon>
                 </div>
                 <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
                 <v-text-field
@@ -201,7 +201,7 @@
         const filter_CPM_group = [];
         microRNAraw.tabsTable[1].body[j].forEach((item, index)=>{
           if(index > 5){
-            const numberItem = Math.round(Number(item)*1000) / 1000;
+            const numberItem = Math.round(Number(item)*100) / 100;
             filter_CPM_group.push(numberItem)
           }
         })
@@ -216,7 +216,7 @@
         for(let k = 0; miRNA_name_Group.length > k ; k++){
           if(!tableObj[tableHeaders[j]][miRNA_name_Group[k]]){ 
             tableObj[tableHeaders[j]][miRNA_name_Group[k]] = {
-              'ReadCount': readCount_Group[k][j],
+              'ReadCount': calNumInteger(readCount_Group[k][j]),
               'log10(CPM+1)': calNumInteger(microRNAraw.log[k][j]),
               'CPM': calNumInteger(CPM_group[k][j]),
             }
@@ -231,10 +231,12 @@
     displayTableInfo();
   };
   const calNumInteger = (val) =>{
-    const numberItem = Math.round(Number(val)*1000) / 1000;
-    const tempNumberItem = numberItem.toFixed(3);
-    const numThousand = tempNumberItem.toLocaleString('en-US');
-    return numThousand
+    const numberItem = Math.round(Number(val)*100) / 100;
+    const numTo_en_US = numberItem.toLocaleString('en-US');
+    return numTo_en_US
+    // const tempNumberItem = numberItem.toFixed(3);
+    // const numThousand = tempNumberItem.toLocaleString('en-US');
+    // return numThousand
   };
   const displayTableInfo = () => {  
     const selectHeaderName = conditionHeaders.value[condition_header.value];
