@@ -50,17 +50,27 @@
             @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
         </v-row>
-        <hr>
+        <!-- <hr> -->
       </v-card-text>
-      <v-card-text>
+      <v-card-text class="py-0">
+        <div class="d-flex justify-end mr-3">
+          <div class="d-flex justify-end mt-2 ">
+            <div class="toggle_cols " @click="changedContentSize(6, 220, 450)">
+              <v-icon icon="fa:fas fa-table-columns mr-5"></v-icon>
+            </div>
+            <div class="toggle_cols" @click="changedContentSize(12, 0, 350)" >
+              <v-icon icon="fa:far fa-square mr-5"></v-icon>
+            </div>
+          </div>
+        </div>
         <v-row>
-          <v-col cols="6">
+          <v-col :cols="contentCols">
             <div class="py-1 mb-2">
               <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
               <Volcano :change_volcano_plot="compare_de_Obj" @xaxisMaxValue="listenXxais_Max"></Volcano>
             </div>
           </v-col>
-          <v-col cols="6">
+          <v-col :cols="contentCols">
             <div v-if="handleDataIF">
               <!-- <v-card class="px-2 py-1"> -->
                 <div class="d-flex align-self-center px-2 py-1">
@@ -80,7 +90,7 @@
                     </v-text-field>
                   </div> -->
                 </div>
-                <DisplayTable :table="tableComponentInfo" :expresstablestyle="220"></DisplayTable>
+                <DisplayTable :table="tableComponentInfo" :expresstablestyle="deTableSize"></DisplayTable>
               <!-- </v-card> -->
             </div>
           </v-col>
@@ -103,6 +113,9 @@
   const log2_LowerBound = ref(-1);
   const log2_UpperBound = ref(1);
   const handleDataIF = ref(false);
+  const contentCols = ref(6);
+  const deTableSize= ref(230);
+  const plot_height = ref(450);
   const tableComponentInfo = ref({
     headers:[],
     body:[]
@@ -117,6 +130,14 @@
   dataService.DE_Folder_Info$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((deFolderData)=>{
     sort_deFolderData(deFolderData);
   });
+  const changedContentSize = (col, removeTableHeight, removePlotHeight)=>{
+    if(contentCols.value === col) return;
+    contentCols.value = col;
+    deTableSize.value = removeTableHeight;
+    plot_height.value = removePlotHeight;
+    console.log(col,'col')
+    changed_miRNA_DataInfo()
+  }
   const sort_deFolderData = async(de_data) => {
     if(Object.keys(de_data).length === 0)return;
     if(de_data.title_Group.length === 0){
@@ -224,13 +245,14 @@
         compare_de_Obj.value.selectStyleNum = p_value_number.value;
         compare_de_Obj.value.log2_LowerBound = log2_LowerBound.value;
         compare_de_Obj.value.log2_UpperBound = log2_UpperBound.value;
+        compare_de_Obj.value.height = plot_height.value;
       }
     }
   };
   const listenXxais_Max = (emitValue)=>{
     log2V_model_val.value = emitValue;
   }
-  const exportFile = () =>{
+  const exportFile = () => {
     const combinationTable = [];
     const combinationTable_title = [];
     const p_value_number_val = Number(p_value_number.value);
@@ -260,3 +282,8 @@
     dataService.exportXlsx(combinationTable, 'difference_expression', combinationTable_title);
   }
 </script>
+<style lang="scss">
+  .toggle_cols{
+    cursor: pointer,
+  }
+</style>

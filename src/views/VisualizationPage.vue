@@ -11,9 +11,9 @@
           <div class="toggle_cols" @click="changed_plot_size(6, 500)">
             <v-icon icon="fa:fas fa-table-columns mr-5"></v-icon>
           </div>
-        <div class="toggle_cols" @click="changed_plot_size(12, 700)" v-if="useStyleTab === 0">
-          <v-icon icon="fa:far fa-square mr-5"></v-icon>
-            </div>
+          <div class="toggle_cols" @click="changed_plot_size(12, 700)" v-if="useStyleTab === 0">
+            <v-icon icon="fa:far fa-square mr-5"></v-icon>
+          </div>
         </div>
       </div>
     <v-card-text>

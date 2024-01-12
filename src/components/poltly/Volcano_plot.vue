@@ -41,6 +41,7 @@
     info:[],
     headers:[]
   };
+  const removePlotHeight = ref(450);
   const plot_height = ref(30)
   const plotConfig = {
     responsive:true, 
@@ -202,8 +203,8 @@
     positiveLine.y = [ 0, postitiveYMax ];
     image_config.filename = `Volcano_plot`;
     const windowInnerheight = window.innerHeight;
-    plot_height.value =  Math.ceil(( windowInnerheight - 450 )/ windowInnerheight * 100);
-    
+    plot_height.value =  Math.ceil(( windowInnerheight - removePlotHeight.value )/ windowInnerheight * 100);
+    // console.log(plot_height.value, 'plot_height')
     setTimeout(()=>{
       transfer_FullScreen_data.value = {
         data: DE_folder_data,
@@ -215,6 +216,7 @@
   }
   watch(props.change_volcano_plot, (change_Val)=>{
     const titleIndex = storagedDE_folder.headers.indexOf(change_Val.title);
+    console.log(change_Val, 'change_Val')
     if(titleIndex === -1){
       console.log('dont index')
       return
@@ -222,6 +224,7 @@
     valcanoTitle.value = change_Val.title;
     log2Upper = change_Val.log2_UpperBound;
     log2Lower = change_Val.log2_LowerBound;
+    removePlotHeight.value = change_Val.height;
     if(change_Val.selectStyleNum === '') return;
     // if(change_Val.selectStyleNum === '' || change_Val.selectStyleNum === Infinity )return;
     log_SelectStyleNum = - Math.log10(change_Val.selectStyleNum);
