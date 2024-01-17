@@ -6,6 +6,7 @@ const _transferMeg$ = new Subject({});
 const _visualization_Plot$ = new BehaviorSubject();
 const _CPM_PCA_Info$ = new BehaviorSubject({});
 const _DE_Folder_Info$ = new BehaviorSubject({});
+const _export_raw_table_different_expression_XLSX$ = new Subject(false);
 const DE_folder_compare_name = [];
 const DE_folder_Data = [];
 const conditionSort = [];
@@ -154,6 +155,9 @@ const handleDE_Folder = async () => {
     _DE_Folder_Info$.next({'title_Group': DE_folder_compare_name, 'info': DE_folder_Data});
   }
 }
+const exportRawTable_different_expression = () => {
+  _export_raw_table_different_expression_XLSX$.next(true)
+};
 const exportXlsx = async(readFile, fileName, sheetsName)=> {
   let sheets_Title = [];
   let excelName = '';
@@ -174,7 +178,6 @@ const exportXlsx = async(readFile, fileName, sheetsName)=> {
   }
   writeFileXLSX(export_wb, excelName + '.xlsx');
 };
-
 const transferHandleFinishMeg = (handleInfo) => _transferMeg$.next(handleInfo);
 export const dataService = {
   handleQCReadAlignmentfolder,
@@ -183,9 +186,11 @@ export const dataService = {
   transferHandleFinishMeg,
   handleDE_Folder,
   exportXlsx,
+  exportRawTable_different_expression,
   ReadAlignmentSubject$: _ReadAlignmentSubject$.asObservable(),
   handleRawReadsFolder$: _handleRawReadsFolder$.asObservable(),
   visualization_Plot$: _visualization_Plot$.asObservable(),
+  export_raw_table_different_expression_XLSX$: _export_raw_table_different_expression_XLSX$.asObservable(),
   transferMeg$: _transferMeg$.asObservable(),
   CPM_PCA_Info$: _CPM_PCA_Info$.asObservable(),
   DE_Folder_Info$: _DE_Folder_Info$.asObservable(),

@@ -90,7 +90,7 @@
                     </v-text-field>
                   </div> -->
                 </div>
-                <DisplayTable :table="tableComponentInfo" :expresstablestyle="deTableSize"></DisplayTable>
+                <DisplayTable :table="tableComponentInfo" :expresstablestyle="deTableSize" @select_miRNA_name="tableSelected_miRNA_name"></DisplayTable>
               <!-- </v-card> -->
             </div>
           </v-col>
@@ -118,8 +118,9 @@
   const plot_height = ref(450);
   const tableComponentInfo = ref({
     headers:[],
-    body:[]
+    body:[],
   });
+  const display_plotText = [];
   const compare_de_Obj = ref({
     title:'',
   });
@@ -135,7 +136,6 @@
     contentCols.value = col;
     deTableSize.value = removeTableHeight;
     plot_height.value = removePlotHeight;
-    console.log(col,'col')
     changed_miRNA_DataInfo()
   }
   const sort_deFolderData = async(de_data) => {
@@ -212,8 +212,6 @@
             const compare_de_tables_p_value_Number = Number(compare_de_tables_info[i].body[j][headers_p_value]);
             const compare_de_tables_log2_Number = Number(compare_de_tables_info[i].body[j][headers_log2_Ratio]);
             if(compare_de_tables_p_value_Number > p_value_number_val) continue;
-            // console.log(log2_LowerBound.value,'log2_LowerBound');
-            // console.log(log2_UpperBound.value, 'log2_UpperBound');
             if(headers_log2_Ratio >=0 && compare_de_tables_log2_Number >=log2_UpperBound.value ||
               headers_log2_Ratio >=0 && compare_de_tables_log2_Number <= log2_LowerBound.value){
               display_Table.push(compare_de_tables_info[i].body[j]);
@@ -227,6 +225,7 @@
             // body:compare_de_tables_info[i].body,
             body: display_Table,
             headers,
+            showCheckBox:true
           })
         }
     }
@@ -235,27 +234,42 @@
       handleDataIF.value = true;
     });
   };
+  const changed_compare_de_Obj = (obj_title)=>{
+    compare_de_Obj.value.title = obj_title;
+    compare_de_Obj.value.selectStyle = select_P_Q_Style.value;
+    compare_de_Obj.value.selectStyleNum = p_value_number.value;
+    compare_de_Obj.value.log2_LowerBound = log2_LowerBound.value;
+    compare_de_Obj.value.log2_UpperBound = log2_UpperBound.value;
+    compare_de_Obj.value.height = plot_height.value;
+    compare_de_Obj.value.displayText = display_plotText;
+  }
   const changed_miRNA_DataInfo = () => {
     if(log2_UpperBound.value === '' || log2_LowerBound.value === '') return;
     for(let i = 0 ; compare_de_tables_info.length > i ; i++){
       if( compare_de_title.value === compare_de_tables_info[i].title ){
         handle_table_Info();
-        compare_de_Obj.value.title = compare_de_tables_info[i].title;
-        compare_de_Obj.value.selectStyle = select_P_Q_Style.value;
-        compare_de_Obj.value.selectStyleNum = p_value_number.value;
-        compare_de_Obj.value.log2_LowerBound = log2_LowerBound.value;
-        compare_de_Obj.value.log2_UpperBound = log2_UpperBound.value;
-        compare_de_Obj.value.height = plot_height.value;
+        changed_compare_de_Obj(compare_de_tables_info[i].title);
       }
     }
   };
   const listenXxais_Max = (emitValue)=>{
     log2V_model_val.value = emitValue;
   }
-  const exportFile = () => {
+  const tableSelected_miRNA_name = (plot_text)=>{
+    compare_de_Obj.value.title = '';
+    display_plotText.length = 0;
+    plot_text.forEach((item) => display_plotText.push(item));
+    for(let i = 0 ; compare_de_tables_info.length > i ; i++){
+      if( compare_de_title.value === compare_de_tables_info[i].title ){
+        changed_compare_de_Obj(compare_de_tables_info[i].title);
+      }
+    }
+  }
+  const exportFile = (rawTableBoolean) => {
     const combinationTable = [];
     const combinationTable_title = [];
     const p_value_number_val = Number(p_value_number.value);
+    let excel_status = [];
     for(let i = 0 ; compare_de_tables_info.length > i ; i++){
       const headersUpper = [];
       for(let j = 0 ; compare_de_tables_info[i].headers.length > j ; j++){
@@ -268,19 +282,38 @@
       table.push(compare_de_tables_info[i].headers);
       for(let j = 0 ; compare_de_tables_info[i].body.length > j ; j++){
         const compare_de_tables_p_value_Number = Number(compare_de_tables_info[i].body[j][headers_p_value_Index]);
-        if(headers_p_value_Index > -1 && compare_de_tables_p_value_Number <= p_value_number_val){
+        if(headers_p_value_Index > -1 && compare_de_tables_p_value_Number <= p_value_number_val && rawTableBoolean !== true){
           const compare_de_tables_log2_Number = Number(compare_de_tables_info[i].body[j][headers_log2_Ratio_Index]);
           if(headers_log2_Ratio_Index >= 0 && compare_de_tables_log2_Number >= log2_UpperBound.value ||
             headers_log2_Ratio_Index >= 0 && compare_de_tables_log2_Number <= log2_LowerBound.value){
-              table.push(compare_de_tables_info[i].body[j])
+              table.push(compare_de_tables_info[i].body[j]);
             }
+        }else if(rawTableBoolean === true){
+          table.push(compare_de_tables_info[i].body[j])
         }
-        // table.push(compare_de_tables_info[i].body[j])
       }
       combinationTable.push(table)
     }
+    let status_pvalue = p_value_number_val;
+    let status_log2_LowerBound = log2_LowerBound.value;
+    let status_log2_UpperBound = log2_UpperBound.value;
+    const status_range_log2FC_Lower_bound = `log2FC Lower bound (-${log2V_model_val.value} ~ 0)`;
+    const status_range__log2FC_Upper_bound = `log2FC Upper bound (0 ~ ${log2V_model_val.value})`;
+
+    if(rawTableBoolean){
+      status_log2_LowerBound = 0;
+      status_log2_UpperBound = 0;
+      status_pvalue = 1;
+      combinationTable_title.unshift('State');
+      
+    }
+    excel_status.push(['P-value', status_pvalue], [status_range_log2FC_Lower_bound, status_log2_LowerBound ],[status_range__log2FC_Upper_bound, status_log2_UpperBound]);
+    combinationTable.unshift(excel_status);
     dataService.exportXlsx(combinationTable, 'difference_expression', combinationTable_title);
   }
+  dataService.export_raw_table_different_expression_XLSX$.pipe(takeUntil(comSubject$)).subscribe((rawTableBoolean)=>{
+    exportFile(rawTableBoolean);
+  })
 </script>
 <style lang="scss">
   .toggle_cols{

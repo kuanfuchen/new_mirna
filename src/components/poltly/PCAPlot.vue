@@ -54,9 +54,10 @@
     modeBarButtonsToAdd:[imageCapture],
     displayModeBar: true
   }
-  const settingColor = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4',
-    '#00BCD4', '#009688', '#4CAF50', '#8BC34A' , '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800','#FF5722'
-    ,'#795548', '#607D8B'];
+  const settingColor = ['#17becf','#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22'];
+  // const settingColor = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4',
+  //   '#00BCD4', '#009688', '#4CAF50', '#8BC34A' , '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800','#FF5722'
+  //   ,'#795548', '#607D8B'];
   const madePCA_plot = async() => {
     const tempData = [];
     const title = [];

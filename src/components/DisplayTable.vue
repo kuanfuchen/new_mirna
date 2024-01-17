@@ -1,30 +1,29 @@
 <template>
   <div>
-    <div class="d-flex justify-end mb-2">
-      <div class="d-flex align-center" >
+    <div class="d-flex justify-space-between mb-2">
+      <div class="">
+        <v-btn color="teal" @click="selected_display_plot_text" v-if="toggleShowSelect">
+          <v-icon icon="fa:fas fa-image" style="font-size: 24px;"></v-icon>
+        </v-btn>
+      </div>
+      <div class="d-flex align-center">
         <!-- <div class="download_xlsx" @click="exportFile">
           <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
         </div> -->
         <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
         <v-text-field
-          v-model="search_RNAname"
-          label=""
+          v-model="search_RNAname" variant="outlined"
+          label="" hide-details style="width:300px"
           prepend-inner-icon="mdi-magnify"
-          single-line
-          variant="outlined"
-          hide-details
-          density="compact"
-          style="width:300px"
+          single-line density="compact"
         ></v-text-field>
       </div>
     </div>
     <v-data-table
-      v-model:items-per-page="itemsPerPage" fixed-header
-      :headers="headers" :search="search_RNAname"
-      :items="tableBody"
-      item-value="Sample name"
-      :height="dataTable_height"
-      class="elevation-1">
+      v-model:items-per-page="itemsPerPage" fixed-header :items="tableBody"
+      :headers="headers" :search="search_RNAname" item-value="Sample name"
+      :height="dataTable_height" :show-select="toggleShowSelect"
+      v-model="selectedShow_miRNA" return-object class="elevation-1">
       <template v-slot:item.Ratio="{item}">
         <div>
           <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio }}</p>
@@ -41,22 +40,25 @@
         </div>
       </template> -->
     </v-data-table>
-    <!-- density="compact" -->
   </div>
 </template>
 <script setup>
-  import { ref, onMounted, watch } from 'vue';
+  import { ref, onMounted, watch, defineEmits } from 'vue';
   const itemsPerPage = ref(25);
   const definedprops = defineProps (['table', 'exportName','expresstablestyle']);
+  const emits = defineEmits(['select_miRNA_name']);
   // import { dataService } from '../service/data_service.js'; 
+  const toggleShowSelect = ref(false);
+  const selectedShow_miRNA = ref([]);
   const headers = ref([]);
   const tableBody = ref([]);
   const dataTable_height = ref('');
   const search_RNAname = ref('');
-  const listenTable = async()=>{
+  const listenTable = async() => {
     const tableInfo = definedprops.table;
     if(tableInfo.headers.length === 0) return;
     let bodyInfo = [];
+    if(tableInfo.showCheckBox) toggleShowSelect.value = true;
     for(let j = 0 ; tableInfo.body.length > j ; j++){
       bodyInfo[j] = [];
       for(let k = 0 ; tableInfo.headers.length > k ; k++){
@@ -98,9 +100,13 @@
       for( let j = 0 ; bodyInfoKeys.length > j ; j++ ){
         if(bodyInfoKeys[j] !== 'Samplename' && bodyInfoKeys[j] !== 'condition' && bodyInfoKeys[j] !== 'microRNAID' && bodyInfoKeys[j]!== 'Up_Down' && bodyInfoKeys[j] !== 'significant'){
           const [ base, exponent ] = bodyInfo[i][bodyInfoKeys[j]].split('E').map(Number);
-          // const tempVal = (Math.round(Number(base)*1000) / 1000).toFixed(2);
-          const tempVal = (Math.round(Number(base)*100) / 100);
+          // const tempValx = (Math.round(Number(base)*1000) / 1000).toFixed(2);
+          // const tempVal_split = tempValx.split('.');
+          // console.log(tempVal_split, 'tempVal_split')
+          const tempVal = Math.round(Number(base)*100) / 100;
           const fixed2Val = tempVal.toLocaleString('en-US');
+
+          
           if(exponent !== undefined && exponent !== 0){
             bodyInfo[i][bodyInfoKeys[j]] = `${fixed2Val}e${exponent}`;
           }else{
@@ -117,12 +123,20 @@
     }
     tableBody.value = bodyInfo;
   };
+  const selected_display_plot_text = ()=>{
+    const miRNANames = [];
+    selectedShow_miRNA.value.forEach((item)=>{
+      miRNANames.push(item.microRNAID)
+    })
+    emits('select_miRNA_name', miRNANames);
+  }
   watch(definedprops.table,(/*newTble*/)=>{
     headers.value.length = 0;
     tableBody.value.length = 0;
     listenTable();
   })
   onMounted(()=>{
+    if(tableBody.value.length > 0)return;
     listenTable()
   })
 </script>

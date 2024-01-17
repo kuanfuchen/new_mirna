@@ -34,6 +34,7 @@
   const toogle_Plot_Screen = ref(false);
   let log2Upper = 1;
   let log2Lower = -1;
+  let selecte_miRNAs_Name = [];
   let log_SelectStyleNum = 0;
   const comSubject$ = new Subject();
   const transfer_FullScreen_data = ref([]);
@@ -56,8 +57,8 @@
     y: [],
     mode: 'markers',
     type: 'scatter',
-    name: 'Team A',
-    text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+    name: '',
+    text: [],
     marker: { 
       size: 6,
       color:'#EF5350',//1976D2
@@ -68,8 +69,8 @@
     y: [],
     mode: 'markers',
     type: 'scatter',
-    name: 'Team B',
-    text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+    name: '',
+    text: [],
     marker: { 
       size: 6,
       color:'#1976D2',//26A69A
@@ -81,11 +82,26 @@
     y: [],
     mode: 'markers',
     type: 'scatter',
-    name: 'Team C',
-    text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+    name: '',
+    text: [],
+    
     marker: { 
       size: 6,
       color:'#B0BEC5'
+    }
+  }
+  const display_Text_volcano__plot_plotlyjs_data = {
+    x:[],
+    y:[],
+    mode:'markers+text',
+    type: 'scatter',
+    name: '',
+    text: [],
+    textposition:'bottom',
+    marker: { 
+      size: 6,
+      color:[]
+      // color:'#EF5350',//1976D2
     }
   }
   const layout = {
@@ -127,7 +143,7 @@
       width:2.5
     }
   }
-  const DE_folder_data = [ volcano_plot_plotlyjs_data, selected_volcano__plot_plotlyjs_data, negative_volcano_plot_plotlyjs_data, positiveLine, negativeLine, pvalue_line];
+  const DE_folder_data = [ volcano_plot_plotlyjs_data, selected_volcano__plot_plotlyjs_data, negative_volcano_plot_plotlyjs_data, display_Text_volcano__plot_plotlyjs_data, positiveLine, negativeLine, pvalue_line];
   dataService.DE_Folder_Info$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((deFolderData)=>{
     storagedDE_folder.info = deFolderData.info;
     storagedDE_folder.headers = deFolderData.title_Group;
@@ -143,6 +159,10 @@
     selected_volcano__plot_plotlyjs_data.x.length = 0;
     selected_volcano__plot_plotlyjs_data.y.length = 0;
     selected_volcano__plot_plotlyjs_data.text.length = 0;
+    display_Text_volcano__plot_plotlyjs_data.x.length = 0;
+    display_Text_volcano__plot_plotlyjs_data.y.length = 0;
+    display_Text_volcano__plot_plotlyjs_data.text.length = 0;
+    display_Text_volcano__plot_plotlyjs_data.marker.color.length = 0;
     layout.xaxis.range.length = 0;
     layout.yaxis.range.length = 0;
     positiveLine.x = [log2Upper, log2Upper];
@@ -169,30 +189,59 @@
     Plotly.purge('displatVolcanoPlot');
     for(let i = 0 ; log2.length> i ; i++){
       const floatNum = parseFloat(log2[i]);
+      const selecte_miRNAs_Name_Index = selecte_miRNAs_Name.indexOf(RNA_ID[i]);
       if( log2Upper <= floatNum &&  p_value[i] >= log_SelectStyleNum){
-        volcano_plot_plotlyjs_data.y.push(p_value[i]);
-        volcano_plot_plotlyjs_data.x.push(log2[i]);
-        volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+        if(selecte_miRNAs_Name_Index === -1){
+          volcano_plot_plotlyjs_data.y.push(p_value[i]);
+          volcano_plot_plotlyjs_data.x.push(log2[i]);
+          volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+        }else{
+          display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
+          display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
+          display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
+          display_Text_volcano__plot_plotlyjs_data.marker.color.push('#EF5350');
+        }
       }else if( log2Lower >= floatNum && p_value[i] >= log_SelectStyleNum ){
-        negative_volcano_plot_plotlyjs_data.y.push(p_value[i]);
-        negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
-        negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+        if(selecte_miRNAs_Name_Index === -1){
+          negative_volcano_plot_plotlyjs_data.y.push(p_value[i]);
+          negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
+          negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+        }else{
+          display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
+          display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
+          display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
+          display_Text_volcano__plot_plotlyjs_data.marker.color.push('#1976D2');
+        }
       }
-      // else if( log2Lower < floatNum && floatNum < log2Upper  ){
       else{
-        selected_volcano__plot_plotlyjs_data.y.push(p_value[i]);
-        selected_volcano__plot_plotlyjs_data.x.push(log2[i]);
-        selected_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
+        if(selecte_miRNAs_Name_Index === -1){
+          selected_volcano__plot_plotlyjs_data.y.push(p_value[i]);
+          selected_volcano__plot_plotlyjs_data.x.push(log2[i]);
+          selected_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
+        }else{
+          display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
+          display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
+          display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
+          display_Text_volcano__plot_plotlyjs_data.marker.color.push('#B0BEC5');
+        }
       }
     };
-    const maxValYaxis = Math.max(...p_value);
+    const maxValYaxis = Math.max(...p_value)* 1.1;
     const minValYaxis = Math.min(...p_value);
     const maxValXaxis = Math.max(...log2);
     const minValXaxis = Math.min(...log2);
-    const ceil_max_Xaxis = Math.ceil(maxValXaxis);
-    emit('xaxisMaxValue', ceil_max_Xaxis)
+    const absmaxValXaxis = Math.abs(maxValXaxis);
+    const absminValXaxis = Math.abs(minValXaxis);
+    // console.log(absmaxValXaxis, absminValXaxis,'minValXaxis')
+    const maxXaxisRang = absmaxValXaxis > absminValXaxis ? absmaxValXaxis : absminValXaxis;
+    const emit_maxXaxisRang = Math.ceil(maxXaxisRang);
+    const ceil_max_Xaxis = emit_maxXaxisRang* 1.1;
+    // const ceil_max_Xaxis = Math.ceil(maxValXaxis);
+    // emit('xaxisMaxValue', ceil_max_Xaxis)
+    emit('xaxisMaxValue', emit_maxXaxisRang)
     layout.xaxis = {
-      range:[ minValXaxis, maxValXaxis ],
+      // range:[ minValXaxis, maxValXaxis ],
+      range: [ -ceil_max_Xaxis, ceil_max_Xaxis ],
       title:'log2Ratio'
     };
     layout.yaxis = {
@@ -204,7 +253,6 @@
     image_config.filename = `Volcano_plot`;
     const windowInnerheight = window.innerHeight;
     plot_height.value =  Math.ceil(( windowInnerheight - removePlotHeight.value )/ windowInnerheight * 100);
-    // console.log(plot_height.value, 'plot_height')
     setTimeout(()=>{
       transfer_FullScreen_data.value = {
         data: DE_folder_data,
@@ -216,7 +264,6 @@
   }
   watch(props.change_volcano_plot, (change_Val)=>{
     const titleIndex = storagedDE_folder.headers.indexOf(change_Val.title);
-    console.log(change_Val, 'change_Val')
     if(titleIndex === -1){
       console.log('dont index')
       return
@@ -224,6 +271,10 @@
     valcanoTitle.value = change_Val.title;
     log2Upper = change_Val.log2_UpperBound;
     log2Lower = change_Val.log2_LowerBound;
+    
+    if(change_Val.displayText && change_Val.displayText.length > 0){
+      selecte_miRNAs_Name = JSON.parse(JSON.stringify((change_Val.displayText)));
+    }
     removePlotHeight.value = change_Val.height;
     if(change_Val.selectStyleNum === '') return;
     // if(change_Val.selectStyleNum === '' || change_Val.selectStyleNum === Infinity )return;
