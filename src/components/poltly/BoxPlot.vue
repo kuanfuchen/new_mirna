@@ -61,6 +61,7 @@
     const Boxplot_visualization = document.getElementById('Boxplot_visualization');
     Plotly.purge(Boxplot_visualization);
     const traceData = [];
+    console.log(boxPlot_Info ,'boxPlot_Info')
     for(let i = 0 ; boxPlot_Info.headers.length > i ; i++){
       traceData[i] = {
         name:boxPlot_Info.headers[i],
@@ -69,9 +70,14 @@
         y:[]
       };
       for( let j = 0 ; boxPlot_Info.info.length > j ; j++){
-        traceData[i].y.push(boxPlot_Info.info[j][i])
+        // traceData[i].y.push(boxPlot_Info.info[j][i])
+        if(boxPlot_Info.info[j][i] > 0){
+          traceData[i].y.push(boxPlot_Info.info[j][i])
+        }
+        
       }
     }
+    console.log(traceData, 'traceData')
     // 
     const dataOrder = [];
     for(let i = 0 ; boxPlot_Info.sortOrder.length > i ; i++){
@@ -90,7 +96,6 @@
     setTimeout(()=>{
       Plotly.newPlot(Boxplot_visualization, dataOrder, layout, plotConfig);
     })
-    
   };
 
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe(async(visualization_info)=>{

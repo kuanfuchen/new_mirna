@@ -6,7 +6,7 @@
 </template>
 <script setup>
 /* eslint-disable */
-  import { Subject, takeUntil,debounceTime } from 'rxjs';
+  import { Subject, takeUntil, debounceTime } from 'rxjs';
   import { dataService } from '@/service/data_service';
   import MiRNATabs from '../components/MiRNATabs.vue';
   import { ref } from 'vue';

@@ -13,7 +13,7 @@ const conditionSort = [];
 import { pre_alignment_qaqc, adaptor_trimming, base_trimming, post_alignment, microRNA_counts, CPM_Normalized_counts, CPM_PCA } from './getData';
 
 const handleQCReadAlignmentfolder = async() => {
-  const readAlignmentTitle = ['Row reads', 'Adaptor Trimmed','Base Trimming', 'Alignment'];
+  const readAlignmentTitle = ['Raw reads', 'Adaptor Trimmed','Base Trimming', 'Alignment'];
   const handleFinish_pre_alignment_qaqc = handleSplitTxt(pre_alignment_qaqc);
   for(let i = 0 ; handleFinish_pre_alignment_qaqc.body.length > i ; i++){
     conditionSort.push({
@@ -55,7 +55,8 @@ const handle_post_alignment = (post_alignment) => {
         headers.push('%Unique');
         break;
       case "Total non-unique":
-        headers.push('Total non-unique read');
+        // headers.push('Total non-unique read');
+        headers.push('Total nonUnique read');
         break;
       case "Non-unique":
         headers.push('%Non-unique')
@@ -82,18 +83,33 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
   const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
   const normalized_Info = [];
   const normalized_RNA_title = [];
+  // const test_info = [];
+  
+  console.log(normalized_count, 'normalized_count')
   for( let i = 0 ; normalized_count.body.length > i ; i++ ){
     normalized_Info[i] = [];
+    const miRNA_display_normal_count = {};
+    // test_info[i] = [];
     normalized_count.body[i].forEach((body, index)=>{ 
       if(index === 5 ) {
         normalized_RNA_title.push(body)
       };
       if(index > 5){
-        const numberBody = Number(body) + 1;
+        // 
+        const body_number = Number(body);
+        const numberBody = body_number + 1;
         const log10Body = Math.log10(numberBody);
+      
+        miRNA_display_normal_count[normalized_count.headers[index]] = log10Body;
         normalized_Info[i].push(log10Body);
+        // const numberBody = body_number + 1;
+        // const log10Body = Math.log10(numberBody);
+        // normalized_Info[i].push(log10Body);
     }});
+    // test_info[i].push(miRNA_display_normal_count)
   }
+  // console.log(test_info, 'test_info')
+  // console.log(test_info)
   const microRNA_Info = {
     tabs: microRNA_countTab.tabs,
     tabsTable: microRNA_countTab.tabsTable,
@@ -120,10 +136,6 @@ const handleSplitTxt = (tableInfo) => {
   }
   return miRNATable
 };
-const changedXlsxStyle = ()=>{
-  const wb = utils.book_new();
-  
-}
 const handle_CPM_PCA = ()=>{
   const pca_data = handleSplitTxt(CPM_PCA);
   pca_data.sortOrder = conditionSort;

@@ -96,6 +96,16 @@
             <v-data-table fixed-header v-model:items-per-page="itemsPerPage" :headers="tableComponentInfo.headers"
               :items="tableComponentInfo.body" item-value="Sample name" class="elevation-1" :height="dataTable_height"
               :search="search_RNAname">
+              <template v-slot:item.ReadCount="{item}">
+                <div>
+                  {{ item.ReadCount.toLocaleString('en-US') }}
+                </div>
+              </template>
+              <template v-slot:item.CPM="{item}">
+                <div>
+                  {{ item.CPM.toLocaleString('en-US') }}
+                </div>
+              </template>
             </v-data-table>
             <!-- <v-windows v-model="condition_header"> -->
               <!-- <v-window-item v-for="( header, index ) in conditionHeaders" :key="index" :value="header"> -->
@@ -232,11 +242,9 @@
   };
   const calNumInteger = (val) =>{
     const numberItem = Math.round(Number(val)*100) / 100;
-    const numTo_en_US = numberItem.toLocaleString('en-US');
-    return numTo_en_US
-    // const tempNumberItem = numberItem.toFixed(3);
-    // const numThousand = tempNumberItem.toLocaleString('en-US');
-    // return numThousand
+    return numberItem
+    // const numTo_en_US = numberItem.toLocaleString('en-US');
+    // return numTo_en_US
   };
   const displayTableInfo = () => {  
     const selectHeaderName = conditionHeaders.value[condition_header.value];
@@ -261,7 +269,6 @@
     selectedSampleTitle.push(sample1Item.value, sample2Item.value)
   };
   const exportXlsxFile = ()=>{
-    
     const miRNATables_Obj_Keys = Object.keys(miRNATables);
     const visual_table = [];
     for(let i = 0 ; miRNATables_Obj_Keys.length > i ; i++){

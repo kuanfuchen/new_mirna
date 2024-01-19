@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="d-flex justify-space-between mb-2">
-      <div class="">
-        <v-btn color="teal" @click="selected_display_plot_text" v-if="toggleShowSelect">
-          <v-icon icon="fa:fas fa-image" style="font-size: 24px;"></v-icon>
+      <div class="mt-1">
+        <v-btn color="teal" density="comfortable" @click="selected_display_plot_text" v-if="toggleShowSelect">
+          <v-icon icon="fa:fas fa-image" style="font-size: 16px;"></v-icon>
         </v-btn>
       </div>
       <div class="d-flex align-center">
@@ -26,12 +26,47 @@
       v-model="selectedShow_miRNA" return-object class="elevation-1">
       <template v-slot:item.Ratio="{item}">
         <div>
-          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio }}</p>
+          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio.toLocaleString('en-US') }}</p>
         </div>
       </template>
       <template v-slot:item.Log2Ratio="{item}">
         <div>
           <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Log2Ratio }}</p>
+        </div>
+      </template>
+      <template v-slot:item.Totalreads="{item}">
+        <div>
+          {{ item.Totalreads.toLocaleString('en-US') }}
+        </div>
+      </template>
+      <template v-slot:item.Totalalignmentsreads="{item}">
+        <div>
+          {{ item.Totalalignmentsreads.toLocaleString('en-US') }}
+        </div>
+      </template>
+      <template v-slot:item.Totalunalignedreads="{item}">
+        <div>
+          {{ item.Totalunalignedreads.toLocaleString('en-US') }}
+        </div>
+      </template>
+      <template v-slot:item.Totalunique="{ item }">
+        <div>
+          {{  item.Totalunique.toLocaleString('en-US')  }}
+        </div>
+      </template>
+      <template v-slot:item.Foldchange="{ item }">
+        <div>
+          {{  item.Foldchange.toLocaleString('en-US')  }}
+        </div>
+      </template>
+      <template v-slot:item.lsmean0="{ item }">
+        <div>
+          {{  item.lsmean0.toLocaleString('en-US')  }}
+        </div>
+      </template>
+      <template v-slot:item.lsmean1="{ item }">
+        <div>
+          {{  item.lsmean1.toLocaleString('en-US')  }}
         </div>
       </template>
       <!-- <template v-slot:item.Up_Down = "{item}">
@@ -59,33 +94,48 @@
     if(tableInfo.headers.length === 0) return;
     let bodyInfo = [];
     if(tableInfo.showCheckBox) toggleShowSelect.value = true;
+    
     for(let j = 0 ; tableInfo.body.length > j ; j++){
+      let setLSMeanKeyNumber = -1;
       bodyInfo[j] = [];
       for(let k = 0 ; tableInfo.headers.length > k ; k++){
       // header
-        const headerSplitWord = tableInfo.headers[k].split(/\s/).join('').trim();
-        if(j === 0){
+      let checkLSMean = -1;
+      checkLSMean = tableInfo.headers[k].indexOf('LSMean');
+      let headerSplitWord;
+      if(checkLSMean > -1) {
+        setLSMeanKeyNumber ++;
+        headerSplitWord = 'lsmean' + setLSMeanKeyNumber;
+      }else{
+        headerSplitWord = tableInfo.headers[k].split(/\s/).join('').trim();
+      }
+      // setLSMeanKeyNumber = checkLSMean > -1 ?setLSMeanKeyNumber++ : setLSMeanKeyNumber ;
+      // const headerSplitWord = tableInfo.headers[k].split(/\s/).join('').trim();
+      if(j === 0){
           // headers.value.push({
           //   title: tableInfo.headers[k],
           //   align:'center',
           //   sortable:true,
           //   key:tableInfo.headers[k],
           // })
-          headers.value.push({
-            title: tableInfo.headers[k],
-            align: 'center',
-            sortable: true,
-            key: headerSplitWord
-          })
-        }
-        if(!bodyInfo[j][headerSplitWord]){
-          bodyInfo[j][headerSplitWord] = tableInfo.body[j][k];
-        }
+        headers.value.push({
+          title: tableInfo.headers[k],
+          align: 'center',
+          sortable: true,
+          key: checkLSMean === -1 ? headerSplitWord : 'lsmean' + setLSMeanKeyNumber, 
+          // key: headerSplitWord
+        })
+      }
+      if(!bodyInfo[j][headerSplitWord]){
+        bodyInfo[j][headerSplitWord] = tableInfo.body[j][k];
+      }
         // if(!bodyInfo[j][tableInfo.headers[k]]){
         //   bodyInfo[j][tableInfo.headers[k]] = tableInfo.body[j][k];
         // }
       }
     }
+    console.log(headers.value, 'headers')
+    console.log(bodyInfo, 'bodyInfo')
     for(let i = 0; headers.value.length > i ; i++){
       if(headers.value[i].key === 'condition'){
         bodyInfo =  bodyInfo.sort((a, b)=>{
@@ -100,18 +150,24 @@
       for( let j = 0 ; bodyInfoKeys.length > j ; j++ ){
         if(bodyInfoKeys[j] !== 'Samplename' && bodyInfoKeys[j] !== 'condition' && bodyInfoKeys[j] !== 'microRNAID' && bodyInfoKeys[j]!== 'Up_Down' && bodyInfoKeys[j] !== 'significant'){
           const [ base, exponent ] = bodyInfo[i][bodyInfoKeys[j]].split('E').map(Number);
-          // const tempValx = (Math.round(Number(base)*1000) / 1000).toFixed(2);
-          // const tempVal_split = tempValx.split('.');
-          // console.log(tempVal_split, 'tempVal_split')
-          const tempVal = Math.round(Number(base)*100) / 100;
-          const fixed2Val = tempVal.toLocaleString('en-US');
-
-          
           if(exponent !== undefined && exponent !== 0){
-            bodyInfo[i][bodyInfoKeys[j]] = `${fixed2Val}e${exponent}`;
+            bodyInfo[i][bodyInfoKeys[j]] = Number(bodyInfo[i][bodyInfoKeys[j]]).toExponential(2);
+          //   bodyInfo[i][bodyInfoKeys[j]] = Number(`${tempVal}E${exponent}`);
           }else{
-            bodyInfo[i][bodyInfoKeys[j]] = fixed2Val;
+            const val = Math.round(Number(base)*100)/100;
+            if(val > 0){
+              bodyInfo[i][bodyInfoKeys[j]] = val;
+            }else{
+              const numToExponential= Number(bodyInfo[i][bodyInfoKeys[j]]).toExponential(2);
+              if(Number(numToExponential)=== 0){
+                bodyInfo[i][bodyInfoKeys[j]] =  0;
+              }else{
+                bodyInfo[i][bodyInfoKeys[j]] = numToExponential;
+              }
+              
+            }
           };
+          
         }
       }
     }
@@ -122,6 +178,7 @@
       dataTable_height.value =  Math.ceil((windowInnerheight - 330 - redundant_remove_table_height)/ windowInnerheight * 100) + 'vh';
     }
     tableBody.value = bodyInfo;
+    
   };
   const selected_display_plot_text = ()=>{
     const miRNANames = [];
