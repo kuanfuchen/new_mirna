@@ -1,11 +1,20 @@
 <template>
   <div>
     <div class="d-flex justify-space-between mb-2">
-      <div class="mt-1">
-        <v-btn color="teal" density="comfortable" @click="selected_display_plot_text" v-if="toggleShowSelect">
-          <v-icon icon="fa:fas fa-image" style="font-size: 16px;"></v-icon>
-        </v-btn>
+      <div class="mt-1 d-flex align-center">
+        <div class="mr-2" v-if="toggleShowSelect">
+          <v-btn color="teal" density="comfortable" @click="selected_display_plot_text" >
+            <v-icon icon="fa:fas fa-image" style="font-size: 16px;"></v-icon>
+          </v-btn>
+        </div>
+        <!-- reseted_display_plot_text -->
+        <div class="">
+          <v-btn color="primary" class="text-none" density="comfortable" @click="reseted_display_plot_text" :disabled="selectedShow_miRNA.length === 0">
+            Reset
+          </v-btn>
+        </div>
       </div>
+      
       <div class="d-flex align-center">
         <!-- <div class="download_xlsx" @click="exportFile">
           <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
@@ -134,8 +143,6 @@
         // }
       }
     }
-    console.log(headers.value, 'headers')
-    console.log(bodyInfo, 'bodyInfo')
     for(let i = 0; headers.value.length > i ; i++){
       if(headers.value[i].key === 'condition'){
         bodyInfo =  bodyInfo.sort((a, b)=>{
@@ -186,6 +193,10 @@
       miRNANames.push(item.microRNAID)
     })
     emits('select_miRNA_name', miRNANames);
+  }
+  const reseted_display_plot_text = ()=>{
+    selectedShow_miRNA.value.length = 0;
+    emits('select_miRNA_name', []);;
   }
   watch(definedprops.table,(/*newTble*/)=>{
     headers.value.length = 0;

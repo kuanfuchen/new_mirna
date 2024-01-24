@@ -37,7 +37,7 @@
     mode: 'markers',
     type: 'scatter',
     name: 'scatter',
-    text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+    text: [],
     marker: { size: 6, color:'#00BCD4' }
   };
   const layout = {
@@ -114,11 +114,12 @@
     trace1.text = scatter_Info;
     layout.xaxis = {
       range: [ minVal, maxVal],
-      title: infoTitle[0]
+      title: {text:infoTitle[0], font:{ size:16, weight:'bold' }}
     };
     layout.yaxis = {
       range:[ minVal, maxVal ],
-      title:infoTitle[1]
+      title: {text:infoTitle[1], font:{ size:16, weight:'bold' }}
+      // title:infoTitle[1]
     };
     const fullScreen_layout = {
       xaxis:layout.xaxis,

@@ -43,10 +43,13 @@
     y1[i] = Math.random() + 1;
   }
   const layout = {
-    height:500
+    height:500,
+    xaxis: { title: {text:'Sample', font:{ size:16, weight:'bold' }}, automargin:'height' },
+    yaxis:{title:{ text:`miRNA CPM(log<span style="font-size:12px;font-weight:700">10</span>)`, font:{ size:16, weight:'bold' }} },
+    font:{ size:12}, margin:{ t:30,}
   };
   const plotConfig = {
-    responsive:true, 
+    responsive: true, 
     displaylogo: false,
     modeBarButtonsToRemove: ['pan2d','select2d','lasso2d','zoom', 'toImage'],
     modeBarButtonsToAdd:[imageCapture],
@@ -61,7 +64,6 @@
     const Boxplot_visualization = document.getElementById('Boxplot_visualization');
     Plotly.purge(Boxplot_visualization);
     const traceData = [];
-    console.log(boxPlot_Info ,'boxPlot_Info')
     for(let i = 0 ; boxPlot_Info.headers.length > i ; i++){
       traceData[i] = {
         name:boxPlot_Info.headers[i],
@@ -74,11 +76,8 @@
         if(boxPlot_Info.info[j][i] > 0){
           traceData[i].y.push(boxPlot_Info.info[j][i])
         }
-        
       }
-    }
-    console.log(traceData, 'traceData')
-    // 
+    } 
     const dataOrder = [];
     for(let i = 0 ; boxPlot_Info.sortOrder.length > i ; i++){
       const orderIndex = traceData.filter((item)=>{if( boxPlot_Info.sortOrder[i].name === item.name)return item})[0];
@@ -90,7 +89,11 @@
     image_config.filename = `Visualization_box_plot`;
     transfer_FullScreen_data.value = {
       data:dataOrder,
-      layout:{},
+      layout:{
+        xaxis: { title: {text:'Sample', font:{ size:20, weight:'bold' }}, automargin:'height' },
+        yaxis:{title:{ text:'miRNA CPM(log<span style="font-size:12px;font-weight:700">10</span>)', font:{ size:20, weight:'bold' }} },
+        font:{ size:12}, margin:{ t:30,}
+      },
       plotConfig
     }
     setTimeout(()=>{
