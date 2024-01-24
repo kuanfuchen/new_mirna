@@ -37,13 +37,14 @@
     mode: 'markers',
     type: 'scatter',
     name: 'scatter',
-    text: ['A-1', 'A-2', 'A-3', 'A-4', 'A-5'],
+    text: [],
     marker: { size: 6, color:'#00BCD4' }
   };
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
     height:500,
+    minallowed:0
   };
   // const image_config = {
   //   filename:'scatter_plot',
@@ -108,17 +109,19 @@
       }
     };
     maxVal = Math.ceil(maxVal);
-    minVal = Math.floor(minVal - 1);
+    minVal = Math.floor(minVal - 1) < 0 ? -0.5 : Math.floor(minVal) - 0.5;
     trace1.x = traceSite[0];
     trace1.y = traceSite[1];
     trace1.text = scatter_Info;
     layout.xaxis = {
       range: [ minVal, maxVal],
-      title: infoTitle[0]
+      title: {text:infoTitle[0], font:{ size:16, weight:'bold' }}
     };
+    
     layout.yaxis = {
       range:[ minVal, maxVal ],
-      title:infoTitle[1]
+      title: {text:infoTitle[1], font:{ size:16, weight:'bold' }}
+      // title:infoTitle[1]
     };
     const fullScreen_layout = {
       xaxis:layout.xaxis,
@@ -129,6 +132,7 @@
       layout:fullScreen_layout,
       plotConfig
     };
+    console.log(layout, 'layout')
     // image_config.filename = `${infoTitle[0]}_vs_${infoTitle[1]}_scatter_plot`;
     image_config.filename = `${infoTitle[0]}_vs_${infoTitle[1]}_scatter_plot`;
     drawGraphScatterPlot_visualization(scatterplot_visualizationDiv);

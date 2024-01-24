@@ -1,11 +1,20 @@
 <template>
   <div>
-    <div class="d-flex justify-space-between">
-      <p class="ml-3" style="font-weight: 700;font-size: 18px;" >{{ valcanoTitle }}</p>
+    <div class="ml-3" style="font-weight: 700;font-size: 18px;">
+      {{ valcanoTitle }}
+      <!-- <p class="ml-3" style="font-weight: 700;font-size: 18px;" >{{ valcanoTitle }}</p> -->
+    </div>
+    <div class="d-flex justify-space-between mt-1">
+      <div class="ml-5" style="font-weight: 700;font-size: 14px;">
+        <p>Total point: {{ total_position_number }}</p>
+        <p style="color:#EF5350">UP point: {{ positive_position_number }}</p>
+        <p style="color:#1976D2">Down point: {{ negative_position_number }}</p>
+      </div>
       <div class="download_xlsx" @click="toogle_Plot_Screen = true">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
+    
     <div class="mt-3" :style="{'height':plot_height + 'vh'}" id="displatVolcanoPlot"></div>
     <!-- style="height:550px" -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
@@ -36,6 +45,9 @@
   let log2Lower = -1;
   let selecte_miRNAs_Name = [];
   let log_SelectStyleNum = 0;
+  const negative_position_number = ref(0);
+  const positive_position_number = ref(0);
+  const total_position_number = ref(0);
   const comSubject$ = new Subject();
   const transfer_FullScreen_data = ref([]);
   const storagedDE_folder = {
@@ -90,7 +102,7 @@
       color:'#B0BEC5'
     }
   }
-  const display_Text_volcano__plot_plotlyjs_data = {
+  let display_Text_volcano__plot_plotlyjs_data = {
     x:[],
     y:[],
     mode:'markers+text',
@@ -107,6 +119,9 @@
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
+    margin:{
+      t:30
+    },
     showlegend: false
   };
   // 
@@ -149,7 +164,8 @@
     storagedDE_folder.headers = deFolderData.title_Group;
     handleDE_data();
   });
-  const reMark_DE_Plot = (num)=>{
+  const reMark_DE_Plot = async(num)=>{
+    await Plotly.purge('displatVolcanoPlot');
     volcano_plot_plotlyjs_data.x.length = 0;
     volcano_plot_plotlyjs_data.y.length = 0;
     volcano_plot_plotlyjs_data.text.length = 0;
@@ -167,7 +183,10 @@
     layout.yaxis.range.length = 0;
     positiveLine.x = [log2Upper, log2Upper];
     negativeLine.x = [log2Lower, log2Lower];
-    handleDE_data(num);
+    positive_position_number.value = 0;
+    negative_position_number.value = 0;
+    total_position_number.value = 0;
+    handleDE_data(num);    
   }
   const handleDE_data = (selectedDataNum = 0)=>{
     valcanoTitle.value = storagedDE_folder.headers[selectedDataNum];
@@ -186,15 +205,16 @@
     displatVolcano(selected_DE_pValue, selected_DE_log2, selected_RNA_name);
   }
   const displatVolcano = (p_value, log2, RNA_ID) => {
-    Plotly.purge('displatVolcanoPlot');
     for(let i = 0 ; log2.length> i ; i++){
       const floatNum = parseFloat(log2[i]);
       const selecte_miRNAs_Name_Index = selecte_miRNAs_Name.indexOf(RNA_ID[i]);
+      total_position_number.value ++;
       if( log2Upper <= floatNum &&  p_value[i] >= log_SelectStyleNum){
         if(selecte_miRNAs_Name_Index === -1){
           volcano_plot_plotlyjs_data.y.push(p_value[i]);
           volcano_plot_plotlyjs_data.x.push(log2[i]);
           volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+          positive_position_number.value ++;
         }else{
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
@@ -206,6 +226,7 @@
           negative_volcano_plot_plotlyjs_data.y.push(p_value[i]);
           negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
           negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
+          negative_position_number.value ++;
         }else{
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
@@ -232,21 +253,21 @@
     const minValXaxis = Math.min(...log2);
     const absmaxValXaxis = Math.abs(maxValXaxis);
     const absminValXaxis = Math.abs(minValXaxis);
-    // console.log(absmaxValXaxis, absminValXaxis,'minValXaxis')
     const maxXaxisRang = absmaxValXaxis > absminValXaxis ? absmaxValXaxis : absminValXaxis;
     const emit_maxXaxisRang = Math.ceil(maxXaxisRang);
     const ceil_max_Xaxis = emit_maxXaxisRang* 1.1;
     // const ceil_max_Xaxis = Math.ceil(maxValXaxis);
-    // emit('xaxisMaxValue', ceil_max_Xaxis)
-    emit('xaxisMaxValue', emit_maxXaxisRang)
+    // emit('xaxisMaxValue', ceil_max_Xaxis);
+    emit('xaxisMaxValue', emit_maxXaxisRang);
     layout.xaxis = {
-      // range:[ minValXaxis, maxValXaxis ],
       range: [ -ceil_max_Xaxis, ceil_max_Xaxis ],
-      title:'log2Ratio'
+      // title:'log2Ratio'
+      title:{text:`log<span style="font-size:12px;font-weight:700">2</span>Ratio`, font:{size:20, weight:'bold'}}
     };
     layout.yaxis = {
       range:[ minValYaxis, maxValYaxis ],
-      title:'-log10 (P-value)'
+      // title:'-log10 (P-value)'
+      title: { text:`log<span style="font-size:12px;font-weight:700">10</span>(P-value)`, font:{size:20, weight:'bold'}}
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
@@ -271,9 +292,10 @@
     valcanoTitle.value = change_Val.title;
     log2Upper = change_Val.log2_UpperBound;
     log2Lower = change_Val.log2_LowerBound;
-    
     if(change_Val.displayText && change_Val.displayText.length > 0){
       selecte_miRNAs_Name = JSON.parse(JSON.stringify((change_Val.displayText)));
+    }else if(change_Val.displayText.length === 0){
+      selecte_miRNAs_Name.length = 0;
     }
     removePlotHeight.value = change_Val.height;
     if(change_Val.selectStyleNum === '') return;

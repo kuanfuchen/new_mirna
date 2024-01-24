@@ -11,7 +11,7 @@
             <p class="v-col-md-4 v-col-xl-3 text-h6">{{ userInfo }}</p>
             <p class="v-col-md-8 v-col-xl-9 text-h6">{{ projectUsrInfo[userInfo] }}</p>
           </div>
-          <q-separator v-if="index < projectUsrInfo.userInfoOrder.length - 1" />
+          <!-- <q-separator v-if="index < projectUsrInfo.userInfoOrder.length - 1" /> -->
         </v-card-text>
       </v-card>
     </v-responsive>
@@ -21,15 +21,15 @@
 /* eslint-disable */
 import { ref } from 'vue';
 const projectUsrInfo = ref({
-  'userInfoOrder': ['PONumber', 'Date', 'Institute', 'Customer',/*'Tel',*/'Organism', 'kit', 'Genome', 'miRNA DB'],
+  'userInfoOrder': ['ProjectID', 'Date', 'Institute', 'Customer',/*'Tel',*/'Organism', 'Library Kit', 'Genome', 'miRNA DB'],
   'Organism':'xxx',
-  'PONumber':'0000001',
+  'ProjectID':'0000001',
   'Institute':'xx大學',
   'Customer':'xxx',
   // Tel:'',
-  'kit':'kit',
-  'Genome':'PDE',
-  'miRNA DB': 'v22',
+  'Library Kit':'Kit',
+  'Genome':'GRCH38',
+  'miRNA DB': 'miRBase v22.1',
   'Date':'2024/12/11'
 })
 // const backgrundPlant = ref('dark');

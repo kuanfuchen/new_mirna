@@ -18,7 +18,7 @@
       </div>
     <v-card-text>
       <v-window v-model="useStyleTab">
-        <v-window-item value="Graph">
+        <v-window-item value="QC Graph">
           <div>
             <div class="d-flex justify-center">
               <div class="text-h6 w-25">
@@ -144,7 +144,7 @@
   const sample1Item = ref('');
   const sample2Item = ref('');
   const selectedSampleTitle = reactive([]);
-  const displayStyle = ref(['Graph', 'Table']);
+  const displayStyle = ref(['QC Graph', 'Table']);
   const useStyleTab = ref(0);
   const dataTable_height = ref('');
   const search_RNAname = ref('');
@@ -154,7 +154,7 @@
   const plot_cols = ref(6);
   const tableHeader = [
     {title: 'Gene Symbol', align: 'center', sortable: true, key: 'title'},
-    {title: 'log10(CPM+1)', align: 'center', sortable: true, key: 'log10(CPM+1)'},
+    // {title: 'log10(CPM+1)', align: 'center', sortable: true, key: 'log10(CPM+1)'},
     {title: 'CPM', align: 'center', sortable: true, key: 'CPM'},
     {title: 'Read Count', align: 'center', sortable: true, key: 'ReadCount'}];
   // 
@@ -227,7 +227,7 @@
           if(!tableObj[tableHeaders[j]][miRNA_name_Group[k]]){ 
             tableObj[tableHeaders[j]][miRNA_name_Group[k]] = {
               'ReadCount': calNumInteger(readCount_Group[k][j]),
-              'log10(CPM+1)': calNumInteger(microRNAraw.log[k][j]),
+              // 'log10(CPM+1)': calNumInteger(microRNAraw.log[k][j]),
               'CPM': calNumInteger(CPM_group[k][j]),
             }
           }

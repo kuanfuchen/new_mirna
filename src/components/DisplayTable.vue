@@ -1,10 +1,18 @@
 <template>
   <div>
     <div class="d-flex justify-space-between mb-2">
-      <div class="mt-1">
-        <v-btn color="teal" density="comfortable" @click="selected_display_plot_text" v-if="toggleShowSelect">
-          <v-icon icon="fa:fas fa-image" style="font-size: 16px;"></v-icon>
-        </v-btn>
+      <div class="mt-1 d-flex align-center">
+        <div class="mr-2" v-if="toggleShowSelect">
+          <v-btn color="teal" density="comfortable" @click="selected_display_plot_text" >
+            <v-icon icon="fa:fas fa-image" style="font-size: 16px;"></v-icon>
+          </v-btn>
+        </div>
+        <!-- reseted_display_plot_text -->
+        <div class="">
+          <v-btn color="primary" class="text-none" density="comfortable" @click="reseted_display_plot_text" :disabled="selectedShow_miRNA.length === 0">
+            Reset
+          </v-btn>
+        </div>
       </div>
       <div class="d-flex align-center">
         <!-- <div class="download_xlsx" @click="exportFile">
@@ -15,66 +23,68 @@
           v-model="search_RNAname" variant="outlined"
           label="" hide-details style="width:300px"
           prepend-inner-icon="mdi-magnify"
-          single-line density="compact"
-        ></v-text-field>
+          single-line density="compact">
+        </v-text-field>
       </div>
     </div>
-    <v-data-table
+    
+      <v-data-table
       v-model:items-per-page="itemsPerPage" fixed-header :items="tableBody"
       :headers="headers" :search="search_RNAname" item-value="Sample name"
       :height="dataTable_height" :show-select="toggleShowSelect"
       v-model="selectedShow_miRNA" return-object class="elevation-1">
-      <template v-slot:item.Ratio="{item}">
-        <div>
-          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio.toLocaleString('en-US') }}</p>
-        </div>
-      </template>
-      <template v-slot:item.Log2Ratio="{item}">
-        <div>
-          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Log2Ratio }}</p>
-        </div>
-      </template>
-      <template v-slot:item.Totalreads="{item}">
-        <div>
-          {{ item.Totalreads.toLocaleString('en-US') }}
-        </div>
-      </template>
-      <template v-slot:item.Totalalignmentsreads="{item}">
-        <div>
-          {{ item.Totalalignmentsreads.toLocaleString('en-US') }}
-        </div>
-      </template>
-      <template v-slot:item.Totalunalignedreads="{item}">
-        <div>
-          {{ item.Totalunalignedreads.toLocaleString('en-US') }}
-        </div>
-      </template>
-      <template v-slot:item.Totalunique="{ item }">
-        <div>
-          {{  item.Totalunique.toLocaleString('en-US')  }}
-        </div>
-      </template>
-      <template v-slot:item.Foldchange="{ item }">
-        <div>
-          {{  item.Foldchange.toLocaleString('en-US')  }}
-        </div>
-      </template>
-      <template v-slot:item.lsmean0="{ item }">
-        <div>
-          {{  item.lsmean0.toLocaleString('en-US')  }}
-        </div>
-      </template>
-      <template v-slot:item.lsmean1="{ item }">
-        <div>
-          {{  item.lsmean1.toLocaleString('en-US')  }}
-        </div>
-      </template>
-      <!-- <template v-slot:item.Up_Down = "{item}">
-        <div>
-          <p :style="{ 'color':item.Up_Down === 'UP'? '#2962FF':'#D32F2F' }">{{ item.Up_Down }}</p>
-        </div>
-      </template> -->
-    </v-data-table>
+        <template v-slot:item.Ratio="{item}">
+          <div>
+            <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio.toLocaleString('en-US') }}</p>
+          </div>
+        </template>
+        <template v-slot:item.Log2Ratio="{item}">
+          <div>
+            <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Log2Ratio }}</p>
+          </div>
+        </template>
+        <template v-slot:item.Totalreads="{item}">
+          <div>
+            {{ item.Totalreads.toLocaleString('en-US') }}
+          </div>
+        </template>
+        <template v-slot:item.Totalalignmentsreads="{item}">
+          <div>
+            {{ item.Totalalignmentsreads.toLocaleString('en-US') }}
+          </div>
+        </template>
+        <template v-slot:item.Totalunalignedreads="{item}">
+          <div>
+            {{ item.Totalunalignedreads.toLocaleString('en-US') }}
+          </div>
+        </template>
+        <template v-slot:item.Totalunique="{ item }">
+          <div>
+            {{  item.Totalunique.toLocaleString('en-US')  }}
+          </div>
+        </template>
+        <template v-slot:item.Foldchange="{ item }">
+          <div>
+            {{  item.Foldchange.toLocaleString('en-US')  }}
+          </div>
+        </template>
+        <template v-slot:item.lsmean0="{ item }">
+          <div>
+            {{  item.lsmean0.toLocaleString('en-US')  }}
+          </div>
+        </template>
+        <template v-slot:item.lsmean1="{ item }">
+          <div>
+            {{  item.lsmean1.toLocaleString('en-US')  }}
+          </div>
+        </template>
+        <!-- <template v-slot:item.Up_Down = "{item}">
+          <div>
+            <p :style="{ 'color':item.Up_Down === 'UP'? '#2962FF':'#D32F2F' }">{{ item.Up_Down }}</p>
+          </div>
+        </template> -->
+      </v-data-table>
+   
   </div>
 </template>
 <script setup>
@@ -134,8 +144,6 @@
         // }
       }
     }
-    console.log(headers.value, 'headers')
-    console.log(bodyInfo, 'bodyInfo')
     for(let i = 0; headers.value.length > i ; i++){
       if(headers.value[i].key === 'condition'){
         bodyInfo =  bodyInfo.sort((a, b)=>{
@@ -186,6 +194,10 @@
       miRNANames.push(item.microRNAID)
     })
     emits('select_miRNA_name', miRNANames);
+  }
+  const reseted_display_plot_text = ()=>{
+    selectedShow_miRNA.value.length = 0;
+    emits('select_miRNA_name', []);;
   }
   watch(definedprops.table,(/*newTble*/)=>{
     headers.value.length = 0;

@@ -3,7 +3,7 @@
     <v-card class="px-3 mt-2" width="100%" >
       <!--  -->
       <template v-slot:title>
-        <p class="text-teal font-weight-bold">Analysis</p> 
+        <p class="text-teal font-weight-bold">Difference Expression Analysis</p> 
       </template>
       <v-card-text>
         <v-row no-gutters>
@@ -37,16 +37,20 @@
           <v-col cols="3">
             <v-sheet class="pa-2 ma-2">
               <p class="font-weight-bold text-right">
-                log2FC Lower bound (-{{ log2V_model_val }}~0) / Upper bound (0~{{ log2V_model_val }})
+                Log2 Fold Change Lower bound / Upper bound
+                <!-- log2FC Lower bound (-{{ log2V_model_val }}~0) / Upper bound (0~{{ log2V_model_val }}) -->
               </p>
             </v-sheet>
+            
           </v-col>
           <v-col cols="2">
-            <v-text-field :label="`Number(-${log2V_model_val} ~ 0)`" type="number" variant="outlined" v-model="log2_LowerBound" density="compact"
+            <!-- :label="`Number(-${log2V_model_val} ~ 0)`"  -->
+            <v-text-field type="number" variant="outlined" v-model="log2_LowerBound" density="compact"
             @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
           <v-col class="ml-5" cols="2">
-            <v-text-field :label="`Number(0 ~ ${log2V_model_val})`" type="number" variant="outlined" v-model="log2_UpperBound" density="compact" 
+            <!-- :label="`Number(0 ~ ${log2V_model_val})`" -->
+            <v-text-field  type="number" variant="outlined" v-model="log2_UpperBound" density="compact" 
             @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
         </v-row>
@@ -73,25 +77,37 @@
           <v-col :cols="contentCols">
             <div v-if="handleDataIF">
               <!-- <v-card class="px-2 py-1"> -->
-                <div class="d-flex align-self-center px-2 py-1">
-                  <p class="text-h6 my-2 text-teal" style="font-weight: 700;">DE Table</p>
-                  <div class="download_xlsx ml-auto " @click="exportFile">
-                    <v-icon icon="fa:fas fa-file-arrow-down" class="mr-5 text-teal mt-3" style="font-size: 24px;"></v-icon>
-                  </div>
+              <div class="d-flex align-self-center px-2 py-1">
+                <p class="text-h6 my-2 text-teal" style="font-weight: 700;">Difference Expression miRNA Table</p>
+                <div class="download_xlsx ml-auto " @click="exportFile">
+                  <v-icon icon="fa:fas fa-file-arrow-down" class="mr-5 text-teal mt-3" style="font-size: 24px;"></v-icon>
                 </div>
-                <div class="d-flex justify-space-between">
-                  <p class="mb-2" style="font-weight: 700;font-size: 18px;">
-                    {{ compare_de_title }}
-                  </p>
+              </div>
+              <div class="d-flex justify-space-between">
+                <p class="mb-2" style="font-weight: 700;font-size: 18px;">
+                  {{ compare_de_title }}
+                </p>
                   <!-- <div class="d-flex" style="width:500px">
                     <p class="mr-3 font-weight-bold pt-4" style="font-size:18px;">FDR</p>
                     <v-text-field  density="compact" label="FDR / Number(0 ~ 1)" variant="outlined" v-model="fdrVal" @update:modelValue="handle_table_Info"
                       type="number">
                     </v-text-field>
                   </div> -->
-                </div>
-                <DisplayTable :table="tableComponentInfo" :expresstablestyle="deTableSize" @select_miRNA_name="tableSelected_miRNA_name"></DisplayTable>
+              </div>
+              <DisplayTable :table="tableComponentInfo" :expresstablestyle="deTableSize" @select_miRNA_name="tableSelected_miRNA_name"></DisplayTable>
               <!-- </v-card> -->
+            </div>
+            <div class="mb-5">
+              <div class="mt-3 d-flex justify-end align-center">
+                  <h3>
+                    Download none filter raw table
+                  </h3>
+                  <v-btn class="text-none ml-3" color="grey-lighten-3" @click="toggleExportRawData"
+                  variant="flat">
+                  <v-icon icon="fa:fas fa-file-arrow-down" class=" text-teal mr-1" style="font-size: 24px;"></v-icon>
+                  <!-- None filter raw table -->
+                </v-btn>
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -126,7 +142,6 @@
   });
   const log2V_model_val = ref(0);
   const fdrVal = ref(1);
-  // const volcano_plot_title = ref('')
   let compare_de_tables_info = [];
   dataService.DE_Folder_Info$.pipe(takeUntil(comSubject$), debounceTime(300)).subscribe((deFolderData)=>{
     sort_deFolderData(deFolderData);
@@ -299,13 +314,11 @@
     let status_log2_UpperBound = log2_UpperBound.value;
     const status_range_log2FC_Lower_bound = `log2FC Lower bound (-${log2V_model_val.value} ~ 0)`;
     const status_range__log2FC_Upper_bound = `log2FC Upper bound (0 ~ ${log2V_model_val.value})`;
-
     if(rawTableBoolean){
       status_log2_LowerBound = 0;
       status_log2_UpperBound = 0;
       status_pvalue = 1;
       combinationTable_title.unshift('State');
-      
     }
     excel_status.push(['P-value', status_pvalue], [status_range_log2FC_Lower_bound, status_log2_LowerBound ],[status_range__log2FC_Upper_bound, status_log2_UpperBound]);
     combinationTable.unshift(excel_status);
@@ -314,6 +327,9 @@
   dataService.export_raw_table_different_expression_XLSX$.pipe(takeUntil(comSubject$)).subscribe((rawTableBoolean)=>{
     exportFile(rawTableBoolean);
   })
+  const toggleExportRawData =  ()=>{
+    dataService.exportRawTable_different_expression();
+  }
 </script>
 <style lang="scss">
   .toggle_cols{

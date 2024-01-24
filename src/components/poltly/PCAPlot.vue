@@ -33,7 +33,7 @@
   import { ref, watch } from 'vue';
   import {image_config, imageCapture} from '../../utils/image_download';
   const comSubject$ = new Subject();
-  const transfer_FullScreen_data = ref([]);
+  const transfer_FullScreen_data = ref({});
   const toogle_Plot_Screen = ref(false);
   const definedProps = defineProps(['plot_size']);
   const PCA_Data = {
@@ -42,8 +42,10 @@
     sortOrder:[]
   };
   const layout = {
-    xaxis: { title: 'PCA1', },
-    yaxis: { title: 'PCA2', },
+    // xaxis: { title: 'PCA1', },
+    // yaxis: { title: 'PCA2', },
+    xaxis:{title:{ text:'PCA1',font:{size:16,weight:'bold'}}},
+    yaxis:{title:{text:'PCA2', font:{size:16,weight:'bold'}}},
     height:500
     // title: 'Quadrant Plot',
   };
@@ -100,9 +102,11 @@
       const layoutTextSplit = title[i].split(/^([^\s]+)\s*\(([\d.]+%)\)$/);
       const layoutAxisTitle = layoutTextSplit[2].substring(0,5);
       if(i === 0){
-        layout.xaxis.title = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`
+        // layout.xaxis.title = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`
+        layout.xaxis.title.text = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`;
       }else if(i === 1){
-        layout.yaxis.title = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`
+        // layout.yaxis.title = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`
+        layout.yaxis.title.text = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`;
       }
     }
     const pca_plot_data_order = [];
@@ -112,12 +116,12 @@
     }
     const full_screen_layout = {
       xaxis:{
-        title:layout.xaxis.title,
+        // title:layout.xaxis.title,
+        title:{ text:layout.xaxis.title.text, font:{ size:20, weight:'bold' } }
       },
-      
       yaxis:{
-        title:layout.yaxis.title
-      }
+        // title:layout.yaxis.title
+        title:{ text:layout.yaxis.title.text, font:{ size:20, weight:'bold' }}}
     }
     image_config.filename = `Visualization_PCA_plot`;
     setTimeout(() => {
