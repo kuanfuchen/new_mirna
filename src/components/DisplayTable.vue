@@ -8,12 +8,17 @@
           </v-btn>
         </div>
         <!-- reseted_display_plot_text -->
+<<<<<<< HEAD
         <div class="" v-if="toggleShowSelect">
+=======
+        <div class="">
+>>>>>>> 3b5a7c5615ddc5d4b74faba159e08fb17f04a8cb
           <v-btn color="primary" class="text-none" density="comfortable" @click="reseted_display_plot_text" :disabled="selectedShow_miRNA.length === 0">
             Reset
           </v-btn>
         </div>
       </div>
+      
       <div class="d-flex align-center">
         <!-- <div class="download_xlsx" @click="exportFile">
           <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>

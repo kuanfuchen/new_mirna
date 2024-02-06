@@ -41,6 +41,7 @@
                 <!-- log2FC Lower bound (-{{ log2V_model_val }}~0) / Upper bound (0~{{ log2V_model_val }}) -->
               </p>
             </v-sheet>
+            
           </v-col>
           <v-col cols="2">
             <!-- :label="`Number(-${log2V_model_val} ~ 0)`"  -->
@@ -77,8 +78,7 @@
             <div v-if="handleDataIF">
               <!-- <v-card class="px-2 py-1"> -->
               <div class="d-flex align-self-center px-2 py-1">
-                <p class="text-h6 my-2 text-teal" style="font-weight: 700;">Difference Expression miRNA Table</p>
-                
+                <p class="text-h6 my-2 text-teal" style="font-weight: 700;">Difference Expression miRNA Table</p>   
               </div>
               <div class="d-flex justify-space-between">
                 <p class="mb-2" style="font-weight: 700;font-size: 18px;">

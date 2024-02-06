@@ -183,10 +183,15 @@
     layout.yaxis.range.length = 0;
     positiveLine.x = [log2Upper, log2Upper];
     negativeLine.x = [log2Lower, log2Lower];
+<<<<<<< HEAD
     positive_position_number.value = 0;
     negative_position_number.value = 0;
     total_position_number.value = 0;
     handleDE_data(num);    
+=======
+    handleDE_data(num);    
+    
+>>>>>>> 3b5a7c5615ddc5d4b74faba159e08fb17f04a8cb
   }
   const handleDE_data = (selectedDataNum = 0)=>{
     valcanoTitle.value = storagedDE_folder.headers[selectedDataNum];
@@ -205,6 +210,10 @@
     displatVolcano(selected_DE_pValue, selected_DE_log2, selected_RNA_name);
   }
   const displatVolcano = (p_value, log2, RNA_ID) => {
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 3b5a7c5615ddc5d4b74faba159e08fb17f04a8cb
     for(let i = 0 ; log2.length> i ; i++){
       const floatNum = parseFloat(log2[i]);
       const selecte_miRNAs_Name_Index = selecte_miRNAs_Name.indexOf(RNA_ID[i]);
@@ -262,12 +271,20 @@
     layout.xaxis = {
       range: [ -ceil_max_Xaxis, ceil_max_Xaxis ],
       // title:'log2Ratio'
+<<<<<<< HEAD
       title:{text:`log<span style="font-size:12px;">2</span>Ratio`, font:{size:20,}}
+=======
+      title:{text:`log<span style="font-size:12px;font-weight:700">2</span>Ratio`, font:{size:20, weight:'bold'}}
+>>>>>>> 3b5a7c5615ddc5d4b74faba159e08fb17f04a8cb
     };
     layout.yaxis = {
       range:[ minValYaxis, maxValYaxis ],
       // title:'-log10 (P-value)'
+<<<<<<< HEAD
       title: { text:`log<span style="font-size:12px;">10</span>(P-value)`, font:{size:20}}
+=======
+      title:{text:`log<span style="font-size:12px;font-weight:700">10</span>(P-value)`, font:{size:20, weight:'bold'}}
+>>>>>>> 3b5a7c5615ddc5d4b74faba159e08fb17f04a8cb
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
