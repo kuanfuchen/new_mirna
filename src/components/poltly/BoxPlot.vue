@@ -45,14 +45,9 @@
   const layout = {
     height:500,
     xaxis: { title: {text:'Sample', font:{ size:16, weight:'bold' }}, automargin:'height' },
-<<<<<<< HEAD
     yaxis:{title:{ text:`log<span style="font-size:12px">10</span>(miRNA CPM)`, font:{ size:16, weight:'bold' }} },
     font:{ size:12}, margin:{ t:30,},
     title:'miRNA CPM distribution of sample'
-=======
-    yaxis:{title:{ text:`miRNA CPM(log<span style="font-size:12px;font-weight:700">10</span>)`, font:{ size:16, weight:'bold' }} },
-    font:{ size:12}, margin:{ t:30,}
->>>>>>> 3b5a7c5615ddc5d4b74faba159e08fb17f04a8cb
   };
   const plotConfig = {
     responsive: true, 
