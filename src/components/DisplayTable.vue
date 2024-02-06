@@ -8,7 +8,7 @@
           </v-btn>
         </div>
         <!-- reseted_display_plot_text -->
-        <div class="">
+        <div class="" v-if="toggleShowSelect">
           <v-btn color="primary" class="text-none" density="comfortable" @click="reseted_display_plot_text" :disabled="selectedShow_miRNA.length === 0">
             Reset
           </v-btn>
@@ -128,8 +128,13 @@
           //   sortable:true,
           //   key:tableInfo.headers[k],
           // })
+        const uppercaseFirst = tableInfo.headers[k].split('');
+        const getFirst = uppercaseFirst.splice(0,1);
+        const firstcase=getFirst[0].toUpperCase();
+        const combinedTitle = firstcase+ uppercaseFirst.join('');
         headers.value.push({
-          title: tableInfo.headers[k],
+          // title: tableInfo.headers[k],
+          title:combinedTitle,
           align: 'center',
           sortable: true,
           key: checkLSMean === -1 ? headerSplitWord : 'lsmean' + setLSMeanKeyNumber, 

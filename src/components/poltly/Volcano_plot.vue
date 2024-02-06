@@ -1,14 +1,14 @@
 <template>
   <div>
-    <div class="ml-3" style="font-weight: 700;font-size: 18px;">
+    <div class="ml-3" style="font-weight: 700;font-size: 15px;">
       {{ valcanoTitle }}
       <!-- <p class="ml-3" style="font-weight: 700;font-size: 18px;" >{{ valcanoTitle }}</p> -->
     </div>
     <div class="d-flex justify-space-between mt-1">
       <div class="ml-5" style="font-weight: 700;font-size: 14px;">
-        <p>Total point: {{ total_position_number }}</p>
-        <p style="color:#EF5350">UP point: {{ positive_position_number }}</p>
-        <p style="color:#1976D2">Down point: {{ negative_position_number }}</p>
+        <p>Total filtered miRNA: {{ total_position_number }}</p>
+        <p style="color:#EF5350">UP: {{ positive_position_number }}</p>
+        <p style="color:#1976D2">Down: {{ negative_position_number }}</p>
       </div>
       <div class="download_xlsx" @click="toogle_Plot_Screen = true">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
@@ -122,7 +122,7 @@
     margin:{
       t:30
     },
-    showlegend: false
+    showlegend: false,
   };
   // 
   const positiveLine = {
@@ -208,31 +208,30 @@
     for(let i = 0 ; log2.length> i ; i++){
       const floatNum = parseFloat(log2[i]);
       const selecte_miRNAs_Name_Index = selecte_miRNAs_Name.indexOf(RNA_ID[i]);
-      total_position_number.value ++;
       if( log2Upper <= floatNum &&  p_value[i] >= log_SelectStyleNum){
         if(selecte_miRNAs_Name_Index === -1){
           volcano_plot_plotlyjs_data.y.push(p_value[i]);
           volcano_plot_plotlyjs_data.x.push(log2[i]);
           volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
-          positive_position_number.value ++;
         }else{
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
           display_Text_volcano__plot_plotlyjs_data.marker.color.push('#EF5350');
         }
+        positive_position_number.value ++;
       }else if( log2Lower >= floatNum && p_value[i] >= log_SelectStyleNum ){
         if(selecte_miRNAs_Name_Index === -1){
           negative_volcano_plot_plotlyjs_data.y.push(p_value[i]);
           negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
           negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
-          negative_position_number.value ++;
         }else{
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
           display_Text_volcano__plot_plotlyjs_data.marker.color.push('#1976D2');
         }
+        negative_position_number.value ++;
       }
       else{
         if(selecte_miRNAs_Name_Index === -1){
@@ -246,6 +245,7 @@
           display_Text_volcano__plot_plotlyjs_data.marker.color.push('#B0BEC5');
         }
       }
+      total_position_number.value = positive_position_number.value + negative_position_number.value;
     };
     const maxValYaxis = Math.max(...p_value)* 1.1;
     const minValYaxis = Math.min(...p_value);
@@ -262,12 +262,12 @@
     layout.xaxis = {
       range: [ -ceil_max_Xaxis, ceil_max_Xaxis ],
       // title:'log2Ratio'
-      title:{text:`log<span style="font-size:12px;font-weight:700">2</span>Ratio`, font:{size:20, weight:'bold'}}
+      title:{text:`log<span style="font-size:12px;">2</span>Ratio`, font:{size:20,}}
     };
     layout.yaxis = {
       range:[ minValYaxis, maxValYaxis ],
       // title:'-log10 (P-value)'
-      title: { text:`log<span style="font-size:12px;font-weight:700">10</span>(P-value)`, font:{size:20, weight:'bold'}}
+      title: { text:`log<span style="font-size:12px;">10</span>(P-value)`, font:{size:20}}
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];

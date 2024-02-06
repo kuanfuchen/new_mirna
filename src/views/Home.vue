@@ -21,7 +21,7 @@
 /* eslint-disable */
 import { ref } from 'vue';
 const projectUsrInfo = ref({
-  'userInfoOrder': ['ProjectID', 'Date', 'Institute', 'Customer',/*'Tel',*/'Organism', 'Library Kit', 'Genome', 'miRNA DB'],
+  'userInfoOrder': ['Project ID', 'Date', 'Institute', 'Customer',/*'Tel',*/'Organism', 'Library Kit', 'Genome', 'miRNA DB'],
   'Organism':'xxx',
   'ProjectID':'0000001',
   'Institute':'xx大學',

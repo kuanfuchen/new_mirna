@@ -8,10 +8,12 @@
       <!-- <v-icon icon="md:event"></v-icon> -->
       <!-- <v-app-bar-nav-icon @click="toggleDrawer()"></v-app-bar-nav-icon> -->
     </template>
-    <v-app-bar-title>
-      <v-icon icon="fa:fas fa-dna" class="mx-2 rotateIcon">
+    <v-app-bar-title style="cursor: default;">
+      <!-- <router-link to="/" style="color: white;text-decoration: none;"> -->
+        <v-icon icon="fa:fas fa-dna" class="mx-2 rotateIcon">
       </v-icon>
       <span class="mr-3">CGMMRC</span><span>miRNA</span><span class="ml-3">report</span>
+      <!-- </router-link> -->
     </v-app-bar-title>
     <v-spacer></v-spacer>
     <!-- <v-btn icon><v-icon>mdi-wrench</v-icon></v-btn> -->

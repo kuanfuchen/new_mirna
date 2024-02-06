@@ -46,7 +46,10 @@
     // yaxis: { title: 'PCA2', },
     xaxis:{title:{ text:'PCA1',font:{size:16,weight:'bold'}}},
     yaxis:{title:{text:'PCA2', font:{size:16,weight:'bold'}}},
-    height:500
+    height:500,
+    margin:{
+      t:30
+    }
     // title: 'Quadrant Plot',
   };
   const plotConfig = {

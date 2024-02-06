@@ -13,7 +13,7 @@ const conditionSort = [];
 import { pre_alignment_qaqc, adaptor_trimming, base_trimming, post_alignment, microRNA_counts, CPM_Normalized_counts, CPM_PCA } from './getData';
 
 const handleQCReadAlignmentfolder = async() => {
-  const readAlignmentTitle = ['Raw reads', 'Adaptor Trimmed','Base Trimming', 'Alignment'];
+  const readAlignmentTitle = ['Raw reads', 'Adaptor trimmed','Base trimming', 'Alignment'];
   const handleFinish_pre_alignment_qaqc = handleSplitTxt(pre_alignment_qaqc);
   for(let i = 0 ; handleFinish_pre_alignment_qaqc.body.length > i ; i++){
     conditionSort.push({
@@ -55,8 +55,9 @@ const handle_post_alignment = (post_alignment) => {
         headers.push('%Unique');
         break;
       case "Total non-unique":
-        // headers.push('Total non-unique read');
-        headers.push('Total nonUnique read');
+        headers.push('Total non-unique read');
+        // headers.push('Total nonUnique read');
+
         break;
       case "Non-unique":
         headers.push('%Non-unique')

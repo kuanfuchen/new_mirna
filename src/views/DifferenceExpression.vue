@@ -41,7 +41,6 @@
                 <!-- log2FC Lower bound (-{{ log2V_model_val }}~0) / Upper bound (0~{{ log2V_model_val }}) -->
               </p>
             </v-sheet>
-            
           </v-col>
           <v-col cols="2">
             <!-- :label="`Number(-${log2V_model_val} ~ 0)`"  -->
@@ -79,9 +78,7 @@
               <!-- <v-card class="px-2 py-1"> -->
               <div class="d-flex align-self-center px-2 py-1">
                 <p class="text-h6 my-2 text-teal" style="font-weight: 700;">Difference Expression miRNA Table</p>
-                <div class="download_xlsx ml-auto " @click="exportFile">
-                  <v-icon icon="fa:fas fa-file-arrow-down" class="mr-5 text-teal mt-3" style="font-size: 24px;"></v-icon>
-                </div>
+                
               </div>
               <div class="d-flex justify-space-between">
                 <p class="mb-2" style="font-weight: 700;font-size: 18px;">
@@ -98,13 +95,19 @@
               <!-- </v-card> -->
             </div>
             <div class="mb-5">
-              <div class="mt-3 d-flex justify-end align-center">
-                  <h3>
-                    Download none filter raw table
-                  </h3>
-                  <v-btn class="text-none ml-3" color="grey-lighten-3" @click="toggleExportRawData"
-                  variant="flat">
-                  <v-icon icon="fa:fas fa-file-arrow-down" class=" text-teal mr-1" style="font-size: 24px;"></v-icon>
+              <div class="mt-3 d-flex align-center justify-end">
+                <h3>Downlaod filter miRNA table</h3>
+                <v-btn class="download_xlsx text-none ml-3" @click="exportFile(false)">
+                  <v-icon icon="fa:fas fa-file-arrow-down" class="text-teal " style="font-size: 24px;"></v-icon>
+                </v-btn>
+                
+              </div>
+              <div class="d-flex align-center justify-end mt-8">
+                <h3>
+                  Download <span class="text-light-blue">none filter</span> raw table
+                </h3>
+                <v-btn class="text-none ml-3"  @click="toggleExportRawData">
+                  <v-icon icon="fa:fas fa-file-arrow-down" class=" text-light-blue mr-1" style="font-size: 24px;"></v-icon>
                   <!-- None filter raw table -->
                 </v-btn>
               </div>
@@ -312,14 +315,15 @@
     let status_pvalue = p_value_number_val;
     let status_log2_LowerBound = log2_LowerBound.value;
     let status_log2_UpperBound = log2_UpperBound.value;
-    const status_range_log2FC_Lower_bound = `log2FC Lower bound (-${log2V_model_val.value} ~ 0)`;
-    const status_range__log2FC_Upper_bound = `log2FC Upper bound (0 ~ ${log2V_model_val.value})`;
+    const status_range_log2FC_Lower_bound = `log2Fold Change Lower bound`;
+    const status_range__log2FC_Upper_bound = `log2Fold Change Upper bound`;
     if(rawTableBoolean){
       status_log2_LowerBound = 0;
       status_log2_UpperBound = 0;
       status_pvalue = 1;
-      combinationTable_title.unshift('State');
     }
+    combinationTable_title.unshift('State');
+    console.log(rawTableBoolean, 'rawTableBoolean')
     excel_status.push(['P-value', status_pvalue], [status_range_log2FC_Lower_bound, status_log2_LowerBound ],[status_range__log2FC_Upper_bound, status_log2_UpperBound]);
     combinationTable.unshift(excel_status);
     dataService.exportXlsx(combinationTable, 'difference_expression', combinationTable_title);

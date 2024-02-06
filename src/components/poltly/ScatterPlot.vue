@@ -44,7 +44,8 @@
     xaxis: { range: [] },
     yaxis: { range: [] },
     height:500,
-    minallowed:0
+    minallowed:0,
+    title:`log<span style='font-size:12px'>10</span> (miRNA CPM)`,
   };
   // const image_config = {
   //   filename:'scatter_plot',

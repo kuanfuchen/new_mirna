@@ -38,7 +38,7 @@
       </v-list>
       <div class="footerAbout">
         <div class="d-flex justify-center mb-2" >
-          <img src="../assets/img/logo.png" style="width:10vw">
+          <img src="../assets/img/logo.png" style="width:200px">
         </div>
         <div class="d-flex justify-center">
           <div class="mb-5" style="text-align: center;">
@@ -74,7 +74,7 @@
 </style>
 <script setup>
   import { defineProps } from 'vue';
-  import { dataService } from '../service/data_service.js';
+  // import { dataService } from '../service/data_service.js';
   const definedProp = defineProps({
     'leftDrawer':{
       type:Boolean,
@@ -98,6 +98,4 @@
     title:'Difference Expression',
     to:'differenceExpression'
   }];
-  
-  
 </script>

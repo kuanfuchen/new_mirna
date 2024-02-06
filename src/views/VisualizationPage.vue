@@ -56,7 +56,7 @@
             <v-card class="px-3" width="100%">
               <template v-slot:title>
                 <span class="mr-3 font-weight-bold">PCA Plot</span>
-                <span class="mt-3 font-weight-bold text-primary" style="font-size: 14px;">( color by condition )</span>
+                <span class="mt-3 font-weight-bold " style="font-size: 14px;">( Color by condition )</span>
               </template>
               <PCA_plot :plot_size="plot_height"></PCA_plot>
             </v-card>
