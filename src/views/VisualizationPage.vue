@@ -8,7 +8,7 @@
           </v-tab>
         </v-tabs>
         <div class="d-flex justify-end mt-2" v-if="useStyleTab === 0">
-          <div class="toggle_cols" @click="changed_plot_size(6, 500)">
+          <div class="toggle_cols" @click="changed_plot_size(6, 550)">
             <v-icon icon="fa:fas fa-table-columns mr-5"></v-icon>
           </div>
           <div class="toggle_cols" @click="changed_plot_size(12, 700)" v-if="useStyleTab === 0">
@@ -19,24 +19,23 @@
     <v-card-text>
       <v-window v-model="useStyleTab">
         <v-window-item value="QC Graph">
-          <div>
-            <div class="d-flex justify-center">
-              <div class="text-h6 w-25">
-                <p class="text-center mb-2">Sample1</p>
-                <v-select v-model="sample1Item" @update:modelValue="changeSample1" density="compact"
-                :items="selctedSampleItem" variant="outlined"></v-select>
-              </div>
-              <div class="text-h6 mx-5">V.S</div>
-              <div class="text-h6 w-25">
-                <p class="text-center mb-2">Sample2</p>
-                <v-select v-model="sample2Item" @update:modelValue="changeSample2" density="compact"
-                  :items="selctedSampleItem" variant="outlined"></v-select>
-              </div>
-            </div>
-          </div>
           <v-row>
             <v-col :cols="plot_cols">
-              <v-card class="px-3" width="100%">
+              <v-card class="px-2" width="100%">
+                <div class="scatterPlotCompareStyle">
+                  <div class="compareStyle">
+                    <p class="text-center text-h6 mr-2">Sample1</p>
+                    <v-select v-model="sample1Item" @update:modelValue="changeSample1" density="compact"
+                    :items="selctedSampleItem" variant="outlined" class="compareSelect"></v-select>
+                  </div>
+                  <div class="text-h6 mx-5 gapTitle">V.S</div>
+                  <div class="compareStyle">
+                    <p class="text-center  text-h6 mr-2">Sample2</p>
+                    <v-select v-model="sample2Item" @update:modelValue="changeSample2" density="compact"
+                      :items="selctedSampleItem" variant="outlined" class="compareSelect"></v-select>
+                  </div>
+                </div>
+                <!--  -->
                 <template v-slot:title>
                   <span class="font-weight-bold">Scatter Plot</span>
                 </template>
@@ -55,8 +54,8 @@
           <v-col :cols="plot_cols">
             <v-card class="px-3" width="100%">
               <template v-slot:title>
-                <span class="mr-3 font-weight-bold">PCA Plot</span>
-                <span class="mt-3 font-weight-bold " style="font-size: 14px;">( Color by condition )</span>
+                <span class="pr-3 font-weight-bold">PCA Plot</span>
+                <span class="pt-3 font-weight-bold " style="font-size: 14px;">( Color by condition )</span>
               </template>
               <PCA_plot :plot_size="plot_height"></PCA_plot>
             </v-card>
@@ -79,17 +78,17 @@
               </v-tab>
             </v-tabs>
             <div class="d-flex justify-end mt-1">
-              <div class="d-flex align-center" >
+              <div class="d-flex align-center mb-1 mr-3" >
                 <div class="download_xlsx" @click="exportXlsxFile">
                   <!-- <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon> -->
                   <v-icon icon="fa:fas fa-file-arrow-down" class="text-teal mr-3" style="font-size: 24px;"></v-icon>
                 </div>
                 <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
                 <v-text-field
-                  v-model="search_RNAname" label=""
-                  prepend-inner-icon="mdi-magnify" single-line
-                  variant="outlined" hide-details
-                  density="compact" style="width:300px">
+                  v-model="search_RNAname" label="Search"
+                  single-line
+                  variant="solo-filled" hide-details
+                  density="compact" style="width:250px">
                 </v-text-field>
               </div>
             </div>
@@ -107,11 +106,6 @@
                 </div>
               </template>
             </v-data-table>
-            <!-- <v-windows v-model="condition_header"> -->
-              <!-- <v-window-item v-for="( header, index ) in conditionHeaders" :key="index" :value="header"> -->
-              <!-- <DisplayTable :table="tableComponentInfo"></DisplayTable> -->
-              <!-- </v-window-item> -->
-            <!-- </v-windows> -->
           </v-card>
         </v-window-item>
       </v-window>
@@ -124,16 +118,12 @@
   import { ref, reactive } from 'vue';
   import { dataService } from '../service/data_service.js';
   import { Subject, takeUntil, debounceTime } from 'rxjs';
-  // import { VDataTable } from "vuetify/labs/VDataTable";
-  // import DisplayTable from '../components/DisplayTable.vue';
   import BoxPlot from '../components/poltly/BoxPlot.vue';
   import ScatterPlot from '../components/poltly/ScatterPlot.vue';
   import PCA_plot from '../components/poltly/PCAPlot.vue';
   import Dendrograms from '../components/poltly/Dendrogram.vue';
-  // import MiRNATabs from '../components/MiRNATabs.vue';
   const comSubject$ = new Subject();
   const tableComponentInfo = ref({});
-  // const miRNATab = ref(0);
   const miRNATabs = ref([]);
   const itemsPerPage = ref(25)
   let miRNATables = {};
@@ -149,7 +139,7 @@
   const dataTable_height = ref('');
   const search_RNAname = ref('');
   const plot_height = reactive({
-    height:500
+    height:550
   })
   const plot_cols = ref(6);
   const tableHeader = [
@@ -161,7 +151,9 @@
 
   // 
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(100)).subscribe(async(visualization_info)=>{
-    selctedSampleItem.value = await visualization_info.headers;
+    const sortVisualization_info_headers = await visualization_info.headers.sort();
+    selctedSampleItem.value = sortVisualization_info_headers
+    // selctedSampleItem.value = await visualization_info.headers;
     if(visualization_info.headers.length > 1){
       sample1Item.value = visualization_info.headers[0];
       sample2Item.value = visualization_info.headers[1];
@@ -302,5 +294,33 @@
   }
   .download_xlsx, .toggle_cols{
     cursor: pointer;
+  }
+  .scatterPlotCompareStyle{
+    height:100px;
+    display: flex;
+    justify-content: center;
+    .gapTitle{
+      display:block
+    }
+    .compareStyle{
+      display: block;
+    }
+  }
+  @media(max-width: 1200px){
+    .scatterPlotCompareStyle{
+      display: block;
+      height:100px;
+      .compareSelect{
+        width:100%;
+        margin-right: 50px;
+      }
+      .gapTitle{
+        display:none
+      }
+      .compareStyle{
+        display: flex;
+        
+      }
+    }
   }
 </style>

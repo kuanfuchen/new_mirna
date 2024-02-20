@@ -85,8 +85,6 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
   const normalized_Info = [];
   const normalized_RNA_title = [];
   // const test_info = [];
-  
-  console.log(normalized_count, 'normalized_count')
   for( let i = 0 ; normalized_count.body.length > i ; i++ ){
     normalized_Info[i] = [];
     const miRNA_display_normal_count = {};
@@ -107,10 +105,7 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
         // const log10Body = Math.log10(numberBody);
         // normalized_Info[i].push(log10Body);
     }});
-    // test_info[i].push(miRNA_display_normal_count)
   }
-  // console.log(test_info, 'test_info')
-  // console.log(test_info)
   const microRNA_Info = {
     tabs: microRNA_countTab.tabs,
     tabsTable: microRNA_countTab.tabsTable,

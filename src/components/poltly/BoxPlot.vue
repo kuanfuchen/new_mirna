@@ -5,7 +5,7 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div id="Boxplot_visualization" :style="{'height':definedProps.plot_size.height}"></div>
+    <div id="Boxplot_visualization"></div>
     <!--  -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
@@ -43,10 +43,11 @@
     y1[i] = Math.random() + 1;
   }
   const layout = {
-    height:500,
+    height:definedProps.plot_size.height,
     xaxis: { title: {text:'Sample', font:{ size:16, weight:'bold' }}, automargin:'height' },
     yaxis:{title:{ text:`log<span style="font-size:12px">10</span>(miRNA CPM)`, font:{ size:16, weight:'bold' }} },
-    font:{ size:12}, margin:{ t:30,},
+    font:{ size:12}, 
+    margin:{ t:70,},
     title:'miRNA CPM distribution of sample'
   };
   const plotConfig = {
@@ -93,7 +94,7 @@
       layout:{
         xaxis: { title: {text:'Sample', font:{ size:20, weight:'bold' }}, automargin:'height' },
         yaxis:{title:{ text:'miRNA CPM(log<span style="font-size:12px;font-weight:700">10</span>)', font:{ size:20, weight:'bold' }} },
-        font:{ size:12}, margin:{ t:30,}
+        font:{ size:12}, margin:{ t:50,}
       },
       plotConfig
     }
@@ -101,7 +102,6 @@
       Plotly.newPlot(Boxplot_visualization, dataOrder, layout, plotConfig);
     })
   };
-
   dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe(async(visualization_info)=>{
     if(visualization_info.info.length === 0) return;
     boxPlot_Info = visualization_info;

@@ -20,10 +20,6 @@
       </v-card>
     </v-dialog>
   </div>
-  <!--  -->
-  <!-- <div>
-    <div id="PCA_plot"></div>
-  </div> -->
 </template>
 <script setup>
   import Plotly from 'plotly.js-dist-min';
@@ -42,15 +38,10 @@
     sortOrder:[]
   };
   const layout = {
-    // xaxis: { title: 'PCA1', },
-    // yaxis: { title: 'PCA2', },
     xaxis:{title:{ text:'PCA1',font:{size:16,weight:'bold'}}},
     yaxis:{title:{text:'PCA2', font:{size:16,weight:'bold'}}},
-    margin:{
-      t:30
-    },
-    height:500
-    // title: 'Quadrant Plot',
+    margin:{ t:30 },
+    height:550
   };
   const plotConfig = {
     responsive:true, 

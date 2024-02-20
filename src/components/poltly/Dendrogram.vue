@@ -5,7 +5,7 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div id="myDiv" style="height:500px"></div>
+    <div id="myDiv" ></div>
   </div>
 </template>
 <script setup>
@@ -19,13 +19,13 @@
         [7, 8, 9]
       ],
       type: 'heatmap',
-      dendrogram: {
-        side: 'bottom', // 设置 dendrogram 的位置，可以是 'top' 或 'bottom'
-        width: 300,    // 设置 dendrogram 的宽度
-      }
+      // dendrogram: {
+      //   side: 'bottom', // 设置 dendrogram 的位置，可以是 'top' 或 'bottom'
+      //   width: 300,    // 设置 dendrogram 的宽度
+      // }
     }];
 
-    Plotly.newPlot('myDiv', data);
+    Plotly.newPlot('myDiv', data, {height:550});
     // const dendrogramData = {
     //   // type: 'dendrogram',
     //   type:'heatmap',

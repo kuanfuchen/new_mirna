@@ -91,19 +91,19 @@
                     </v-text-field>
                   </div> -->
               </div>
-              <DisplayTable :table="tableComponentInfo" :expresstablestyle="deTableSize" @select_miRNA_name="tableSelected_miRNA_name"></DisplayTable>
+              <DisplayTable :table="tableComponentInfo" :useSearch="true" :expresstablestyle="deTableSize" @select_miRNA_name="tableSelected_miRNA_name"></DisplayTable>
               <!-- </v-card> -->
             </div>
             <div class="mb-5">
-              <div class="mt-3 d-flex align-center justify-end">
-                <h3>Downlaod filter miRNA table</h3>
+              <div class="mt-3 d-flex align-center ">
+                <h3 style="width:250px">Downlaod filter miRNA table</h3>
                 <v-btn class="download_xlsx text-none ml-3" @click="exportFile(false)">
                   <v-icon icon="fa:fas fa-file-arrow-down" class="text-teal " style="font-size: 24px;"></v-icon>
                 </v-btn>
                 
               </div>
-              <div class="d-flex align-center justify-end mt-8">
-                <h3>
+              <div class="d-flex align-center mt-8">
+                <h3 style="width:250px">
                   Download <span class="text-light-blue">none filter</span> raw table
                 </h3>
                 <v-btn class="text-none ml-3"  @click="toggleExportRawData">
@@ -265,6 +265,7 @@
     if(log2_UpperBound.value === '' || log2_LowerBound.value === '') return;
     for(let i = 0 ; compare_de_tables_info.length > i ; i++){
       if( compare_de_title.value === compare_de_tables_info[i].title ){
+        display_plotText.length = 0;
         handle_table_Info();
         changed_compare_de_Obj(compare_de_tables_info[i].title);
       }
@@ -323,7 +324,6 @@
       status_pvalue = 1;
     }
     combinationTable_title.unshift('State');
-    console.log(rawTableBoolean, 'rawTableBoolean')
     excel_status.push(['P-value', status_pvalue], [status_range_log2FC_Lower_bound, status_log2_LowerBound ],[status_range__log2FC_Upper_bound, status_log2_UpperBound]);
     combinationTable.unshift(excel_status);
     dataService.exportXlsx(combinationTable, 'difference_expression', combinationTable_title);

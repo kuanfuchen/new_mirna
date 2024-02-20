@@ -7,8 +7,8 @@
     <div class="d-flex justify-space-between mt-1">
       <div class="ml-5" style="font-weight: 700;font-size: 14px;">
         <p>Total filtered miRNA: {{ total_position_number }}</p>
-        <p style="color:#EF5350">UP: {{ positive_position_number }}</p>
-        <p style="color:#1976D2">Down: {{ negative_position_number }}</p>
+        <p style="color:#EF5350;margin-left:90px">UP: {{ positive_position_number }}</p>
+        <p style="color:#1976D2;margin-left:90px">Down: {{ negative_position_number }}</p>
       </div>
       <div class="download_xlsx" @click="toogle_Plot_Screen = true">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
@@ -16,7 +16,6 @@
     </div>
     
     <div class="mt-3" :style="{'height':plot_height + 'vh'}" id="displatVolcanoPlot"></div>
-    <!-- style="height:550px" -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
         <v-card-text >
@@ -214,6 +213,7 @@
           volcano_plot_plotlyjs_data.x.push(log2[i]);
           volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
         }else{
+          console.log(p_value[i],'p_value')
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
@@ -226,6 +226,7 @@
           negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
           negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
         }else{
+          console.log(p_value[i],'p_value')
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
@@ -234,11 +235,13 @@
         negative_position_number.value ++;
       }
       else{
+        
         if(selecte_miRNAs_Name_Index === -1){
           selected_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           selected_volcano__plot_plotlyjs_data.x.push(log2[i]);
           selected_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
         }else{
+          console.log(p_value[i],'p_value')
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);

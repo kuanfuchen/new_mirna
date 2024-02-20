@@ -14,83 +14,83 @@
           </v-btn>
         </div>
       </div>
-      <div class="d-flex align-center">
+      <div class="d-flex align-center" v-if="definedprops.useSearch">
         <!-- <div class="download_xlsx" @click="exportFile">
           <v-icon icon="fa:fas fa-file-excel mr-5"></v-icon>
         </div> -->
         <v-icon icon="fa:fas fa-magnifying-glass mr-3"></v-icon>
-        <v-text-field
-          v-model="search_RNAname" variant="outlined"
-          label="" hide-details style="width:300px"
-          prepend-inner-icon="mdi-magnify"
+        <v-text-field v-if="definedprops.closeSearch !==true"
+          v-model="search_RNAname" variant="solo-filled"
+          label="MicroRNA ID search" hide-details style="width:300px"
           single-line density="compact">
         </v-text-field>
       </div>
     </div>
-    
-      <v-data-table
+    <v-data-table
       v-model:items-per-page="itemsPerPage" fixed-header :items="tableBody"
-      :headers="headers" :search="search_RNAname" item-value="Sample name"
+      :headers="headers" v-model:search="search_RNAname" item-value="Sample name"
       :height="dataTable_height" :show-select="toggleShowSelect"
-      v-model="selectedShow_miRNA" return-object class="elevation-1">
-        <template v-slot:item.Ratio="{item}">
-          <div>
-            <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio.toLocaleString('en-US') }}</p>
-          </div>
-        </template>
-        <template v-slot:item.Log2Ratio="{item}">
-          <div>
-            <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Log2Ratio }}</p>
-          </div>
-        </template>
-        <template v-slot:item.Totalreads="{item}">
-          <div>
-            {{ item.Totalreads.toLocaleString('en-US') }}
-          </div>
-        </template>
-        <template v-slot:item.Totalalignmentsreads="{item}">
-          <div>
-            {{ item.Totalalignmentsreads.toLocaleString('en-US') }}
-          </div>
-        </template>
-        <template v-slot:item.Totalunalignedreads="{item}">
-          <div>
-            {{ item.Totalunalignedreads.toLocaleString('en-US') }}
-          </div>
-        </template>
-        <template v-slot:item.Totalunique="{ item }">
-          <div>
-            {{  item.Totalunique.toLocaleString('en-US')  }}
-          </div>
-        </template>
-        <template v-slot:item.Foldchange="{ item }">
-          <div>
-            {{  item.Foldchange.toLocaleString('en-US')  }}
-          </div>
-        </template>
-        <template v-slot:item.lsmean0="{ item }">
-          <div>
-            {{  item.lsmean0.toLocaleString('en-US')  }}
-          </div>
-        </template>
-        <template v-slot:item.lsmean1="{ item }">
-          <div>
-            {{  item.lsmean1.toLocaleString('en-US')  }}
-          </div>
-        </template>
+      return-object class="elevation-1"
+      :custom-filter="filterMiRNA"
+      v-model="selectedShow_miRNA">
+      <template v-slot:item.Ratio="{item}">
+        <div>
+          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio.toLocaleString('en-US') }}</p>
+        </div>
+      </template>
+      <template v-slot:item.Log2Ratio="{item}">
+        <div>
+          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Log2Ratio }}</p>
+        </div>
+      </template>
+      <template v-slot:item.Totalreads="{item}">
+        <div>
+          {{ item.Totalreads.toLocaleString('en-US') }}
+      </div>
+      </template>
+      <template v-slot:item.Totalalignmentsreads="{item}">
+        <div>
+          {{ item.Totalalignmentsreads.toLocaleString('en-US') }}
+        </div>
+      </template>
+      <template v-slot:item.Totalunalignedreads="{item}">
+        <div>
+          {{ item.Totalunalignedreads.toLocaleString('en-US') }}
+        </div>
+      </template>
+      <template v-slot:item.Totalunique="{ item }">
+        <div>
+          {{  item.Totalunique.toLocaleString('en-US')  }}
+        </div>
+      </template>
+      <template v-slot:item.Foldchange="{ item }">
+        <div>
+          {{  item.Foldchange.toLocaleString('en-US')  }}
+        </div>
+      </template>
+      <template v-slot:item.lsmean0="{ item }">
+        <div>
+          {{  item.lsmean0.toLocaleString('en-US')  }}
+        </div>
+      </template>
+      <template v-slot:item.lsmean1="{ item }">
+        <div>
+          {{  item.lsmean1.toLocaleString('en-US')  }}
+        </div>
+      </template>
         <!-- <template v-slot:item.Up_Down = "{item}">
           <div>
             <p :style="{ 'color':item.Up_Down === 'UP'? '#2962FF':'#D32F2F' }">{{ item.Up_Down }}</p>
           </div>
         </template> -->
-      </v-data-table>
-   
+    </v-data-table>
   </div>
 </template>
 <script setup>
   import { ref, onMounted, watch, defineEmits } from 'vue';
   const itemsPerPage = ref(25);
-  const definedprops = defineProps (['table', 'exportName','expresstablestyle']);
+  const definedprops = defineProps (['table','useSearch', 'expresstablestyle']);
+  // 'exportName',
   const emits = defineEmits(['select_miRNA_name']);
   // import { dataService } from '../service/data_service.js'; 
   const toggleShowSelect = ref(false);
@@ -102,9 +102,9 @@
   const listenTable = async() => {
     const tableInfo = definedprops.table;
     if(tableInfo.headers.length === 0) return;
+    selectedShow_miRNA.value.length = 0;
     let bodyInfo = [];
     if(tableInfo.showCheckBox) toggleShowSelect.value = true;
-    
     for(let j = 0 ; tableInfo.body.length > j ; j++){
       let setLSMeanKeyNumber = -1;
       bodyInfo[j] = [];
@@ -144,9 +144,6 @@
       if(!bodyInfo[j][headerSplitWord]){
         bodyInfo[j][headerSplitWord] = tableInfo.body[j][k];
       }
-        // if(!bodyInfo[j][tableInfo.headers[k]]){
-        //   bodyInfo[j][tableInfo.headers[k]] = tableInfo.body[j][k];
-        // }
       }
     }
     for(let i = 0; headers.value.length > i ; i++){
@@ -184,7 +181,6 @@
         }
       }
     }
-
     if(bodyInfo.length >= 20){
       const windowInnerheight = window.innerHeight;
       const redundant_remove_table_height = typeof definedprops.expresstablestyle === 'number' ? definedprops.expresstablestyle : 0;
@@ -203,6 +199,9 @@
   const reseted_display_plot_text = ()=>{
     selectedShow_miRNA.value.length = 0;
     emits('select_miRNA_name', []);;
+  }
+  const filterMiRNA = (val, query, item)=>{
+    return val != null && query != null && typeof val === 'string'&& item.columns.microRNAID.indexOf(query) !==-1&& val.toString().toLocaleUpperCase().indexOf(query) !== -1
   }
   watch(definedprops.table,(/*newTble*/)=>{
     headers.value.length = 0;

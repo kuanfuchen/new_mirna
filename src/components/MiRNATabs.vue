@@ -11,7 +11,8 @@
     <v-card-text>
       <v-window v-model="miRNATab">
         <v-window-item v-for="(tab, index) in miRNATabs" :key="index" :value="tab">
-          <DisplayTable :table="tableComponentInfo" :exportName="props.export_miRNA_Name"></DisplayTable>
+          <DisplayTable :table="tableComponentInfo" :useSearch="false"></DisplayTable>
+          <!-- :exportName="props.export_miRNA_Name" -->
         </v-window-item>
       </v-window>
     </v-card-text>

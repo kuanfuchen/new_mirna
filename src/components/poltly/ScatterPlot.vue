@@ -6,7 +6,6 @@
       </div>
     </div>
     <div id="scatterplot_visualization"></div>
-    <!--  -->
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
         <v-card-text >
@@ -43,27 +42,10 @@
   const layout = {
     xaxis: { range: [] },
     yaxis: { range: [] },
-    height:500,
+    height:() => definedProps.plot_size.height - 100,
     minallowed:0,
     title:`log<span style='font-size:12px'>10</span> (miRNA CPM)`,
   };
-  // const image_config = {
-  //   filename:'scatter_plot',
-  //   format:'png'
-  // }
-  // const imageCapture = {
-  //   name:'Download Image',
-  //   icon:Plotly.Icons.camera,
-  //   direction:'up',
-  //   click: async(gd )=>{
-  //     await Plotly.toImage(gd).then((url)=>{
-  //       const aElement = document.createElement('a');
-  //       aElement.href = url;
-  //       aElement.download= image_config.filename;
-  //       aElement.click()
-  //     })
-  //   }
-  // };
   const plotConfig = {
     responsive:true, 
     displaylogo: false,
@@ -133,8 +115,6 @@
       layout:fullScreen_layout,
       plotConfig
     };
-    console.log(layout, 'layout')
-    // image_config.filename = `${infoTitle[0]}_vs_${infoTitle[1]}_scatter_plot`;
     image_config.filename = `${infoTitle[0]}_vs_${infoTitle[1]}_scatter_plot`;
     drawGraphScatterPlot_visualization(scatterplot_visualizationDiv);
   };
@@ -152,7 +132,8 @@
   });
   watch(defineScatterGraphInfo.scatterGraphInfo,() => { handleScatterPlotInfo() });
   watch(defineScatterGraphInfo.plot_size, (newVal)=>{
-    layout.height = newVal.height;
+    // layout.height = newVal.height;
+    layout.height = newVal.height - 100;
     handleScatterPlotInfo();
   })
   const close_dialog = (val) => toogle_Plot_Screen.value = val;
