@@ -93,7 +93,7 @@
       data:dataOrder,
       layout:{
         xaxis: { title: {text:'Sample', font:{ size:20, weight:'bold' }}, automargin:'height' },
-        yaxis:{title:{ text:'miRNA CPM(log<span style="font-size:12px;font-weight:700">10</span>)', font:{ size:20, weight:'bold' }} },
+        yaxis:{title:{ text:'miRNA CPM(log<span style="font-size:12px;">10</span>)', font:{ size:20, weight:'bold' }} },
         font:{ size:12}, margin:{ t:50,}
       },
       plotConfig

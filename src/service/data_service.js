@@ -81,6 +81,7 @@ const handleRawReadsFolder = () => {
 }
 const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
   if(!normalized_count.headers || !normalized_count.body) return;
+  // const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
   const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
   const normalized_Info = [];
   const normalized_RNA_title = [];
@@ -142,12 +143,14 @@ const handleDE_Folder = async () => {
   // const de_folder_name = '../assets/miRNA-seq/Bowtie2/03. DE miRNAs/';
   const assetContext = require.context( '../assets/miRNA-seq/Bowtie2/03. DE miRNAs/', true, /\.txt$/)
   assetContext.keys().forEach((key) => {
-  // const key_index = key.indexOf(/\gene_list.txt/);
-    const keySplit = key.split(/\//);
-    const keySplitIndex = keySplit.indexOf('gene_list.txt');
-    if( keySplitIndex > -1 ){
-      const folderNameIndex = keySplit.length - 2;
-      DE_folder_compare_name.push(keySplit[folderNameIndex]);
+    const removeFilterFile = key.indexOf('filtered/');
+    if(removeFilterFile < 0){
+      const keySplit = key.split(/\//);
+      const keySplitIndex = keySplit.indexOf('gene_list.txt');
+      if( keySplitIndex > -1 ){
+        const folderNameIndex = keySplit.length - 2;
+        DE_folder_compare_name.push(keySplit[folderNameIndex]);
+      }
     }
   });
   const DE_txtGroup = [];
@@ -156,6 +159,7 @@ const handleDE_Folder = async () => {
     const readTxt = require(`../assets/miRNA-seq/Bowtie2/03. DE miRNAs/${DE_folder_compare_name[i]}/gene_list.txt`)
     DE_txtGroup.push(readTxt.default);
   }
+
   for(let i = 0 ; DE_txtGroup.length > i ; i++){
     const de_txtTableInfo = handleSplitTxt(DE_txtGroup[i]);
     de_txtTableInfo.title = DE_folder_compare_name[i];

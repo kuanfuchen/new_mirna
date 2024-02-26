@@ -19,7 +19,7 @@
     <v-card-text>
       <v-window v-model="useStyleTab">
         <v-window-item value="QC Graph">
-          <v-row>
+          <v-row class="pb-1">
             <v-col :cols="plot_cols">
               <v-card class="px-2" width="100%">
                 <div class="scatterPlotCompareStyle">
@@ -54,8 +54,7 @@
           <v-col :cols="plot_cols">
             <v-card class="px-3" width="100%">
               <template v-slot:title>
-                <span class="pr-3 font-weight-bold">PCA Plot</span>
-                <span class="pt-3 font-weight-bold " style="font-size: 14px;">( Color by condition )</span>
+                <p class="pr-3 font-weight-bold d-flex">PCA Plot<span style="font-size: 14px;">( Color by condition )</span></p>
               </template>
               <PCA_plot :plot_size="plot_height"></PCA_plot>
             </v-card>
@@ -63,9 +62,9 @@
           <v-col :cols="plot_cols">
             <v-card class="px-3" width="100%">
               <template v-slot:title>
-                <span class="font-weight-bold mr-3">Heatmap Plot</span>
+                <span class="font-weight-bold pr-3">Heatmap Plot</span>
               </template>
-              <Dendrograms></Dendrograms>
+              <Dendrograms :heatmapHeight="plot_height"></Dendrograms>
             </v-card>
           </v-col>
         </v-row>
@@ -150,10 +149,14 @@
   // 
 
   // 
-  dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(100)).subscribe(async(visualization_info)=>{
-    const sortVisualization_info_headers = await visualization_info.headers.sort();
-    selctedSampleItem.value = sortVisualization_info_headers
-    // selctedSampleItem.value = await visualization_info.headers;
+  dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(100)).subscribe((visualization_info)=>{
+    const tempSampleList = [];
+    for(let i = 0 ; visualization_info.headers.length > i ; i++){
+      tempSampleList.push(visualization_info.headers[i])
+    };
+    selctedSampleItem.value = tempSampleList.sort();
+    // selctedSampleItem.value =  visualization_info.headers;
+
     if(visualization_info.headers.length > 1){
       sample1Item.value = visualization_info.headers[0];
       sample2Item.value = visualization_info.headers[1];

@@ -132,9 +132,12 @@
   const log2_LowerBound = ref(-1);
   const log2_UpperBound = ref(1);
   const handleDataIF = ref(false);
-  const contentCols = ref(6);
-  const deTableSize= ref(230);
-  const plot_height = ref(450);
+  // const contentCols = ref(6);
+  // const deTableSize= ref(230);
+  // const plot_height = ref(450);
+  const contentCols = ref(12);
+  const deTableSize= ref(0);
+  const plot_height = ref(350);
   const tableComponentInfo = ref({
     headers:[],
     body:[],

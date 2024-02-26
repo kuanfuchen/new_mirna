@@ -30,6 +30,10 @@ const routes = [
         path:'workflowInfo',
         name:'workflowInfo',
         component: () => import('@/views/WorkflowInfo.vue')
+      },{
+        path:'/:catchAll(.*)',
+        name:'notfound',
+        component:()=>import('@/views/Notfound.vue')
       }
 
     ],

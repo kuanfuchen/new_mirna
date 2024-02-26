@@ -213,7 +213,6 @@
           volcano_plot_plotlyjs_data.x.push(log2[i]);
           volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
         }else{
-          console.log(p_value[i],'p_value')
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
@@ -226,7 +225,6 @@
           negative_volcano_plot_plotlyjs_data.x.push(log2[i]);
           negative_volcano_plot_plotlyjs_data.text.push(RNA_ID[i]);
         }else{
-          console.log(p_value[i],'p_value')
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
@@ -241,7 +239,6 @@
           selected_volcano__plot_plotlyjs_data.x.push(log2[i]);
           selected_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
         }else{
-          console.log(p_value[i],'p_value')
           display_Text_volcano__plot_plotlyjs_data.x.push(log2[i]);
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);

@@ -1,75 +1,93 @@
 <template>
   <div>
     <div class="d-flex justify-end">
-      <div class="download_xlsx">
+      <div class="download_xlsx" @click="showHeatmap()">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div id="myDiv" ></div>
+    <div>
+      <img :src="getHeatmapImg()" :style="{ height:heatmapHight }" class="heatmapStyle">
+    </div>
   </div>
+  <v-dialog v-model="toggle_Heatmap"  width="90vw" >
+      <v-card class="bg-white" style="overflow: auto;">
+        <v-card-text>
+          <h5 class="text-h5" style="font-weight: 700;">
+            Heatmap Plot
+          </h5>  
+          <div class="d-flex justify-end mb-3">
+            <v-btn density="comfortable" rounded="lg" color="red-darken-1" variant="outlined" @click="toggle_Heatmap = false"
+            icon="$close">
+            </v-btn>
+          </div>
+          <div class="heatmapBackground" >
+            <!-- <img :src="getHeatmapImg()" class="heatmapDialogStyle"> -->
+            <!-- <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot> -->
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 </template>
+<style scope>
+  .heatmapStyle{
+    width:100%;
+    /* height: 544.5px; */
+    /* height:100%; */
+  }
+  /* .heatmapDialogStyle{
+    width: 100%;
+    height: 80vh;
+  } */
+  .heatmapBackground{
+    /* width:100%; */
+    height: 80vh;
+    background: url('../../assets/miRNA-seq/Bowtie2/heatmap.png');
+    background-size:cover;
+    background-repeat: no-repeat;
+  }
+</style>
 <script setup>
-  import { onMounted } from 'vue';
-  import Plotly from 'plotly.js-dist-min';
-  onMounted(() => {
-    const data = [{
-      z: [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9]
-      ],
-      type: 'heatmap',
-      // dendrogram: {
-      //   side: 'bottom', // 设置 dendrogram 的位置，可以是 'top' 或 'bottom'
-      //   width: 300,    // 设置 dendrogram 的宽度
-      // }
-    }];
-
-    Plotly.newPlot('myDiv', data, {height:550});
-    // const dendrogramData = {
-    //   // type: 'dendrogram',
-    //   type:'heatmap',
-    //   orientation: 'bottom',
-    //   ids: ['root', 'A', 'B', 'C', 'D', 'E'],
-    //   labels: ['Root', 'A', 'B', 'C', 'D', 'E'],
-    //   parentIds: ['', 'root', 'root', 'root', 'A', 'A'],
-    //   marker: {
-    //     color: ['rgba(0, 0, 0, 0)', 'rgba(255, 0, 0, 1)', 'rgba(0, 255, 0, 1)', 'rgba(0, 0, 255, 1)', 'rgba(255, 0, 0, 1)', 'rgba(0, 255, 0, 1)'],
-    //   },
-    // };
-
-    // // 設定 Scatter Plot 的屬性
-    // const trace = {
-    //   type: 'scatter',
-    //   x: [1, 2, 3, 4, 5],
-    //   y: [10, 15, 13, 17, 10],
-    //   mode: 'markers',
-    // };
-
-    // // 創建佈局
-    // const layout = {
-    //   title: 'Dendrogram with Scatter Plot',
-    //   xaxis: {
-    //     title: 'X-axis',
-    //   },
-    //   yaxis: {
-    //     title: 'Y-axis',
-    //   },
-    //   showlegend: false, // 隱藏圖例
-    //   width: 800,        // 圖表寬度
-    //   height: 500,       // 圖表高度
-    //   margin: { t: 0 },  // 設置頂部邊緣為 0，以容納樹狀圖
-    //   annotations: [
-    //     {
-    //       x: 0.5,
-    //       y: -0.15,
-    //       xref: 'paper',
-    //       yref: 'paper',
-    //       showarrow: false,
-    //       text: 'Dendrogram',
-    //     },
-    //   ],
-    // };
-    // Plotly.newPlot('myDiv', [dendrogramData,/* trace */], layout);
+  import { ref, watch /*onMounted*/ } from 'vue';
+  let heatmapBackground = null;
+  let zoomArea = null
+  let showZoomArea = false;
+  const toggle_Heatmap = ref(false);
+  const definedProps = defineProps(['heatmapHeight']);
+  const heatmapHight = ref('544.5px')
+  const getHeatmapImg = ()=>{
+    return new URL('../../assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
+  }
+  const zoomImgMouseMove = (e)=>{
+    return { offsetX:e.offsetX, offsetY:e.offsetY }
+  }
+  const zoomImgMouseEnter = () => showZoomArea = true;
+  const zoomImgMouseLeave = () => showZoomArea = false;
+  const showHeatmap = ()=>{
+    toggle_Heatmap.value = true;
+    heatmapBackground = document.querySelector('.heatmapBackground');
+    zoomArea = document.querySelector('.zoomArea');
+    heatmapBackground.addEventListener('mousemove', zoomImgMouseMove, false);
+    heatmapBackground.addEventListener('mouseenter', zoomImgMouseEnter, false);
+    heatmapBackground.addEventListener('mouseleave', zoomImgMouseLeave, false);
+  }
+  watch(definedProps.heatmapHeight, (newVal)=>{
+    if(newVal.height === 550){
+      heatmapHight.value = '544.5px';
+    }else{
+      heatmapHight.value = '100%'
+    }
   })
+  // import Plotly from 'plotly.js-dist-min';
+  // onMounted(() => {
+  //   const data = [{
+  //     z: [
+  //       [1, 2, 3],
+  //       [4, 5, 6],
+  //       [7, 8, 9]
+  //     ],
+  //     type: 'heatmap',
+    
+  //   }];
+  //   Plotly.newPlot('myDiv', data, {height:550});
+  // })
 </script>
