@@ -9,21 +9,32 @@
       <img :src="getHeatmapImg()" :style="{ height:heatmapHight }" class="heatmapStyle">
     </div>
   </div>
-  <v-dialog v-model="toggle_Heatmap"  width="90vw" >
-      <v-card class="bg-white" style="overflow: auto;">
+  <v-dialog v-model="toggle_Heatmap"  width="100vw" >
+      <v-card class="bg-white" style="height: 92vh;overflow: auto;">
         <v-card-text>
           <h5 class="text-h5" style="font-weight: 700;">
             Heatmap Plot
           </h5>  
           <div class="d-flex justify-end mb-3">
+            <div class="d-flex">
+              <!-- <v-icon icon="fa:fas fa-magnifying-glass-minus"></v-icon> -->
+              <v-slider v-model="toggleZoom" style="width:200px"
+              append-icon="fa:fas fa-magnifying-glass-plus"
+              prepend-icon="fa:fas fa-magnifying-glass-minus"></v-slider>
+              <!-- <v-icon icon="fa:fas fa-magnifying-glass-plus"></v-icon> -->
+            </div>
             <v-btn density="comfortable" rounded="lg" color="red-darken-1" variant="outlined" @click="toggle_Heatmap = false"
             icon="$close">
             </v-btn>
           </div>
-          <div class="heatmapBackground" >
-            <!-- <img :src="getHeatmapImg()" class="heatmapDialogStyle"> -->
+          <!-- <div class="heatmapBackground"> -->
+            <!-- class="heatmapDialogStyle" -->
+            <div :style="{width:`${dialogHeatmapWidth}%`,height:`${dialogHeatmapHight}vh`}">
+              <img :src="getHeatmapImg()" style="width:100%;height: 100%;" >
+            </div>
+              
             <!-- <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot> -->
-          </div>
+          <!-- </div> -->
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -34,41 +45,30 @@
     /* height: 544.5px; */
     /* height:100%; */
   }
-  /* .heatmapDialogStyle{
+  .heatmapDialogStyle{
     width: 100%;
     height: 80vh;
-  } */
-  .heatmapBackground{
-    /* width:100%; */
+  }
+  /* .heatmapBackground{
     height: 80vh;
     background: url('../../assets/miRNA-seq/Bowtie2/heatmap.png');
     background-size:cover;
     background-repeat: no-repeat;
-  }
+  } */
 </style>
 <script setup>
   import { ref, watch /*onMounted*/ } from 'vue';
-  let heatmapBackground = null;
-  let zoomArea = null
-  let showZoomArea = false;
   const toggle_Heatmap = ref(false);
   const definedProps = defineProps(['heatmapHeight']);
-  const heatmapHight = ref('544.5px')
+  const heatmapHight = ref('544.5px');
+  const toggleZoom = ref(0);
+  const dialogHeatmapHight = ref(80);
+  const dialogHeatmapWidth = ref(100)
   const getHeatmapImg = ()=>{
     return new URL('../../assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
   }
-  const zoomImgMouseMove = (e)=>{
-    return { offsetX:e.offsetX, offsetY:e.offsetY }
-  }
-  const zoomImgMouseEnter = () => showZoomArea = true;
-  const zoomImgMouseLeave = () => showZoomArea = false;
   const showHeatmap = ()=>{
     toggle_Heatmap.value = true;
-    heatmapBackground = document.querySelector('.heatmapBackground');
-    zoomArea = document.querySelector('.zoomArea');
-    heatmapBackground.addEventListener('mousemove', zoomImgMouseMove, false);
-    heatmapBackground.addEventListener('mouseenter', zoomImgMouseEnter, false);
-    heatmapBackground.addEventListener('mouseleave', zoomImgMouseLeave, false);
   }
   watch(definedProps.heatmapHeight, (newVal)=>{
     if(newVal.height === 550){
@@ -76,6 +76,11 @@
     }else{
       heatmapHight.value = '100%'
     }
+  });
+  watch(toggleZoom, (newVal)=>{
+    console.log(newVal, 'newVal')
+    dialogHeatmapWidth.value = 100 + 1.5*newVal;
+    dialogHeatmapHight.value = 80 + 0.8*1.5*newVal;
   })
   // import Plotly from 'plotly.js-dist-min';
   // onMounted(() => {

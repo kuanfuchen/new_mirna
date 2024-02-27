@@ -149,7 +149,7 @@
   // 
 
   // 
-  dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(100)).subscribe((visualization_info)=>{
+  dataService.visualization_Plot$.pipe(takeUntil(comSubject$),debounceTime(300)).subscribe((visualization_info)=>{
     const tempSampleList = [];
     for(let i = 0 ; visualization_info.headers.length > i ; i++){
       tempSampleList.push(visualization_info.headers[i])

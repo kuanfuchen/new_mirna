@@ -71,8 +71,10 @@
       }
     }
     const pca_plot_data = [];
+    const headersTitle =  PCA_Data.headers.filter((item, index)=>{if(index > 0)return item});
     for(let i = 0 ; tempData.length > i ; i++){
-      const drawMarkerColor = PCA_Data.sortOrder.filter((item)=>{ if(item.name === PCA_Data.headers[ i + 1 ])return item.color})[0];
+      const drawMarkerColor = PCA_Data.sortOrder.filter((item)=>{ if(item.name === headersTitle[i])return item.color})[0];
+      // const drawMarkerColor = PCA_Data.sortOrder.filter((item)=>{ if(item.name === PCA_Data.headers[ i + 1 ])return item.color})[0];
       pca_plot_data.push({
         x:[ tempData[i][0] ],
         y:[ tempData[i][1] ],

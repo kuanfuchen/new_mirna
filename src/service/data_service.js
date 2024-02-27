@@ -113,6 +113,7 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
     log: normalized_Info
   };
   await _handleRawReadsFolder$.next(microRNA_Info);
+  // console.log(headersSort,'headersSort')
   await _visualization_Plot$.next({headers: headersSort, info: normalized_Info, miRNA_title: normalized_RNA_title, sortOrder: conditionSort});
 }
 const handleSplitTxt = (tableInfo) => {
@@ -123,13 +124,21 @@ const handleSplitTxt = (tableInfo) => {
   const split_tableInfo = tableInfo.split(/\n/);
   for(let i = 0 ; split_tableInfo.length > i ; i++){
     const removeSpace_split_tableInfo = split_tableInfo[i].split(/\t/);
-    if(removeSpace_split_tableInfo.length === 1) continue;
-    if(i === 0) {
-      miRNATable.headers = removeSpace_split_tableInfo;
+    const removeR_split_tableInfo = removeSpace_split_tableInfo.map((item) => item.split(/\r/)[0]);
+    if(removeR_split_tableInfo.length === 1) continue;
+    if(i === 0){
+      miRNATable.headers = removeR_split_tableInfo;
     }else{
       miRNATable.body[i - 1] = [];
-      miRNATable.body[i - 1] = removeSpace_split_tableInfo;
+      miRNATable.body[i - 1] = removeR_split_tableInfo;
     }
+    // if(removeSpace_split_tableInfo.length === 1) continue;
+    // if(i === 0) {
+    //   miRNATable.headers = removeSpace_split_tableInfo;
+    // }else{
+    //   miRNATable.body[i - 1] = [];
+    //   miRNATable.body[i - 1] = removeSpace_split_tableInfo;
+    // }
   }
   return miRNATable
 };
