@@ -6,11 +6,12 @@ const _transferMeg$ = new Subject({});
 const _visualization_Plot$ = new BehaviorSubject();
 const _CPM_PCA_Info$ = new BehaviorSubject({});
 const _DE_Folder_Info$ = new BehaviorSubject({});
+const _Project_info_Subject$ = new BehaviorSubject();
 const _export_raw_table_different_expression_XLSX$ = new Subject(false);
 const DE_folder_compare_name = [];
 const DE_folder_Data = [];
 const conditionSort = [];
-import { pre_alignment_qaqc, adaptor_trimming, base_trimming, post_alignment, microRNA_counts, CPM_Normalized_counts, CPM_PCA } from './getData';
+import { pre_alignment_qaqc, adaptor_trimming, base_trimming, post_alignment, microRNA_counts, CPM_Normalized_counts, CPM_PCA, Project_info } from './getData';
 
 const handleQCReadAlignmentfolder = async() => {
   const readAlignmentTitle = ['Raw reads', 'Adaptor trimmed','Base trimming', 'Alignment'];
@@ -73,12 +74,55 @@ const handleRawReadsFolder = () => {
   const microRNA_countTitle = ['Raw_Reads', 'Normalized_Reads'];
   const handleFinish_microRNA_counts =  handleSplitTxt(microRNA_counts);
   const handleFinish_CPM_Normalized_counts = handleSplitTxt(CPM_Normalized_counts);
+  // console.log(handleFinish_Project_info, 'handleFinish_Project_info')
   const microRNA_countTab = {
     tabs: microRNA_countTitle,
     tabsTable:[handleFinish_microRNA_counts, handleFinish_CPM_Normalized_counts]
   }
   graphPlotVisualization(handleFinish_CPM_Normalized_counts, microRNA_countTab);
 }
+const handleProject = ()=>{
+  const splitSpaceProject_info = Project_info.split(/\n/);
+  const project_info_Txt = [];
+  const project_txt_Resolve = {};
+  for(let i = 0 ; splitSpaceProject_info.length > i ;i++){
+    const splitR_Project_info = splitSpaceProject_info[i].split(/\r/)[0];
+    if(splitR_Project_info.length > 1){
+      project_info_Txt.push(splitR_Project_info)
+    }
+  }
+  project_info_Txt.forEach((item, index) => {
+    switch (item){
+      case 'Project ID':
+        project_txt_Resolve['Project ID'] = project_info_Txt[index + 1];
+        break
+      case 'Date':
+        project_txt_Resolve.Date = project_info_Txt[index + 1];
+        break
+      case "Institute":
+        project_txt_Resolve.Institute = project_info_Txt[index + 1];
+        break
+      case "Customer":
+        project_txt_Resolve.Customer = project_info_Txt[index + 1];
+        break
+      case "Organism":
+        project_txt_Resolve.Organism = project_info_Txt[index + 1];
+        break
+      case "Library Kit":
+        project_txt_Resolve['Library Kit'] = project_info_Txt[index + 1];
+        break
+      case "Genome":
+        project_txt_Resolve.Genome = project_info_Txt[index + 1];
+        break
+      case "miRNA DB":
+        if(index + 1 <= project_info_Txt.length){
+          project_txt_Resolve['miRNA DB'] = project_info_Txt[index + 1];
+        }
+        break
+    }
+  })
+  _Project_info_Subject$.next(project_txt_Resolve);
+};
 const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
   if(!normalized_count.headers || !normalized_count.body) return;
   // const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
@@ -201,6 +245,7 @@ const exportXlsx = async(readFile, fileName, sheetsName)=> {
 };
 const transferHandleFinishMeg = (handleInfo) => _transferMeg$.next(handleInfo);
 export const dataService = {
+  handleProject,
   handleQCReadAlignmentfolder,
   handleRawReadsFolder,
   handle_CPM_PCA,
@@ -215,4 +260,5 @@ export const dataService = {
   transferMeg$: _transferMeg$.asObservable(),
   CPM_PCA_Info$: _CPM_PCA_Info$.asObservable(),
   DE_Folder_Info$: _DE_Folder_Info$.asObservable(),
+  Project_info_Subject$:_Project_info_Subject$.asObservable(),
 } 

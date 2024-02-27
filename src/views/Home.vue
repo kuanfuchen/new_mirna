@@ -20,19 +20,29 @@
 <script setup>
 /* eslint-disable */
 import { ref } from 'vue';
+import { Subject, takeUntil } from 'rxjs';
+import { dataService } from '@/service/data_service';
+const comSubject$ = new Subject();
 const projectUsrInfo = ref({
   'userInfoOrder': ['Project ID', 'Date', 'Institute', 'Customer',/*'Tel',*/'Organism', 'Library Kit', 'Genome', 'miRNA DB'],
-  'Organism':'xxx',
-  'ProjectID':'0000001',
-  'Institute':'xx大學',
-  'Customer':'xxx',
-  // Tel:'',
-  'Library Kit':'Kit',
-  'Genome':'GRCH38',
-  'miRNA DB': 'miRBase v22.1',
-  'Date':'2024/12/11'
+  'Organism':'',
+  'Project ID':'',
+  'Institute':'',
+  'Customer':'',
+  'Library Kit':'',
+  'Genome':'',
+  'miRNA DB': '',
+  'Date':''
 })
-// const backgrundPlant = ref('dark');
+const handleProjectInfo = (projectInfo)=>{
+  const objInfo = Object.entries(projectInfo);
+  for(let i = 0 ; objInfo.length > i ; i++){
+    projectUsrInfo.value[objInfo[i][0]] = objInfo[i][1]
+  }
+}
+dataService.Project_info_Subject$.pipe(takeUntil(comSubject$)).subscribe(async(projectInfo)=>{
+  await handleProjectInfo(projectInfo);
+});
 </script>
 <style scoped>
   .tableBackground{

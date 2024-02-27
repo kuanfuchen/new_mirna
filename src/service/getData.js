@@ -7,7 +7,7 @@ import microRNA_counts from '../assets/miRNA-seq/Bowtie2/01. raw reads/microRNA_
 // import CPM_PCA from '../assets/miRNA-seq/Bowtie2/02. normalized reads/GSA (CPM)/CPM_Normalized_counts_for_PCA_plot.txt'; 
 import CPM_Normalized_counts from '../assets/miRNA-seq/Bowtie2/02. normalized reads/CPM_Normalized_counts.txt';
 import CPM_PCA from '../assets/miRNA-seq/Bowtie2/02. normalized reads/CPM_Normalized_counts_for_PCA_plot.txt';
-
+import Project_info from '../assets/miRNA-seq/Bowtie2/Project Information.txt';
 export {
   pre_alignment_qaqc,
   adaptor_trimming,
@@ -15,5 +15,6 @@ export {
   post_alignment,
   microRNA_counts,
   CPM_Normalized_counts,
-  CPM_PCA
+  CPM_PCA,
+  Project_info
 }
