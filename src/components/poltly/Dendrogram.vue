@@ -5,10 +5,16 @@
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div class="zoom-wrap">
-      <img id=" target" :src="getHeatmapImg()" :style="{ height:heatmapHight }" class="heatmapStyle magnifying_glassStyle">
-      <div class="zoom-area showBox"></div>
+    <div >
+      <img  :src="getHeatmapImg()" :style="{ height:heatmapHight }" class="heatmapStyle">
     </div>
+    <!-- <div class="box">
+        <div class="zoom-wrap">
+        <img id=" target" :src="getHeatmapImg()" :style="{ height:heatmapHight }" class="heatmapStyle magnifying_glassStyle">
+        <div class="zoom-area showBox"></div>
+      </div>
+    </div> -->
+    
   </div>
   <v-dialog v-model="toggle_Heatmap"  width="100vw" >
       <v-card class="bg-white" style="height: 92vh;overflow: auto;">
@@ -28,15 +34,16 @@
             icon="$close">
             </v-btn>
           </div>
-          <!-- <div class="heatmapBackground"> -->
-            <!-- class="heatmapDialogStyle" -->
-            <div  :style="{width:`${dialogHeatmapWidth}%`,height:`${dialogHeatmapHight}vh`}">
-              <img :src="getHeatmapImg()"  style="width:100%;height: 100%;" >
-              
+          <div class="box" :style="{width:`${dialogHeatmapWidth}%`}">
+            <div class="zoom-wrap" :style="{width:`${dialogHeatmapWidth}%`,height:`${dialogHeatmapHight}vh`}">
+              <img id="target" :src="getHeatmapImg()" style="width:100%;height: 100%;" class="heatmapStyle magnifying_glassStyle">
+              <div class="zoom-area showBox"></div>
             </div>
+          </div>
+            <!-- <div :style="{width:`${dialogHeatmapWidth}%`,height:`${dialogHeatmapHight}vh`}">
+              <img :src="getHeatmapImg()"  style="width:100%;height: 100%;" >
+            </div> -->
               
-            <!-- <Dialog_plot :listen_plot_data="transfer_FullScreen_data" @toggle_tranfer_dialog_plot="close_dialog" ></Dialog_plot> -->
-          <!-- </div> -->
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -69,7 +76,7 @@
   display: block;
   width: 200px;
   height: 200px;
-  border-radius: 100%;
+  border-radius: 20px;
   box-shadow: 0 0 5px rgba(255,255,255,.3), inset 0 0 5px rgba(0,0,0,.3);
   background-repeat: no-repeat;
   pointer-events: none;
@@ -84,14 +91,22 @@
   left: -40px;
   width: 80px;
   height: 80px;
-  border-radius: 100%;
+  border-radius: 20px;
   background-color: #2f2f2f54;
+}
+.box{
+  /* margin-bottom: 3rem; */
+  /* width:100%; */
+  height: auto;
+  /* min-height: 550px; */
+  background-color: #eeeeee;
+  display: flex;
 }
 </style>
 <script setup>
   import { ref, watch, onMounted } from 'vue';
   import $ from 'jquery';
-  // import {mangificant_glass} from '../../utils/mangificant_glass.js';
+  import {mangificant_glass} from '../../utils/mangificant_glass.js';
   const toggle_Heatmap = ref(false);
   const definedProps = defineProps(['heatmapHeight']);
   const heatmapHight = ref('544.5px');
@@ -104,16 +119,13 @@
     return new URL('../../assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
   }
   
-  const showHeatmap = ()=>{
+  const showHeatmap = async()=>{
     toggle_Heatmap.value = true;
-    // const blow = blowupJS.blowup();
-    // setTimeout(() => {
-      // console.log(magnifying_glassStyle, 'magnifying_glassStyle')
-      // let target = document.querySelector('#magnifying_glassStyle');
-      // console.log(target, 'target')
-      // let zoomArea = document.querySelector('#showBox');
+    setTimeout(async() => {
+      magnifying_glassStyle.value = await document.querySelector('.magnifying_glassStyle');
+      showBox.value = await  document.querySelector('.showBox');
       mangificant_glass(magnifying_glassStyle.value, showBox.value);
-    // },1000);
+    },100 );
     
   }
   watch(definedProps.heatmapHeight, (newVal)=>{
@@ -127,10 +139,10 @@
     dialogHeatmapWidth.value = 100 + 1.5*newVal;
     dialogHeatmapHight.value = 80 + 0.8*1.5*newVal;
   })
-  onMounted(()=>{
-    magnifying_glassStyle.value = document.querySelector('.magnifying_glassStyle');
-    showBox.value = document.querySelector('.showBox');
-    console.log(magnifying_glassStyle.value, showBox.value);
+  onMounted(async()=>{
+    
+    
+    // console.log(magnifying_glassStyle.value, showBox.value);
   });
   // import Plotly from 'plotly.js-dist-min';
   // onMounted(() => {
