@@ -12,7 +12,7 @@
         </v-list-item>
       </v-list>
       <v-list>
-        <v-list-subheader class="titleStyle">QC Reports</v-list-subheader>
+        <v-list-subheader class="titleStyle">QC Reports <v-icon icon="fa:fas fa-caret-down"></v-icon></v-list-subheader>
         <v-list-item v-for="(item, i) in sideBarGroupA" :key="i" :to="item.to"
           @click="activeItem = item.value"  :active="activeItem === item.value" >
             <v-list-item-title v-text="item.title" class="subTitleStyle pl-3">
@@ -20,21 +20,12 @@
         </v-list-item>
       </v-list>
       <v-list>
-        <v-list-subheader class="titleStyle">Analysis</v-list-subheader>
+        <v-list-subheader class="titleStyle">Analysis <v-icon icon="fa:fas fa-caret-down"></v-icon></v-list-subheader>
         <v-list-item v-for="(item, i) in sideBarGroupB" :key="i" :to="item.to"
           @click="activeItem = item.value"  :active="activeItem === item.value">
-          <v-list-item-title v-text="item.title" class="subTitleStyle pl-3">
-          </v-list-item-title>       
+          <v-list-item-title v-text="item.title" class="subTitleStyle pl-3"></v-list-item-title>       
         </v-list-item>
-        <v-list-item   class="subTitleStyle">
-          <!-- <template v-slot:append>
-            <v-btn class="text-none mt-3" color="grey-lighten-3" @click="toggleExportRawData"
-            variant="flat">
-              <v-icon icon="fa:fas fa-file-arrow-down" class=" text-teal mr-1" style="font-size: 24px;"></v-icon>
-              None filter raw table
-            </v-btn>
-          </template> -->
-        </v-list-item>
+        <v-list-item   class="subTitleStyle"></v-list-item>
       </v-list>
       <div class="footerAbout">
         <div class="d-flex justify-center mb-2" >

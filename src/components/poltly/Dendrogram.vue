@@ -1,132 +1,131 @@
 <template>
-  <div>
-    <div class="d-flex justify-end">
-      <div class="download_xlsx" @click="showHeatmap()">
+  <div style="display: block;">
+    <div class="d-flex justify-end" style="height:21px">
+      <div class="pr-5 btn-icon" @click="downloadHeatmapImage">
+        <!-- <a class="pr-5" :href="downloadHeatmapImage" download="heatmap.png"> -->
+          <v-icon icon="fa:fas fa-download"></v-icon>
+        <!-- </a> -->
+        
+      </div>
+      <div class="btn-icon"  @click="showHeatmap()">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
     </div>
-    <div >
-      <img  :src="getHeatmapImg()" :style="{ height:heatmapHight }" class="heatmapStyle">
-    </div>
-    <!-- <div class="box">
-        <div class="zoom-wrap">
-        <img id=" target" :src="getHeatmapImg()" :style="{ height:heatmapHight }" class="heatmapStyle magnifying_glassStyle">
-        <div class="zoom-area showBox"></div>
+    <!-- zoomist-container -->
+    <div class="zoomist-container" >
+      <div class="zoomist-wrapper">
+        <div class="zoomist-image">
+          <img :src="getHeatmapImg()" id="heatmap1" :style="{ height:heatmapHight }" />
+        </div>
       </div>
-    </div> -->
-    
+    </div>
   </div>
-  <v-dialog v-model="toggle_Heatmap"  width="100vw" >
-      <v-card class="bg-white" style="height: 92vh;overflow: auto;">
-        <v-card-text>
-          <h5 class="text-h5" style="font-weight: 700;">
-            Heatmap Plot
-          </h5>  
-          <div class="d-flex justify-end mb-3">
-            <div class="d-flex">
-              <!-- <v-icon icon="fa:fas fa-magnifying-glass-minus"></v-icon> -->
-              <v-slider v-model="toggleZoom" style="width:200px"
-              append-icon="fa:fas fa-magnifying-glass-plus"
-              prepend-icon="fa:fas fa-magnifying-glass-minus"></v-slider>
-              <!-- <v-icon icon="fa:fas fa-magnifying-glass-plus"></v-icon> -->
-            </div>
-            <v-btn density="comfortable" rounded="lg" color="red-darken-1" variant="outlined" @click="toggle_Heatmap = false"
+  <v-dialog v-model="toggle_Heatmap"  width="95vw" >
+    <v-card class="bg-white" style="height: 92vh;">
+      <v-card-text>
+        <div class="d-flex justify-space-between align-center py-2">
+        <h5 class="text-h5 ml-2" style="font-weight: 700;">
+          Heatmap Plot
+        </h5>  
+        <div class="d-flex align-center mr-3">
+          <v-btn density="comfortable" rounded="lg" color="red-darken-1" variant="outlined" @click="toggle_Heatmap = false"
             icon="$close">
-            </v-btn>
-          </div>
-          <div class="box" :style="{width:`${dialogHeatmapWidth}%`}">
-            <div class="zoom-wrap" :style="{width:`${dialogHeatmapWidth}%`,height:`${dialogHeatmapHight}vh`}">
-              <img id="target" :src="getHeatmapImg()" style="width:100%;height: 100%;" class="heatmapStyle magnifying_glassStyle">
-              <div class="zoom-area showBox"></div>
+          </v-btn>
+        </div>
+      </div>
+      </v-card-text>
+      <v-card-text>
+        <div class="zoomist-dialogContainer" >
+          <div class="zoomist-wrapper">
+            <div class="zoomist-image">
+              <img :src="getHeatmapImg()" :style="{width:`${dialogHeatmapWidth}%`,height:`${dialogHeatmapHight}vh`}" />
             </div>
           </div>
-            <!-- <div :style="{width:`${dialogHeatmapWidth}%`,height:`${dialogHeatmapHight}vh`}">
-              <img :src="getHeatmapImg()"  style="width:100%;height: 100%;" >
-            </div> -->
-              
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+        </div>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 <style scope>
+ @import "zoomist/css";
   .heatmapStyle{
     width:100%;
     /* height: 544.5px; */
     /* height:100%; */
   }
+  .btn-icon{
+    cursor: pointer;
+  }
   .heatmapDialogStyle{
     width: 100%;
     height: 80vh;
   }
-  .zoom-wrap{
-  position: relative;
-  display: inline-block;
-  
+.v-input .v-input__details{
+  display: none;
 }
-
-.target{
-  position: relative;
+.zoomist-container {
   width: 100%;
 }
 
-.zoom-area{
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  display: block;
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
-  box-shadow: 0 0 5px rgba(255,255,255,.3), inset 0 0 5px rgba(0,0,0,.3);
-  background-repeat: no-repeat;
-  pointer-events: none;
-  transition: .3s ease-out;
+.zoomist-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
 }
 
-.zoom-area::before {
-  content: ' ';
-  display: block;
-  position: relative;
-  top: -40px;
-  left: -40px;
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
-  background-color: #2f2f2f54;
-}
-.box{
-  /* margin-bottom: 3rem; */
-  /* width:100%; */
-  height: auto;
-  /* min-height: 550px; */
-  background-color: #eeeeee;
-  display: flex;
+.zoomist-image img {
+  width: 100%;
+  /* height: 544.5px; */
+  /* object-fit: cover;
+  object-position: center; */
 }
 </style>
 <script setup>
   import { ref, watch, onMounted } from 'vue';
-  import $ from 'jquery';
-  import {mangificant_glass} from '../../utils/mangificant_glass.js';
+  import Zoomist from 'zoomist';
+  import html2canvas from 'html2canvas';
   const toggle_Heatmap = ref(false);
   const definedProps = defineProps(['heatmapHeight']);
   const heatmapHight = ref('544.5px');
-  const toggleZoom = ref(0);
   const dialogHeatmapHight = ref(80);
-  const dialogHeatmapWidth = ref(100)
-  const magnifying_glassStyle = ref(null);
-  const showBox = ref(null);
+  const dialogHeatmapWidth = ref(100);
   const getHeatmapImg = ()=>{
     return new URL('../../assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
   }
-  
+  const downloadHeatmapImage = () => {
+    try{
+      const img = new Image();
+      const imgName = 'heatmap';
+      const imgContent = '../../assets/miRNA-seq/Bowtie2/heatmap.png';
+      // const imgContent = document.getElementById('heatmap1');
+      img.setAttribute('crossOrigin', 'anonymous');
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        canvas.width = imgContent.width;
+        canvas.height = imgContent.height;
+        const context = canvas.getContext('2d');
+        context.drawImage(img, 0, img.width, img.height);
+        const url = canvas.toDataURL('image/png');
+        const ahref = document.createElement('a');
+        const event = new MouseEvent('click');
+        ahref.download = imgName;
+        ahref.href = url;
+        ahref.dispatchEvent(event)
+      }
+      img.src = imgContent;
+    }catch(err){
+      console.log(err)
+    }
+  }
   const showHeatmap = async()=>{
     toggle_Heatmap.value = true;
-    setTimeout(async() => {
-      magnifying_glassStyle.value = await document.querySelector('.magnifying_glassStyle');
-      showBox.value = await  document.querySelector('.showBox');
-      mangificant_glass(magnifying_glassStyle.value, showBox.value);
-    },100 );
-    
+    setTimeout(() => {
+      new Zoomist('.zoomist-dialogContainer', {
+        maxScale: 5,
+        bounds: true,
+        slider: true,
+        zoomer: true
+      })
+    },50);
   }
   watch(definedProps.heatmapHeight, (newVal)=>{
     if(newVal.height === 550){
@@ -135,26 +134,15 @@
       heatmapHight.value = '100%'
     }
   });
-  watch(toggleZoom, (newVal)=>{
-    dialogHeatmapWidth.value = 100 + 1.5*newVal;
-    dialogHeatmapHight.value = 80 + 0.8*1.5*newVal;
+  const openZoomist = ()=>{
+    new Zoomist('.zoomist-container', {
+      maxScale: 5,
+      bounds: true,
+      slider: true,
+      zoomer: true
+    })
+  }
+  onMounted(async() => {
+    await openZoomist()
   })
-  onMounted(async()=>{
-    
-    
-    // console.log(magnifying_glassStyle.value, showBox.value);
-  });
-  // import Plotly from 'plotly.js-dist-min';
-  // onMounted(() => {
-  //   const data = [{
-  //     z: [
-  //       [1, 2, 3],
-  //       [4, 5, 6],
-  //       [7, 8, 9]
-  //     ],
-  //     type: 'heatmap',
-    
-  //   }];
-  //   Plotly.newPlot('myDiv', data, {height:550});
-  // })
 </script>
