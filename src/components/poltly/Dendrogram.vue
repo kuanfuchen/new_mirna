@@ -5,7 +5,6 @@
         <!-- <a class="pr-5" :href="downloadHeatmapImage" download="heatmap.png"> -->
           <v-icon icon="fa:fas fa-download"></v-icon>
         <!-- </a> -->
-        
       </div>
       <div class="btn-icon"  @click="showHeatmap()">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
@@ -15,7 +14,7 @@
     <div class="zoomist-container" >
       <div class="zoomist-wrapper">
         <div class="zoomist-image">
-          <img :src="getHeatmapImg()" id="heatmap1" :style="{ height:heatmapHight }" />
+          <img :src="getHeatmapImg()" class="heatmapPicture" :style="{ height:heatmapHight }" />
         </div>
       </div>
     </div>
@@ -69,7 +68,7 @@
 
 .zoomist-image {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  /* aspect-ratio: 16 / 9; */
 }
 
 .zoomist-image img {
@@ -81,41 +80,31 @@
 </style>
 <script setup>
   import { ref, watch, onMounted } from 'vue';
-  import Zoomist from 'zoomist';
-  import html2canvas from 'html2canvas';
+  import Zoomist from 'zoomist'; 
   const toggle_Heatmap = ref(false);
   const definedProps = defineProps(['heatmapHeight']);
   const heatmapHight = ref('544.5px');
   const dialogHeatmapHight = ref(80);
   const dialogHeatmapWidth = ref(100);
-  const getHeatmapImg = ()=>{
-    return new URL('../../assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
-  }
+  let href;
+  const getHeatmapImg = ()=> new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
   const downloadHeatmapImage = () => {
     try{
-      const img = new Image();
-      const imgName = 'heatmap';
-      const imgContent = '../../assets/miRNA-seq/Bowtie2/heatmap.png';
-      // const imgContent = document.getElementById('heatmap1');
-      img.setAttribute('crossOrigin', 'anonymous');
-      img.onload = ()=>{
-        const canvas = document.createElement('canvas');
-        canvas.width = imgContent.width;
-        canvas.height = imgContent.height;
-        const context = canvas.getContext('2d');
-        context.drawImage(img, 0, img.width, img.height);
-        const url = canvas.toDataURL('image/png');
-        const ahref = document.createElement('a');
-        const event = new MouseEvent('click');
-        ahref.download = imgName;
-        ahref.href = url;
-        ahref.dispatchEvent(event)
-      }
-      img.src = imgContent;
+    const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
+    fetch(href).then(async(res)=>{
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link =document.createElement('a');
+      link.href = blobUrl;
+      link.download = 'heatmap';
+      link.innerHTML = '下載文件';
+      link.click()
+      
+    })
     }catch(err){
       console.log(err)
     }
-  }
+  };
   const showHeatmap = async()=>{
     toggle_Heatmap.value = true;
     setTimeout(() => {
