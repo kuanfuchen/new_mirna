@@ -34,8 +34,12 @@ const routes = [
         path:'/:catchAll(.*)',
         name:'notfound',
         component:()=>import('@/views/Notfound.vue')
-      }
-
+      },
+      // {
+      //   path:'externalFold',
+      //   name:'externalFold',
+      //   component:()=>import('@/views/ExternalFold.vue')
+      // }
     ],
   },
 ]

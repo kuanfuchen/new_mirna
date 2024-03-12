@@ -1,11 +1,9 @@
 <template>
   <div style="display: block;">
-    <div class="d-flex justify-end" style="height:21px">
-      <div class="pr-5 btn-icon" @click="downloadHeatmapImage">
-        <!-- <a class="pr-5" :href="downloadHeatmapImage" download="heatmap.png"> -->
+    <div class="d-flex justify-end" style="height:21px;margin-bottom: 9.5px;">
+      <!-- <div class="pr-5 btn-icon" @click="downloadHeatmapImage">
           <v-icon icon="fa:fas fa-download"></v-icon>
-        <!-- </a> -->
-      </div>
+      </div> -->
       <div class="btn-icon"  @click="showHeatmap()">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
@@ -14,7 +12,7 @@
     <div class="zoomist-container" >
       <div class="zoomist-wrapper">
         <div class="zoomist-image">
-          <img :src="getHeatmapImg()" class="heatmapPicture" :style="{ height:heatmapHight }" />
+          <img :src="getHeatmapImg()" id="heatmapPicture" :style="{ height:heatmapHight }" />
         </div>
       </div>
     </div>
@@ -81,26 +79,60 @@
 <script setup>
   import { ref, watch, onMounted } from 'vue';
   import Zoomist from 'zoomist'; 
+  import html2canvas from 'html2canvas';
   const toggle_Heatmap = ref(false);
   const definedProps = defineProps(['heatmapHeight']);
-  const heatmapHight = ref('544.5px');
+  import { saveAs } from 'file-saver';
+  const heatmapHight = ref('535px');
   const dialogHeatmapHight = ref(80);
   const dialogHeatmapWidth = ref(100);
-  let href;
+
   const getHeatmapImg = ()=> new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
   const downloadHeatmapImage = () => {
     try{
+      // method 1 
+      // const heatmapPicture = document.querySelector('.heatmapPicture');
+      // const imgsrc = heatmapPicture.src;
+      // const img = new Image();
+      // img.setAttribute('crossOrigin','anonymous');
+      // img.onload = ()=>{
+      //   const canvas = document.createElement('canvas');
+      //   canvas.width = img.width;
+      //   canvas.height = img.height;
+      //   const context = canvas.getContext('2d');
+      //   context.drawImage(img, 0, 0, img.width, img.height);
+      //   const url = canvas.toDataURL('image/png');
+      //   const a = document.createElement('a');
+      //   const event = new MouseEvent('click');
+      //   a.download = 'heatmap';
+      //   a.href = url;
+      //   a.dispatchEvent(event);
+      // }
+      // img.src = imgsrc
+    // method 2
+    // const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
+    // fetch(src).then(async(res)=>{
+    //   const blob = await res.blob();
+    //   console.log(blob)
+    //   const blobUrl = URL.createObjectURL(blob);
+    //   const link =document.createElement('a');
+    //   link.href = blobUrl;
+    //   link.download = 'heatmap';
+    //   link.innerHTML = '下載文件';
+    //   link.click()
+    // })
+    // method 3
     const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
-    fetch(href).then(async(res)=>{
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const link =document.createElement('a');
-      link.href = blobUrl;
-      link.download = 'heatmap';
-      link.innerHTML = '下載文件';
-      link.click()
-      
-    })
+    console.log(href,'href');
+    saveAs(href, 'heatmap.png')
+    //method 4 
+    // const heatmapPicture = document.getElementById('heatmapPicture');
+    // html2canvas(heatmapPicture).then((canvas)=>{
+    //   const link = document.createElement('a');
+    //   link.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    //   link.download = 'screenshot.png';
+    //   link.click();
+    //   })
     }catch(err){
       console.log(err)
     }
@@ -109,25 +141,25 @@
     toggle_Heatmap.value = true;
     setTimeout(() => {
       new Zoomist('.zoomist-dialogContainer', {
-        maxScale: 5,
+        maxScale: 6,
         bounds: true,
-        slider: true,
+        // slider: true,
         zoomer: true
       })
     },50);
   }
   watch(definedProps.heatmapHeight, (newVal)=>{
     if(newVal.height === 550){
-      heatmapHight.value = '544.5px';
+      heatmapHight.value = '535px';
     }else{
       heatmapHight.value = '100%'
     }
   });
   const openZoomist = ()=>{
     new Zoomist('.zoomist-container', {
-      maxScale: 5,
+      maxScale: 6,
       bounds: true,
-      slider: true,
+      // slider: true,
       zoomer: true
     })
   }

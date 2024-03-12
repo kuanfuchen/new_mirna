@@ -212,6 +212,7 @@
         }
         const headers_p_value = headersUpper.indexOf('P-VALUE');
         const headers_log2_Ratio = headersUpper.indexOf('LOG2RATIO');
+        const headers_ratio = headersUpper.indexOf('RATIO');
         for(let j = 0 ; compare_de_tables_info[i].body.length > j ; j++){
           // const fdrNumber = Number(compare_de_tables_info[i].body[j][fdrIndex]);
           // const significant_value = fdrVal_Number >= fdrNumber ? true : false;
@@ -235,6 +236,9 @@
             if(compare_de_tables_p_value_Number > p_value_number_val) continue;
             if(headers_log2_Ratio >=0 && compare_de_tables_log2_Number >=log2_UpperBound.value ||
               headers_log2_Ratio >=0 && compare_de_tables_log2_Number <= log2_LowerBound.value){
+                compare_de_tables_info[i].body[j][headers_log2_Ratio] = Number(compare_de_tables_info[i].body[j][headers_log2_Ratio]);
+                compare_de_tables_info[i].body[j][headers_ratio] = Number(compare_de_tables_info[i].body[j][headers_ratio]);
+                // console.log(compare_de_tables_info[i].body[j][headers_ratio],'compare_de_tables_info[i].body[j]')
               display_Table.push(compare_de_tables_info[i].body[j]);
             }
           };
@@ -309,7 +313,7 @@
           if(headers_log2_Ratio_Index >= 0 && compare_de_tables_log2_Number >= log2_UpperBound.value ||
             headers_log2_Ratio_Index >= 0 && compare_de_tables_log2_Number <= log2_LowerBound.value){
               table.push(compare_de_tables_info[i].body[j]);
-            }
+          }
         }else if(rawTableBoolean === true){
           table.push(compare_de_tables_info[i].body[j])
         }
@@ -334,7 +338,7 @@
   dataService.export_raw_table_different_expression_XLSX$.pipe(takeUntil(comSubject$)).subscribe((rawTableBoolean)=>{
     exportFile(rawTableBoolean);
   })
-  const toggleExportRawData =  ()=>{
+  const toggleExportRawData =  () => {
     dataService.exportRawTable_different_expression();
   }
 </script>

@@ -58,7 +58,6 @@ const handle_post_alignment = (post_alignment) => {
       case "Total non-unique":
         headers.push('Total non-unique read');
         // headers.push('Total nonUnique read');
-
         break;
       case "Non-unique":
         headers.push('%Non-unique')
@@ -212,7 +211,7 @@ const handleDE_Folder = async () => {
     const readTxt = require(`../assets/miRNA-seq/Bowtie2/03. DE miRNAs/${DE_folder_compare_name[i]}/gene_list.txt`)
     DE_txtGroup.push(readTxt.default);
   }
-
+  
   for(let i = 0 ; DE_txtGroup.length > i ; i++){
     const de_txtTableInfo = handleSplitTxt(DE_txtGroup[i]);
     de_txtTableInfo.title = DE_folder_compare_name[i];

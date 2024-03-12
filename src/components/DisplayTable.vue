@@ -35,12 +35,12 @@
       v-model="selectedShow_miRNA">
       <template v-slot:item.Ratio="{item}">
         <div>
-          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Ratio.toLocaleString('en-US') }}</p>
+          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ Math.abs(item.Ratio) > 0.001? item.Ratio.toLocaleString('en-US'):item.Ratio }}</p>
         </div>
       </template>
       <template v-slot:item.Log2Ratio="{item}">
         <div>
-          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ item.Log2Ratio }}</p>
+          <p :style="{ 'color': Number(item.Log2Ratio) >=0 ? '#D32F2F' : '#2962FF' }">{{ Math.abs(item.Log2Ratio) > 0.01? item.Log2Ratio.toLocaleString('en-US'):item.Log2Ratio }}</p>
         </div>
       </template>
       <template v-slot:item.Totalreads="{item}">
@@ -158,10 +158,12 @@
     for(let i = 0 ; bodyInfo.length > i ; i++){
       const bodyInfoKeys = Object.keys(bodyInfo[i]);
       for( let j = 0 ; bodyInfoKeys.length > j ; j++ ){
-        if(bodyInfoKeys[j] !== 'Samplename' && bodyInfoKeys[j] !== 'condition' && bodyInfoKeys[j] !== 'microRNAID' && bodyInfoKeys[j]!== 'Up_Down' && bodyInfoKeys[j] !== 'significant'){
+        if(bodyInfoKeys[j] !== 'Samplename' && bodyInfoKeys[j] !== 'condition' && bodyInfoKeys[j] !== 'microRNAID' && bodyInfoKeys[j]!== 'Up_Down' && bodyInfoKeys[j] !== 'significant'
+          && bodyInfoKeys[j] !== 'Log2Ratio' && bodyInfoKeys[j] !== "Ratio"){
           const [ base, exponent ] = bodyInfo[i][bodyInfoKeys[j]].split('E').map(Number);
           if(exponent !== undefined && exponent !== 0){
             bodyInfo[i][bodyInfoKeys[j]] = Number(bodyInfo[i][bodyInfoKeys[j]]).toExponential(2);
+            // bodyInfo[i][bodyInfoKeys[j]] = Number(bodyInfo[i][bodyInfoKeys[j]])
           //   bodyInfo[i][bodyInfoKeys[j]] = Number(`${tempVal}E${exponent}`);
           }else{
             const val = Math.round(Number(base)*100)/100;
@@ -169,6 +171,7 @@
               bodyInfo[i][bodyInfoKeys[j]] = val;
             }else{
               const numToExponential= Number(bodyInfo[i][bodyInfoKeys[j]]).toExponential(2);
+              // const numToExponential= Number(bodyInfo[i][bodyInfoKeys[j]]);
               if(Number(numToExponential)=== 0){
                 bodyInfo[i][bodyInfoKeys[j]] =  0;
               }else{
@@ -177,7 +180,6 @@
               
             }
           };
-          
         }
       }
     }

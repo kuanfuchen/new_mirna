@@ -64,7 +64,7 @@
               <template v-slot:title>
                 <span class="font-weight-bold pr-3">Heatmap Plot</span>
               </template>
-              <Dendrograms :heatmapHeight="plot_height"></Dendrograms>
+              <Dendrograms  :heatmapHeight="plot_height"></Dendrograms>
             </v-card>
           </v-col>
         </v-row>
