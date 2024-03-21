@@ -1,9 +1,10 @@
 <template>
   <div style="display: block;">
-    <div class="d-flex justify-end" style="height:21px;margin-bottom: 9.5px;">
-      <!-- <div class="pr-5 btn-icon" @click="downloadHeatmapImage">
+    <div class="d-flex justify-space-between" style="height:21px;margin-bottom: 9.5px;">
+      <div class="pl-5 btn-icon" @click="downloadHeatmapImage">
           <v-icon icon="fa:fas fa-download"></v-icon>
-      </div> -->
+          <span class="ml-2">open new window and right click to save</span>
+      </div>
       <div class="btn-icon"  @click="showHeatmap()">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
@@ -122,9 +123,10 @@
     //   link.click()
     // })
     // method 3
-    const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
-    console.log(href,'href');
-    saveAs(href, 'heatmap.png')
+    
+    // const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
+    // console.log(href,'href');
+    // saveAs(href, 'heatmap.png')
     //method 4 
     // const heatmapPicture = document.getElementById('heatmapPicture');
     // html2canvas(heatmapPicture).then((canvas)=>{
@@ -133,6 +135,9 @@
     //   link.download = 'screenshot.png';
     //   link.click();
     //   })
+    //method 5 
+      const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
+      window.open(href, '_blank','width=100vw')
     }catch(err){
       console.log(err)
     }

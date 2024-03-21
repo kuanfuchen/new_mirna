@@ -73,7 +73,6 @@ const handleRawReadsFolder = () => {
   const microRNA_countTitle = ['Raw_Reads', 'Normalized_Reads'];
   const handleFinish_microRNA_counts =  handleSplitTxt(microRNA_counts);
   const handleFinish_CPM_Normalized_counts = handleSplitTxt(CPM_Normalized_counts);
-  // console.log(handleFinish_Project_info, 'handleFinish_Project_info')
   const microRNA_countTab = {
     tabs: microRNA_countTitle,
     tabsTable:[handleFinish_microRNA_counts, handleFinish_CPM_Normalized_counts]
@@ -156,7 +155,6 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
     log: normalized_Info
   };
   await _handleRawReadsFolder$.next(microRNA_Info);
-  // console.log(headersSort,'headersSort')
   await _visualization_Plot$.next({headers: headersSort, info: normalized_Info, miRNA_title: normalized_RNA_title, sortOrder: conditionSort});
 }
 const handleSplitTxt = (tableInfo) => {
@@ -223,6 +221,9 @@ const exportRawTable_different_expression = () => {
   _export_raw_table_different_expression_XLSX$.next(true)
 };
 const exportXlsx = async(readFile, fileName, sheetsName)=> {
+  console.log(readFile, 'readFile');
+  console.log(fileName, 'fileName');
+  console.log(sheetsName, 'sheetsName');
   let sheets_Title = [];
   let excelName = '';
   if(fileName === 'readAndAlignment'){
@@ -242,7 +243,10 @@ const exportXlsx = async(readFile, fileName, sheetsName)=> {
   }
   writeFileXLSX(export_wb, excelName + '.xlsx');
 };
-const transferHandleFinishMeg = (handleInfo) => _transferMeg$.next(handleInfo);
+const transferHandleFinishMeg = (handleInfo) => {
+  console.log(handleInfo, 'handleInfo')
+  _transferMeg$.next(handleInfo)
+};
 export const dataService = {
   handleProject,
   handleQCReadAlignmentfolder,
