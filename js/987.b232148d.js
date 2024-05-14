@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunknew_mirna"]=self["webpackChunknew_mirna"]||[]).push([[987],{3744:function(n,t){t.Z=(n,t)=>{const r=n.__vccOpts||n;for(const[e,c]of t)r[e]=c;return r}},9987:function(n,t,r){r.r(t),r.d(t,{default:function(){return f}});var e=r(6252);const c=(0,e._)("div",{class:"mt-3 text-h3"}," don't page! ",-1),u=[c];function s(n,t){return(0,e.wg)(),(0,e.iD)("div",null,u)}var o=r(3744);const a={},i=(0,o.Z)(a,[["render",s]]);var f=i}}]);
+//# sourceMappingURL=987.b232148d.js.map
