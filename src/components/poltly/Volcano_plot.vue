@@ -38,7 +38,7 @@
   import Dialog_plot from '../Dialog_Plot.vue';
   import {image_config, imageCapture} from '../../utils/image_download';
   const props = defineProps(['change_volcano_plot', ]);
-  const emit = defineEmits(['maxValYaxis']);
+  // const emit = defineEmits(['maxValYaxis']);
   const toogle_Plot_Screen = ref(false);
   let log2Upper = 1;
   let log2Lower = -1;
@@ -258,7 +258,7 @@
     const ceil_max_Xaxis = emit_maxXaxisRang* 1.1;
     // const ceil_max_Xaxis = Math.ceil(maxValXaxis);
     // emit('xaxisMaxValue', ceil_max_Xaxis);
-    emit('xaxisMaxValue', emit_maxXaxisRang);
+    // emit('xaxisMaxValue', emit_maxXaxisRang);
     layout.xaxis = {
       range: [ -ceil_max_Xaxis, ceil_max_Xaxis ],
       // title:'log2Ratio'
@@ -271,6 +271,7 @@
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
+    negativeLine.y = [0,postitiveYMax];
     image_config.filename = `Volcano_plot`;
     const windowInnerheight = window.innerHeight;
     plot_height.value =  Math.ceil(( windowInnerheight - removePlotHeight.value )/ windowInnerheight * 100);

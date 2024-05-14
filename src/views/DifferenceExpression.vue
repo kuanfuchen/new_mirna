@@ -71,7 +71,8 @@
           <v-col :cols="contentCols">
             <div class="py-1 mb-2">
               <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
-              <Volcano :change_volcano_plot="compare_de_Obj" @xaxisMaxValue="listenXxais_Max"></Volcano>
+              <Volcano :change_volcano_plot="compare_de_Obj" ></Volcano>
+              <!-- @xaxisMaxValue="listenXxais_Max" -->
             </div>
           </v-col>
           <v-col :cols="contentCols">
