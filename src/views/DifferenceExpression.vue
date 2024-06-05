@@ -57,7 +57,7 @@
         <!-- <hr> -->
       </v-card-text>
       <v-card-text class="py-0">
-        <div class="d-flex justify-end mr-3">
+        <!-- <div class="d-flex justify-end mr-3">
           <div class="d-flex justify-end mt-2 ">
             <div class="toggle_cols " @click="changedContentSize(6, 220, 450)">
               <v-icon icon="fa:fas fa-table-columns mr-5"></v-icon>
@@ -66,16 +66,17 @@
               <v-icon icon="fa:far fa-square mr-5"></v-icon>
             </div>
           </div>
-        </div>
+        </div> -->
         <v-row>
-          <v-col :cols="contentCols">
+          <!-- contentCols -->
+          <v-col :cols="12">
             <div class="py-1 mb-2">
               <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
               <Volcano :change_volcano_plot="compare_de_Obj" ></Volcano>
               <!-- @xaxisMaxValue="listenXxais_Max" -->
             </div>
           </v-col>
-          <v-col :cols="contentCols">
+          <v-col :cols="12">
             <div v-if="handleDataIF">
               <!-- <v-card class="px-2 py-1"> -->
               <div class="d-flex align-self-center px-2 py-1">
@@ -158,7 +159,8 @@
     contentCols.value = col;
     deTableSize.value = removeTableHeight;
     plot_height.value = removePlotHeight;
-    changed_miRNA_DataInfo()
+    changed_miRNA_DataInfo();
+    //改變plot長度，目前不使用
   }
   const sort_deFolderData = async(de_data) => {
     if(Object.keys(de_data).length === 0)return;

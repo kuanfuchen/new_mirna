@@ -29,7 +29,7 @@
       </v-list>
       <div class="footerAbout">
         <div class="d-flex justify-center mb-2" >
-          <img src="../assets/img/logo.png" style="width:200px">
+          <img src="../assets/img/logo.png" >
         </div>
         <div class="d-flex justify-center">
           <div class="mb-5" style="text-align: center;">
@@ -37,6 +37,7 @@
             <p>連絡人：張益峯博士</p>
             <p>分機：03-2118800 #3941</p>
             <a href = "mailto: ianyfchang@mail.cgu.edu.tw">ianyfchang@mail.cgu.edu.tw</a>
+            <p>Version 1.1.1</p>
             <!-- <p>ianyfchang@mail.cgu.edu.tw</p> -->
           </div>
         </div>
@@ -55,12 +56,26 @@
       color: #546E7A;
   }
   .footerAbout{
-    font-size: 18px;
+    font-size: 16px;
     color: #546E7A;
     position: fixed;
     bottom: 0;
     width:100%;
-    // text-align:center;
+    img{
+      width: 160px;
+    }
+  }
+  @media (max-width:1599px) {
+    .footerAbout{
+      font-size: 12px;
+    color: #546E7A;
+      position: fixed;
+      bottom: 0;
+      width:100%;
+      img{
+        width:100px
+      }
+    }
   }
 </style>
 <script setup>

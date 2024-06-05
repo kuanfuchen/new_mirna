@@ -4,7 +4,7 @@
       {{ valcanoTitle }}
       <!-- <p class="ml-3" style="font-weight: 700;font-size: 18px;" >{{ valcanoTitle }}</p> -->
     </div>
-    <div class="d-flex justify-space-between mt-1">
+    <!-- <div class="d-flex justify-space-between mt-1">
       <div class="ml-5" style="font-weight: 700;font-size: 14px;">
         <p>Total filtered miRNA: {{ total_position_number }}</p>
         <p style="color:#EF5350;margin-left:90px">UP: {{ positive_position_number }}</p>
@@ -13,9 +13,39 @@
       <div class="download_xlsx" @click="toogle_Plot_Screen = true">
         <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
       </div>
-    </div>
-    
-    <div class="mt-3" :style="{'height':plot_height + 'vh'}" id="displatVolcanoPlot"></div>
+    </div> -->
+    <v-row class="d-flex justify-space-between mt-1">
+      <v-col :cols="6">
+        <v-card style="height:550px">
+          <v-card-text>
+            <DE_Bar_Plot  :de_bar_plot_data="deBarPlotData"></DE_Bar_Plot>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col :cols="6">
+        <v-card style="height:550px">
+          <v-card-text>
+            <div class="d-flex justify-space-between mt-1">
+            <!-- <div class="ml-5" style="font-weight: 700;font-size: 14px;">
+              <p>Total filtered miRNA: {{ total_position_number }}</p>
+              <p style="color:#EF5350;margin-left:90px">UP: {{ positive_position_number }}</p>
+              <p style="color:#1976D2;margin-left:90px">Down: {{ negative_position_number }}</p>
+            </div> -->
+              <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
+              <div class="download_xlsx" @click="toogle_Plot_Screen = true">
+                <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
+              </div>
+            </div>
+            <div class="mt-3"  id="displatVolcanoPlot" ></div>
+            <!-- :style="{'height':plot_height + 'vh'}" -->
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+
+    <!-- <div class="mt-3" :style="{'height':plot_height + 'vh'}" id="displatVolcanoPlot"></div> -->
+
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
         <v-card-text >
@@ -34,9 +64,10 @@
   import Plotly from 'plotly.js-dist-min';
   import { dataService } from '@/service/data_service';
   import { takeUntil, debounceTime, Subject } from 'rxjs';
-  import { ref, watch } from 'vue';
+  import { ref, watch, reactive } from 'vue';
   import Dialog_plot from '../Dialog_Plot.vue';
   import {image_config, imageCapture} from '../../utils/image_download';
+  import DE_Bar_Plot from './DE_BarPlot.vue';
   const props = defineProps(['change_volcano_plot', ]);
   // const emit = defineEmits(['maxValYaxis']);
   const toogle_Plot_Screen = ref(false);
@@ -53,6 +84,11 @@
     info:[],
     headers:[]
   };
+  const deBarPlotData = reactive({
+    positive: 0,
+    neightive: 0,
+    height: 0
+  });
   const removePlotHeight = ref(450);
   const plot_height = ref(30)
   const plotConfig = {
@@ -275,6 +311,9 @@
     image_config.filename = `Volcano_plot`;
     const windowInnerheight = window.innerHeight;
     plot_height.value =  Math.ceil(( windowInnerheight - removePlotHeight.value )/ windowInnerheight * 100);
+    deBarPlotData.height = plot_height.value;
+    deBarPlotData.positive = positive_position_number.value;
+    deBarPlotData.neightive = negative_position_number.value;
     setTimeout(()=>{
       transfer_FullScreen_data.value = {
         data: DE_folder_data,
