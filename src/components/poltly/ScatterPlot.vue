@@ -121,7 +121,7 @@
 
   const drawGraphScatterPlot_visualization = (div) => {
     setTimeout(() => {
-      Plotly.newPlot(div, data, layout, plotConfig/*{ responsive:true, displayModeBar: false }*/)
+      Plotly.newPlot(div, data, layout, plotConfig)
     });
   };
   
@@ -132,7 +132,6 @@
   });
   watch(defineScatterGraphInfo.scatterGraphInfo,() => { handleScatterPlotInfo() });
   watch(defineScatterGraphInfo.plot_size, (newVal)=>{
-    // layout.height = newVal.height;
     layout.height = newVal.height - 100;
     handleScatterPlotInfo();
   })

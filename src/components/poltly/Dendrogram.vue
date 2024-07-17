@@ -91,51 +91,6 @@
   const getHeatmapImg = ()=> new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
   const downloadHeatmapImage = () => {
     try{
-      // method 1 
-      // const heatmapPicture = document.querySelector('.heatmapPicture');
-      // const imgsrc = heatmapPicture.src;
-      // const img = new Image();
-      // img.setAttribute('crossOrigin','anonymous');
-      // img.onload = ()=>{
-      //   const canvas = document.createElement('canvas');
-      //   canvas.width = img.width;
-      //   canvas.height = img.height;
-      //   const context = canvas.getContext('2d');
-      //   context.drawImage(img, 0, 0, img.width, img.height);
-      //   const url = canvas.toDataURL('image/png');
-      //   const a = document.createElement('a');
-      //   const event = new MouseEvent('click');
-      //   a.download = 'heatmap';
-      //   a.href = url;
-      //   a.dispatchEvent(event);
-      // }
-      // img.src = imgsrc
-    // method 2
-    // const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
-    // fetch(src).then(async(res)=>{
-    //   const blob = await res.blob();
-    //   console.log(blob)
-    //   const blobUrl = URL.createObjectURL(blob);
-    //   const link =document.createElement('a');
-    //   link.href = blobUrl;
-    //   link.download = 'heatmap';
-    //   link.innerHTML = '下載文件';
-    //   link.click()
-    // })
-    // method 3
-    
-    // const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
-    // console.log(href,'href');
-    // saveAs(href, 'heatmap.png')
-    //method 4 
-    // const heatmapPicture = document.getElementById('heatmapPicture');
-    // html2canvas(heatmapPicture).then((canvas)=>{
-    //   const link = document.createElement('a');
-    //   link.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    //   link.download = 'screenshot.png';
-    //   link.click();
-    //   })
-    //method 5 
       const href = new URL('@/assets/miRNA-seq/Bowtie2/heatmap.png', import.meta.url).href;
       window.open(href, '_blank','width=100vw')
     }catch(err){

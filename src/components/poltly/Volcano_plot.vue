@@ -2,18 +2,7 @@
   <div>
     <div class="ml-3" style="font-weight: 700;font-size: 15px;">
       {{ valcanoTitle }}
-      <!-- <p class="ml-3" style="font-weight: 700;font-size: 18px;" >{{ valcanoTitle }}</p> -->
     </div>
-    <!-- <div class="d-flex justify-space-between mt-1">
-      <div class="ml-5" style="font-weight: 700;font-size: 14px;">
-        <p>Total filtered miRNA: {{ total_position_number }}</p>
-        <p style="color:#EF5350;margin-left:90px">UP: {{ positive_position_number }}</p>
-        <p style="color:#1976D2;margin-left:90px">Down: {{ negative_position_number }}</p>
-      </div>
-      <div class="download_xlsx" @click="toogle_Plot_Screen = true">
-        <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
-      </div>
-    </div> -->
     <v-row class="d-flex justify-space-between mt-1">
       <v-col :cols="6">
         <v-card style="height:550px">
@@ -26,26 +15,29 @@
         <v-card style="height:550px">
           <v-card-text>
             <div class="d-flex justify-space-between mt-1">
-            <!-- <div class="ml-5" style="font-weight: 700;font-size: 14px;">
-              <p>Total filtered miRNA: {{ total_position_number }}</p>
-              <p style="color:#EF5350;margin-left:90px">UP: {{ positive_position_number }}</p>
-              <p style="color:#1976D2;margin-left:90px">Down: {{ negative_position_number }}</p>
-            </div> -->
               <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
-              <div class="download_xlsx" @click="toogle_Plot_Screen = true">
-                <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
+              <div class="d-flex ml-auto ">
+                <div v-if="annotationsValue.length > 0">
+                  <v-menu v-model="toggledPointSite" :close-on-content-click="false">
+                    <template v-slot:activator="{ props }">
+                      <v-btn size="small" outline v-bind="props" >
+                        <v-icon color="teal" icon="fa:fas fa-gear"></v-icon>
+                      </v-btn>
+                    </template>
+                    <ControlMenu :control_annotation="annotationsValue" @returnPlotSetting="plotSettingChange"
+                    @closeSettingMenu="(ev)=>toggledPointSite = ev"></ControlMenu>
+                  </v-menu>
+                </div>
+                <div class="download_xlsx mt-1 ml-2" @click="toogle_Plot_Screen = true">
+                  <v-icon icon="fa:fas fa-expand mr-5"></v-icon>
+                </div>
               </div>
             </div>
             <div class="mt-3"  id="displatVolcanoPlot" ></div>
-            <!-- :style="{'height':plot_height + 'vh'}" -->
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-
-
-    <!-- <div class="mt-3" :style="{'height':plot_height + 'vh'}" id="displatVolcanoPlot"></div> -->
-
     <v-dialog v-model="toogle_Plot_Screen"  width="90vw" >
       <v-card class="bg-white" style="overflow-y: hidden;">
         <v-card-text >
@@ -68,8 +60,9 @@
   import Dialog_plot from '../Dialog_Plot.vue';
   import {image_config, imageCapture} from '../../utils/image_download';
   import DE_Bar_Plot from './DE_BarPlot.vue';
+  import ControlMenu  from './control/ControlMenu.vue';
   const props = defineProps(['change_volcano_plot', ]);
-  // const emit = defineEmits(['maxValYaxis']);
+  const toggledPointSite = ref(false);
   const toogle_Plot_Screen = ref(false);
   let log2Upper = 1;
   let log2Lower = -1;
@@ -99,6 +92,7 @@
     displayModeBar: true
   }
   const valcanoTitle = ref('');
+  const annotationsValue = ref([]);
   const volcano_plot_plotlyjs_data = {
     x: [],
     y: [],
@@ -106,6 +100,10 @@
     type: 'scatter',
     name: '',
     text: [],
+    textfont :{
+      size:14,
+      weight:"bold"
+    },
     marker: { 
       size: 6,
       color:'#EF5350',//1976D2
@@ -140,7 +138,7 @@
   let display_Text_volcano__plot_plotlyjs_data = {
     x:[],
     y:[],
-    mode:'markers+text',
+    mode:'markers',
     type: 'scatter',
     name: '',
     text: [],
@@ -158,6 +156,7 @@
       t:30
     },
     showlegend: false,
+    annotations:[],
   };
   // 
   const positiveLine = {
@@ -221,6 +220,7 @@
     positive_position_number.value = 0;
     negative_position_number.value = 0;
     total_position_number.value = 0;
+    annotationsValue.value.length = 0;
     handleDE_data(num);    
   }
   const handleDE_data = (selectedDataNum = 0)=>{
@@ -231,15 +231,14 @@
     for(let i = 0 ; storagedDE_folder.info[selectedDataNum].body.length > i ; i++){
       const floatNum = parseFloat(storagedDE_folder.info[selectedDataNum].body[i][1]);
       const logCalu = - Math.log10(floatNum);
-      // selected_DE_pValue.push(storagedDE_folder.info[selectedDataNum].body[i][1]);
       selected_RNA_name.push(storagedDE_folder.info[selectedDataNum].body[i][0]);
       selected_DE_pValue.push(logCalu);
       selected_DE_log2.push(storagedDE_folder.info[selectedDataNum].body[i][4]);
     }
-    //calulate Math.log
     displatVolcano(selected_DE_pValue, selected_DE_log2, selected_RNA_name);
   }
   const displatVolcano = (p_value, log2, RNA_ID) => {
+    layout.annotations.length = 0;
     for(let i = 0 ; log2.length> i ; i++){
       const floatNum = parseFloat(log2[i]);
       const selecte_miRNAs_Name_Index = selecte_miRNAs_Name.indexOf(RNA_ID[i]);
@@ -253,6 +252,22 @@
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
           display_Text_volcano__plot_plotlyjs_data.marker.color.push('#EF5350');
+          layout.annotations.push({
+            originName:RNA_ID[i],
+            x:log2[i],
+            y:p_value[i],
+            text:RNA_ID[i],
+            showarrow: true,
+            arrowhead: 0,
+            ax: 10,
+            ay: -30,
+            xanchor:'left',
+            bgcolor: 'rgba(224, 247, 250,0.8)',
+            borderpad: 4,
+            textfont:{
+              size:16
+            }
+          })
         }
         positive_position_number.value ++;
       }else if( log2Lower >= floatNum && p_value[i] >= log_SelectStyleNum ){
@@ -265,11 +280,26 @@
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
           display_Text_volcano__plot_plotlyjs_data.marker.color.push('#1976D2');
+          layout.annotations.push({
+            originName:RNA_ID[i],
+            x:log2[i],
+            y:p_value[i],
+            text:RNA_ID[i],
+            showarrow: true,
+            arrowhead: 0,
+            xanchor:'right',
+            ax: -10,
+            ay: -30,
+            bgcolor: 'rgba(224, 247, 250,0.8)',
+            borderpad: 4,
+            textfont:{
+              size:16
+            }
+          })
         }
         negative_position_number.value ++;
       }
       else{
-        
         if(selecte_miRNAs_Name_Index === -1){
           selected_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           selected_volcano__plot_plotlyjs_data.x.push(log2[i]);
@@ -279,6 +309,21 @@
           display_Text_volcano__plot_plotlyjs_data.y.push(p_value[i]);
           display_Text_volcano__plot_plotlyjs_data.text.push(RNA_ID[i]);
           display_Text_volcano__plot_plotlyjs_data.marker.color.push('#B0BEC5');
+          layout.annotations.push({
+            originName:RNA_ID[i],
+            x:log2[i],
+            y:p_value[i],
+            text:RNA_ID[i],
+            showarrow: true,
+            arrowhead: 0,
+            ax: 0,
+            ay: -30,
+            bgcolor: 'rgba(224, 247, 250,0.8)',
+            borderpad: 4,
+            textfont:{
+              size:16
+            }
+          })
         }
       }
       total_position_number.value = positive_position_number.value + negative_position_number.value;
@@ -292,18 +337,13 @@
     const maxXaxisRang = absmaxValXaxis > absminValXaxis ? absmaxValXaxis : absminValXaxis;
     const emit_maxXaxisRang = Math.ceil(maxXaxisRang);
     const ceil_max_Xaxis = emit_maxXaxisRang* 1.1;
-    // const ceil_max_Xaxis = Math.ceil(maxValXaxis);
-    // emit('xaxisMaxValue', ceil_max_Xaxis);
-    // emit('xaxisMaxValue', emit_maxXaxisRang);
     layout.xaxis = {
       range: [ -ceil_max_Xaxis, ceil_max_Xaxis ],
-      // title:'log2Ratio'
       title:{text:`log<span style="font-size:12px;">2</span>Ratio`, font:{size:20,}}
     };
     layout.yaxis = {
       range:[ minValYaxis, maxValYaxis ],
-      // title:'-log10 (P-value)'
-      title: { text:`log<span style="font-size:12px;">10</span>(P-value)`, font:{size:20}}
+      title: { text:`-log<span style="font-size:12px;">10</span>(P-value)`, font:{size:20}}
     };
     const postitiveYMax = Math.ceil(maxValYaxis);
     positiveLine.y = [ 0, postitiveYMax ];
@@ -314,6 +354,18 @@
     deBarPlotData.height = plot_height.value;
     deBarPlotData.positive = positive_position_number.value;
     deBarPlotData.neightive = negative_position_number.value;
+    if(layout.annotations.length > 0){
+      for(let i = 0 ; layout.annotations.length > i ; i++ ){
+          annotationsValue.value.push({
+          name:layout.annotations[i].originName, 
+          ID:layout.annotations[i].text,
+          x:Math.abs(layout.annotations[i].ax),
+          y:Math.abs(layout.annotations[i].ay),
+        })
+      }
+    }else{
+      annotationsValue.value.length = 0;
+    }
     setTimeout(()=>{
       transfer_FullScreen_data.value = {
         data: DE_folder_data,
@@ -323,7 +375,20 @@
       Plotly.newPlot('displatVolcanoPlot', DE_folder_data, layout, plotConfig)
     },100)
   }
-  watch(props.change_volcano_plot, (change_Val)=>{
+  const plotSettingChange = (menu_annotations) => {
+    if(menu_annotations.length <= 0)return;
+    for(let i = 0;menu_annotations.length > i ; i++){
+      if(layout.annotations[i].originName === menu_annotations[i].name){
+        layout.annotations[i].ax = Number(menu_annotations[i].x) * -1;
+        layout.annotations[i].ay = Number(menu_annotations[i].y) * -1;
+        annotationsValue.value[i].x = Number(menu_annotations[i].x);
+        annotationsValue.value[i].y = Number(menu_annotations[i].y);
+      }
+    }
+    Plotly.relayout('displatVolcanoPlot', layout);
+    toggledPointSite.value = false;
+  }
+  watch(props.change_volcano_plot, (change_Val) => {
     const titleIndex = storagedDE_folder.headers.indexOf(change_Val.title);
     if(titleIndex === -1){
       console.log('dont index')
@@ -339,7 +404,6 @@
     }
     removePlotHeight.value = change_Val.height;
     if(change_Val.selectStyleNum === '') return;
-    // if(change_Val.selectStyleNum === '' || change_Val.selectStyleNum === Infinity )return;
     log_SelectStyleNum = - Math.log10(change_Val.selectStyleNum);
     if(log_SelectStyleNum === Infinity || log_SelectStyleNum === '') return;
     pvalue_line.y = [ log_SelectStyleNum, log_SelectStyleNum ];

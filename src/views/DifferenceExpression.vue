@@ -3,7 +3,7 @@
     <v-card class="px-3 mt-2" width="100%" >
       <!--  -->
       <template v-slot:title>
-        <p class="text-teal font-weight-bold">Difference Expression Analysis</p> 
+        <p class="text-teal font-weight-bold">Differential Expression Analysis</p> 
       </template>
       <v-card-text>
         <v-row no-gutters>
@@ -19,7 +19,6 @@
             </v-sheet>
           </v-col>
         </v-row>
-        <!--  -->
         <v-row no-gutters>
           <v-col cols="3">
             <v-sheet class="pa-2 ma-2"> 
@@ -38,66 +37,43 @@
             <v-sheet class="pa-2 ma-2">
               <p class="font-weight-bold text-right">
                 Log2 Fold Change Lower bound / Upper bound
-                <!-- log2FC Lower bound (-{{ log2V_model_val }}~0) / Upper bound (0~{{ log2V_model_val }}) -->
               </p>
             </v-sheet>
             
           </v-col>
           <v-col cols="2">
-            <!-- :label="`Number(-${log2V_model_val} ~ 0)`"  -->
             <v-text-field type="number" variant="outlined" v-model="log2_LowerBound" density="compact"
             @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
           <v-col class="ml-5" cols="2">
-            <!-- :label="`Number(0 ~ ${log2V_model_val})`" -->
             <v-text-field  type="number" variant="outlined" v-model="log2_UpperBound" density="compact" 
             @update:modelValue="changed_miRNA_DataInfo"></v-text-field>
           </v-col>
         </v-row>
-        <!-- <hr> -->
       </v-card-text>
       <v-card-text class="py-0">
-        <!-- <div class="d-flex justify-end mr-3">
-          <div class="d-flex justify-end mt-2 ">
-            <div class="toggle_cols " @click="changedContentSize(6, 220, 450)">
-              <v-icon icon="fa:fas fa-table-columns mr-5"></v-icon>
-            </div>
-            <div class="toggle_cols" @click="changedContentSize(12, 0, 350)" >
-              <v-icon icon="fa:far fa-square mr-5"></v-icon>
-            </div>
-          </div>
-        </div> -->
         <v-row>
           <!-- contentCols -->
           <v-col :cols="12">
             <div class="py-1 mb-2">
               <p class="text-h6 ml-3 text-teal" style="font-weight: 700;">Volcano Plot</p>
               <Volcano :change_volcano_plot="compare_de_Obj" ></Volcano>
-              <!-- @xaxisMaxValue="listenXxais_Max" -->
             </div>
           </v-col>
           <v-col :cols="12">
             <div v-if="handleDataIF">
-              <!-- <v-card class="px-2 py-1"> -->
               <div class="d-flex align-self-center px-2 py-1">
-                <p class="text-h6 my-2 text-teal" style="font-weight: 700;">Difference Expression miRNA Table</p>   
+                <p class="text-h6 my-2 text-teal" style="font-weight: 700;">Differential Expression miRNA Table</p>   
               </div>
               <div class="d-flex justify-space-between">
                 <p class="mb-2" style="font-weight: 700;font-size: 18px;">
                   {{ compare_de_title }}
                 </p>
-                  <!-- <div class="d-flex" style="width:500px">
-                    <p class="mr-3 font-weight-bold pt-4" style="font-size:18px;">FDR</p>
-                    <v-text-field  density="compact" label="FDR / Number(0 ~ 1)" variant="outlined" v-model="fdrVal" @update:modelValue="handle_table_Info"
-                      type="number">
-                    </v-text-field>
-                  </div> -->
               </div>
               <DisplayTable :table="tableComponentInfo" :useSearch="true" :expresstablestyle="deTableSize" @select_miRNA_name="tableSelected_miRNA_name"></DisplayTable>
-              <!-- </v-card> -->
             </div>
             <div class="mb-5">
-              <div class="mt-3 d-flex align-center ">
+              <div class="mt-3 d-flex align-center">
                 <h3 style="width:250px">Downlaod filter miRNA table</h3>
                 <v-btn class="download_xlsx text-none ml-3" @click="exportFile(false)">
                   <v-icon icon="fa:fas fa-file-arrow-down" class="text-teal " style="font-size: 24px;"></v-icon>
@@ -134,9 +110,6 @@
   const log2_LowerBound = ref(-1);
   const log2_UpperBound = ref(1);
   const handleDataIF = ref(false);
-  // const contentCols = ref(6);
-  // const deTableSize= ref(230);
-  // const plot_height = ref(450);
   const contentCols = ref(12);
   const deTableSize= ref(0);
   const plot_height = ref(350);
@@ -184,7 +157,6 @@
       const display_Table = [];
       let fdrIndex = -1;
       for(let i = 0 ; compare_de_tables_info.length > i ; i++){
-        // if(compare_de_tables_info[i].title === compare_de_title.value){
         const headers = [];
         for(let j = 0 ; compare_de_tables_info[i].headers.length > j; j++){
           let header = '';
@@ -201,14 +173,11 @@
           }else{
             const headerTrim = header.trim();
             headers.push(headerTrim);
-            // headers.push(header);
           }
           if(headerUpper === 'FDR STEP UP'){
             fdrIndex = j;
           }
         }
-        // const headers_significant_index = headers.indexOf('significant');
-        // if(headers_significant_index === -1) headers.push('significant');
         const headersUpper = [];
         for(let i = 0 ; headers.length > i ; i++){
           headersUpper.push(headers[i].toUpperCase())
@@ -217,8 +186,6 @@
         const headers_log2_Ratio = headersUpper.indexOf('LOG2RATIO');
         const headers_ratio = headersUpper.indexOf('RATIO');
         for(let j = 0 ; compare_de_tables_info[i].body.length > j ; j++){
-          // const fdrNumber = Number(compare_de_tables_info[i].body[j][fdrIndex]);
-          // const significant_value = fdrVal_Number >= fdrNumber ? true : false;
           if(headers.length > compare_de_tables_info[i].body[j].length){
             compare_de_tables_info[i].body[j].forEach((item, index)=>{
               let changedStyle;
@@ -230,9 +197,6 @@
               }
             })
           }
-          // if(compare_de_tables_info[i].body[j].length <= headers.length){
-          //   compare_de_tables_info[i].body[j][headers.length - 1]= significant_value;
-          // }
           if(headers_p_value > -1 && compare_de_tables_info[i].title === compare_de_title.value) {
             const compare_de_tables_p_value_Number = Number(compare_de_tables_info[i].body[j][headers_p_value]);
             const compare_de_tables_log2_Number = Number(compare_de_tables_info[i].body[j][headers_log2_Ratio]);
@@ -241,7 +205,6 @@
               headers_log2_Ratio >=0 && compare_de_tables_log2_Number <= log2_LowerBound.value){
                 compare_de_tables_info[i].body[j][headers_log2_Ratio] = Number(compare_de_tables_info[i].body[j][headers_log2_Ratio]);
                 compare_de_tables_info[i].body[j][headers_ratio] = Number(compare_de_tables_info[i].body[j][headers_ratio]);
-                // console.log(compare_de_tables_info[i].body[j][headers_ratio],'compare_de_tables_info[i].body[j]')
               display_Table.push(compare_de_tables_info[i].body[j]);
             }
           };
@@ -250,7 +213,6 @@
         }
         if(compare_de_tables_info[i].title === compare_de_title.value){
           resolve({
-            // body:compare_de_tables_info[i].body,
             body: display_Table,
             headers,
             showCheckBox:true

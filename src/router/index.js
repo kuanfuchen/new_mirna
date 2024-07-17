@@ -7,9 +7,6 @@ const routes = [
       {
         path: '',
         name: 'ProjectInfo',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
       },
       {
@@ -35,11 +32,16 @@ const routes = [
         name:'notfound',
         component:()=>import('@/views/Notfound.vue')
       },
-      // {
-      //   path:'externalFold',
-      //   name:'externalFold',
-      //   component:()=>import('@/views/ExternalFold.vue')
-      // }
+      {
+        path:'/functionEnrichment',
+        name:'FunctionEnrichment',
+        component: () => import('@/views/functionEnrich/FunctionalEnrichment.vue')
+      },
+      {
+        path:'/fe_kegg',
+        name:'FunctionEnrichmentKEGG',
+        component: () => import('@/views/functionEnrich/Fun_Enrich_KEGG.vue')
+      },
     ],
   },
 ]

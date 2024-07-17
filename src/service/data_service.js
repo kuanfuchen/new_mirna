@@ -57,7 +57,6 @@ const handle_post_alignment = (post_alignment) => {
         break;
       case "Total non-unique":
         headers.push('Total non-unique read');
-        // headers.push('Total nonUnique read');
         break;
       case "Non-unique":
         headers.push('%Non-unique')
@@ -123,11 +122,9 @@ const handleProject = ()=>{
 };
 const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
   if(!normalized_count.headers || !normalized_count.body) return;
-  // const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
   const headersSort = normalized_count.headers.filter((header, i)=> { if(i > 5)return header } );
   const normalized_Info = [];
   const normalized_RNA_title = [];
-  // const test_info = [];
   for( let i = 0 ; normalized_count.body.length > i ; i++ ){
     normalized_Info[i] = [];
     const miRNA_display_normal_count = {};
@@ -144,9 +141,6 @@ const graphPlotVisualization = async(normalized_count, microRNA_countTab) => {
       
         miRNA_display_normal_count[normalized_count.headers[index]] = log10Body;
         normalized_Info[i].push(log10Body);
-        // const numberBody = body_number + 1;
-        // const log10Body = Math.log10(numberBody);
-        // normalized_Info[i].push(log10Body);
     }});
   }
   const microRNA_Info = {
@@ -173,13 +167,6 @@ const handleSplitTxt = (tableInfo) => {
       miRNATable.body[i - 1] = [];
       miRNATable.body[i - 1] = removeR_split_tableInfo;
     }
-    // if(removeSpace_split_tableInfo.length === 1) continue;
-    // if(i === 0) {
-    //   miRNATable.headers = removeSpace_split_tableInfo;
-    // }else{
-    //   miRNATable.body[i - 1] = [];
-    //   miRNATable.body[i - 1] = removeSpace_split_tableInfo;
-    // }
   }
   return miRNATable
 };
@@ -190,7 +177,6 @@ const handle_CPM_PCA = ()=>{
 }
 const handleDE_Folder = async () => {
   //由於有未知元素命名，故特別命名
-  // const de_folder_name = '../assets/miRNA-seq/Bowtie2/03. DE miRNAs/';
   const assetContext = require.context( '../assets/miRNA-seq/Bowtie2/03. DE miRNAs/', true, /\.txt$/)
   assetContext.keys().forEach((key) => {
     const removeFilterFile = key.indexOf('filtered/');
@@ -205,11 +191,9 @@ const handleDE_Folder = async () => {
   });
   const DE_txtGroup = [];
   for(let i = 0 ; DE_folder_compare_name.length > i ; i++){
-    // const path = de_folder_name + DE_folder_compare_name[i] + '/gene_list.txt';
     const readTxt = require(`../assets/miRNA-seq/Bowtie2/03. DE miRNAs/${DE_folder_compare_name[i]}/gene_list.txt`)
     DE_txtGroup.push(readTxt.default);
   }
-  
   for(let i = 0 ; DE_txtGroup.length > i ; i++){
     const de_txtTableInfo = handleSplitTxt(DE_txtGroup[i]);
     de_txtTableInfo.title = DE_folder_compare_name[i];
@@ -221,9 +205,6 @@ const exportRawTable_different_expression = () => {
   _export_raw_table_different_expression_XLSX$.next(true)
 };
 const exportXlsx = async(readFile, fileName, sheetsName)=> {
-  console.log(readFile, 'readFile');
-  console.log(fileName, 'fileName');
-  console.log(sheetsName, 'sheetsName');
   let sheets_Title = [];
   let excelName = '';
   if(fileName === 'readAndAlignment'){
@@ -244,7 +225,6 @@ const exportXlsx = async(readFile, fileName, sheetsName)=> {
   writeFileXLSX(export_wb, excelName + '.xlsx');
 };
 const transferHandleFinishMeg = (handleInfo) => {
-  console.log(handleInfo, 'handleInfo')
   _transferMeg$.next(handleInfo)
 };
 export const dataService = {

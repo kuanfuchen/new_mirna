@@ -78,11 +78,6 @@
           {{  item.lsmean1.toLocaleString('en-US')  }}
         </div>
       </template>
-        <!-- <template v-slot:item.Up_Down = "{item}">
-          <div>
-            <p :style="{ 'color':item.Up_Down === 'UP'? '#2962FF':'#D32F2F' }">{{ item.Up_Down }}</p>
-          </div>
-        </template> -->
     </v-data-table>
   </div>
 </template>
@@ -119,15 +114,7 @@
       }else{
         headerSplitWord = tableInfo.headers[k].split(/\s/).join('').trim();
       }
-      // setLSMeanKeyNumber = checkLSMean > -1 ?setLSMeanKeyNumber++ : setLSMeanKeyNumber ;
-      // const headerSplitWord = tableInfo.headers[k].split(/\s/).join('').trim();
       if(j === 0){
-          // headers.value.push({
-          //   title: tableInfo.headers[k],
-          //   align:'center',
-          //   sortable:true,
-          //   key:tableInfo.headers[k],
-          // })
         const uppercaseFirst = tableInfo.headers[k].split('');
         const getFirst = uppercaseFirst.splice(0,1);
         const firstcase=getFirst[0].toUpperCase();
@@ -138,7 +125,6 @@
           align: 'center',
           sortable: true,
           key: checkLSMean === -1 ? headerSplitWord : 'lsmean' + setLSMeanKeyNumber, 
-          // key: headerSplitWord
         })
       }
       if(!bodyInfo[j][headerSplitWord]){
@@ -163,15 +149,12 @@
           const [ base, exponent ] = bodyInfo[i][bodyInfoKeys[j]].split('E').map(Number);
           if(exponent !== undefined && exponent !== 0){
             bodyInfo[i][bodyInfoKeys[j]] = Number(bodyInfo[i][bodyInfoKeys[j]]).toExponential(2);
-            // bodyInfo[i][bodyInfoKeys[j]] = Number(bodyInfo[i][bodyInfoKeys[j]])
-          //   bodyInfo[i][bodyInfoKeys[j]] = Number(`${tempVal}E${exponent}`);
           }else{
             const val = Math.round(Number(base)*100)/100;
             if(val > 0){
               bodyInfo[i][bodyInfoKeys[j]] = val;
             }else{
               const numToExponential= Number(bodyInfo[i][bodyInfoKeys[j]]).toExponential(2);
-              // const numToExponential= Number(bodyInfo[i][bodyInfoKeys[j]]);
               if(Number(numToExponential)=== 0){
                 bodyInfo[i][bodyInfoKeys[j]] =  0;
               }else{
@@ -219,7 +202,4 @@
   .v-table .v-data-table__th,  .v-table .v-data-table__td{
     font-weight: 600 !important;
   }
-  // .download_xlsx{
-  //   cursor: pointer;
-  // }
 </style>

@@ -51,9 +51,6 @@
     displayModeBar: true
   }
   const settingColor = ['#17becf','#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22'];
-  // const settingColor = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4',
-  //   '#00BCD4', '#009688', '#4CAF50', '#8BC34A' , '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800','#FF5722'
-  //   ,'#795548', '#607D8B'];
   const madePCA_plot = async() => {
     const tempData = [];
     const title = [];
@@ -74,7 +71,6 @@
     const headersTitle =  PCA_Data.headers.filter((item, index)=>{if(index > 0)return item});
     for(let i = 0 ; tempData.length > i ; i++){
       const drawMarkerColor = PCA_Data.sortOrder.filter((item)=>{ if(item.name === headersTitle[i])return item.color})[0];
-      // const drawMarkerColor = PCA_Data.sortOrder.filter((item)=>{ if(item.name === PCA_Data.headers[ i + 1 ])return item.color})[0];
       pca_plot_data.push({
         x:[ tempData[i][0] ],
         y:[ tempData[i][1] ],
@@ -98,10 +94,8 @@
       const layoutTextSplit = title[i].split(/^([^\s]+)\s*\(([\d.]+%)\)$/);
       const layoutAxisTitle = layoutTextSplit[2].substring(0,5);
       if(i === 0){
-        // layout.xaxis.title = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`
         layout.xaxis.title.text = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`;
       }else if(i === 1){
-        // layout.yaxis.title = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`
         layout.yaxis.title.text = `${layoutTextSplit[1]} (${layoutAxisTitle}%)`;
       }
     }
@@ -112,11 +106,9 @@
     }
     const full_screen_layout = {
       xaxis:{
-        // title:layout.xaxis.title,
         title:{ text:layout.xaxis.title.text, font:{ size:20, weight:'bold' } }
       },
       yaxis:{
-        // title:layout.yaxis.title
         title:{ text:layout.yaxis.title.text, font:{ size:20, weight:'bold' }}}
     }
     image_config.filename = `Visualization_PCA_plot`;

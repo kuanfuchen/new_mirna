@@ -12,7 +12,6 @@
 </template>
 <script setup>
   import { onMounted } from 'vue';
-  // const dialog = ref(false);
   import Plotly from 'plotly.js-dist-min';
   const props = defineProps(['listen_plot_data']); 
   const emit = defineEmits(['toggle_tranfer_dialog_plot']);

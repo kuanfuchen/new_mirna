@@ -11,16 +11,10 @@
             <p class="v-col-md-4 v-col-xl-3 text-h6">{{ userInfo }}</p>
             <p class="v-col-md-8 v-col-xl-9 text-h6">{{ projectUsrInfo[userInfo] }}</p>
           </div>
-          <!-- <q-separator v-if="index < projectUsrInfo.userInfoOrder.length - 1" /> -->
         </v-card-text>
       </v-card>
     </v-responsive>
   </v-container>
-
-  <!--  -->
-  <!-- <iframe src="http://www.wallpapers13.com/wp-content/uploads/2015/12/Nature-Lake-Bled.-Desktop-background-image.jpg" width="500" height="300" /> -->
-  <!-- <iframe width="500" height="500" src="http://localhost:8080/statqzv/index.html" frameborder="0"></iframe> -->
-  <!--  -->
 </template>
 <script setup>
 /* eslint-disable */

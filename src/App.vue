@@ -2,21 +2,12 @@
   <div class="allContainer mx-auto">
     <router-view/>
   </div>
-    
-  
-  <!-- <nav> -->
-    <!-- <router-link to="/">Home</router-link> |
-    <router-link :to="{name:'about'}">About</router-link> -->
-    <!-- <a href="./views/AboutView.vue">home</a> -->
-  <!-- </nav> -->
-  <!-- <div class="">123456</div> -->
-  <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-  
 </template>
 <script setup>
   //
   import { onMounted } from 'vue';
   import { dataService } from '@/service/data_service.js';
+  import { papaDate } from './service/papaResolve_getData.js';
 // import data from './service/data_service';
 // export default defineComponent({
 //   name: 'App'
@@ -28,6 +19,7 @@ onMounted(async() => {
   await dataService.handleRawReadsFolder();
   await dataService.handle_CPM_PCA();
   await dataService.handleDE_Folder();
+  await papaDate.searchFunction_enrichment_file();
 });
 </script>
 <style lang="scss">

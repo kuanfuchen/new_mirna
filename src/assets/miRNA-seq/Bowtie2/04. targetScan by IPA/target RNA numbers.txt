@@ -1,0 +1,5 @@
+CE CL1-5 vs CE CL1-0 (162) -> 137 (targeted miRNAs) -> 648 (Experimentally Observed RNA from 55 miRNAs)
+EV CL1-0 vs CE CL1-0 (313) -> 280 (targeted miRNAs) -> 1340 (Experimentally Observed RNA from 93 miRNAs)
+EV CL1-5 vs CE CL1-5 (241) -> 219 (targeted miRNAs) -> 821 (Experimentally Observed RNA from 67 miRNAs)
+EV CL1-5 vs EV CL1-0 (148) -> 127 (targeted miRNAs) -> 844 (Experimentally Observed RNA from 63 miRNAs)
+
